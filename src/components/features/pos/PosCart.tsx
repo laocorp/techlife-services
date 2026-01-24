@@ -92,7 +92,7 @@ export default function PosCart({ items, onUpdateQuantity, onRemove, onCheckout,
                 <PaymentDialog
                     total={total}
                     onConfirm={onCheckout}
-                    disabled={items.length === 0 || loading}
+                    disabled={items.length === 0 || !!loading}
                 />
             </div>
         </div>
