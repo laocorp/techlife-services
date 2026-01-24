@@ -61,7 +61,9 @@ export async function getOrdersAction(filters?: { assetId?: string }) {
     const { data, error } = await query
 
     if (error) throw new Error(error.message)
-    return data
+
+    // Explicit casting or validation could go here
+    return data as any[]
 }
 
 export async function getOrderByIdAction(orderId: string) {

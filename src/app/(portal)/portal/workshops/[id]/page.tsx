@@ -1,6 +1,22 @@
-import { createClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
-import Link from 'next/link'
+// ... imports
+import Image from 'next/image'
+
+// ... (in the products loop)
+{
+    (product.images && product.images.length > 0) || product.image_url ? (
+        <div className="relative w-full h-full">
+            <Image
+                src={product.images?.[0] || product.image_url}
+                alt={product.name}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+        </div>
+    ) : (
+    <ImageIcon className="h-10 w-10 text-slate-300" />
+)
+}
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -122,8 +138,15 @@ export default async function WorkshopProfilePage({
                 <div className="absolute bottom-0 left-0 w-full max-w-5xl mx-auto px-4 pb-8 flex items-end gap-6">
                     <div className="h-32 w-32 bg-white rounded-xl shadow-lg p-1 flex items-center justify-center text-4xl font-bold text-slate-300">
                         {tenantLogo ? (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img src={tenantLogo} alt="Logo" className="w-full h-full object-cover rounded-lg" />
+                            <div className="relative w-full h-full">
+                                <Image
+                                    src={tenantLogo}
+                                    alt="Logo"
+                                    fill
+                                    sizes="(max-width: 768px) 128px, 128px"
+                                    className="object-cover rounded-lg"
+                                />
+                            </div>
                         ) : (
                             tenant.name[0]
                         )}

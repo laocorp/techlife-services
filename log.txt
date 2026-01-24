@@ -1,347 +1,350 @@
 Initializing deployment
 Cloning Repo github.com/laocorp/techlife-services.git to /etc/dokploy/applications/techlifeservice-web-nlowax/code: ✅
 Cloning into '/etc/dokploy/applications/techlifeservice-web-nlowax/code'...
-remote: Enumerating objects: 230, done.
-remote: Counting objects:   0% (1/230)        
-remote: Counting objects:   1% (3/230)        
-remote: Counting objects:   2% (5/230)        
-remote: Counting objects:   3% (7/230)        
-remote: Counting objects:   4% (10/230)        
-remote: Counting objects:   5% (12/230)        
-remote: Counting objects:   6% (14/230)        
-remote: Counting objects:   7% (17/230)        
-remote: Counting objects:   8% (19/230)        
-remote: Counting objects:   9% (21/230)        
-remote: Counting objects:  10% (23/230)        
-remote: Counting objects:  11% (26/230)        
-remote: Counting objects:  12% (28/230)        
-remote: Counting objects:  13% (30/230)        
-remote: Counting objects:  14% (33/230)        
-remote: Counting objects:  15% (35/230)        
-remote: Counting objects:  16% (37/230)        
-remote: Counting objects:  17% (40/230)        
-remote: Counting objects:  18% (42/230)        
-remote: Counting objects:  19% (44/230)        
-remote: Counting objects:  20% (46/230)        
-remote: Counting objects:  21% (49/230)        
-remote: Counting objects:  22% (51/230)        
-remote: Counting objects:  23% (53/230)        
-remote: Counting objects:  24% (56/230)        
-remote: Counting objects:  25% (58/230)        
-remote: Counting objects:  26% (60/230)        
-remote: Counting objects:  27% (63/230)        
-remote: Counting objects:  28% (65/230)        
-remote: Counting objects:  29% (67/230)        
-remote: Counting objects:  30% (69/230)        
-remote: Counting objects:  31% (72/230)        
-remote: Counting objects:  32% (74/230)        
-remote: Counting objects:  33% (76/230)        
-remote: Counting objects:  34% (79/230)        
-remote: Counting objects:  35% (81/230)        
-remote: Counting objects:  36% (83/230)        
-remote: Counting objects:  37% (86/230)        
-remote: Counting objects:  38% (88/230)        
-remote: Counting objects:  39% (90/230)        
-remote: Counting objects:  40% (92/230)        
-remote: Counting objects:  41% (95/230)        
-remote: Counting objects:  42% (97/230)        
-remote: Counting objects:  43% (99/230)        
-remote: Counting objects:  44% (102/230)        
-remote: Counting objects:  45% (104/230)        
-remote: Counting objects:  46% (106/230)        
-remote: Counting objects:  47% (109/230)        
-remote: Counting objects:  48% (111/230)        
-remote: Counting objects:  49% (113/230)        
-remote: Counting objects:  50% (115/230)        
-remote: Counting objects:  51% (118/230)        
-remote: Counting objects:  52% (120/230)        
-remote: Counting objects:  53% (122/230)        
-remote: Counting objects:  54% (125/230)        
-remote: Counting objects:  55% (127/230)        
-remote: Counting objects:  56% (129/230)        
-remote: Counting objects:  57% (132/230)        
-remote: Counting objects:  58% (134/230)        
-remote: Counting objects:  59% (136/230)        
-remote: Counting objects:  60% (138/230)        
-remote: Counting objects:  61% (141/230)        
-remote: Counting objects:  62% (143/230)        
-remote: Counting objects:  63% (145/230)        
-remote: Counting objects:  64% (148/230)        
-remote: Counting objects:  65% (150/230)        
-remote: Counting objects:  66% (152/230)        
-remote: Counting objects:  67% (155/230)        
-remote: Counting objects:  68% (157/230)        
-remote: Counting objects:  69% (159/230)        
-remote: Counting objects:  70% (161/230)        
-remote: Counting objects:  71% (164/230)        
-remote: Counting objects:  72% (166/230)        
-remote: Counting objects:  73% (168/230)        
-remote: Counting objects:  74% (171/230)        
-remote: Counting objects:  75% (173/230)        
-remote: Counting objects:  76% (175/230)        
-remote: Counting objects:  77% (178/230)        
-remote: Counting objects:  78% (180/230)        
-remote: Counting objects:  79% (182/230)        
-remote: Counting objects:  80% (184/230)        
-remote: Counting objects:  81% (187/230)        
-remote: Counting objects:  82% (189/230)        
-remote: Counting objects:  83% (191/230)        
-remote: Counting objects:  84% (194/230)        
-remote: Counting objects:  85% (196/230)        
-remote: Counting objects:  86% (198/230)        
-remote: Counting objects:  87% (201/230)        
-remote: Counting objects:  88% (203/230)        
-remote: Counting objects:  89% (205/230)        
-remote: Counting objects:  90% (207/230)        
-remote: Counting objects:  91% (210/230)        
-remote: Counting objects:  92% (212/230)        
-remote: Counting objects:  93% (214/230)        
-remote: Counting objects:  94% (217/230)        
-remote: Counting objects:  95% (219/230)        
-remote: Counting objects:  96% (221/230)        
-remote: Counting objects:  97% (224/230)        
-remote: Counting objects:  98% (226/230)        
-remote: Counting objects:  99% (228/230)        
-remote: Counting objects: 100% (230/230)        
-remote: Counting objects: 100% (230/230), done.
-remote: Compressing objects:   0% (1/170)        
-remote: Compressing objects:   1% (2/170)        
-remote: Compressing objects:   2% (4/170)        
-remote: Compressing objects:   3% (6/170)        
-remote: Compressing objects:   4% (7/170)        
-remote: Compressing objects:   5% (9/170)        
-remote: Compressing objects:   6% (11/170)        
-remote: Compressing objects:   7% (12/170)        
-remote: Compressing objects:   8% (14/170)        
-remote: Compressing objects:   9% (16/170)        
-remote: Compressing objects:  10% (17/170)        
-remote: Compressing objects:  11% (19/170)        
-remote: Compressing objects:  12% (21/170)        
-remote: Compressing objects:  13% (23/170)        
-remote: Compressing objects:  14% (24/170)        
-remote: Compressing objects:  15% (26/170)        
-remote: Compressing objects:  16% (28/170)        
-remote: Compressing objects:  17% (29/170)        
-remote: Compressing objects:  18% (31/170)        
-remote: Compressing objects:  19% (33/170)        
-remote: Compressing objects:  20% (34/170)        
-remote: Compressing objects:  21% (36/170)        
-remote: Compressing objects:  22% (38/170)        
-remote: Compressing objects:  23% (40/170)        
-remote: Compressing objects:  24% (41/170)        
-remote: Compressing objects:  25% (43/170)        
-remote: Compressing objects:  26% (45/170)        
-remote: Compressing objects:  27% (46/170)        
-remote: Compressing objects:  28% (48/170)        
-remote: Compressing objects:  29% (50/170)        
-remote: Compressing objects:  30% (51/170)        
-remote: Compressing objects:  31% (53/170)        
-remote: Compressing objects:  32% (55/170)        
-remote: Compressing objects:  33% (57/170)        
-remote: Compressing objects:  34% (58/170)        
-remote: Compressing objects:  35% (60/170)        
-remote: Compressing objects:  36% (62/170)        
-remote: Compressing objects:  37% (63/170)        
-remote: Compressing objects:  38% (65/170)        
-remote: Compressing objects:  39% (67/170)        
-remote: Compressing objects:  40% (68/170)        
-remote: Compressing objects:  41% (70/170)        
-remote: Compressing objects:  42% (72/170)        
-remote: Compressing objects:  43% (74/170)        
-remote: Compressing objects:  44% (75/170)        
-remote: Compressing objects:  45% (77/170)        
-remote: Compressing objects:  46% (79/170)        
-remote: Compressing objects:  47% (80/170)        
-remote: Compressing objects:  48% (82/170)        
-remote: Compressing objects:  49% (84/170)        
-remote: Compressing objects:  50% (85/170)        
-remote: Compressing objects:  51% (87/170)        
-remote: Compressing objects:  52% (89/170)        
-remote: Compressing objects:  53% (91/170)        
-remote: Compressing objects:  54% (92/170)        
-remote: Compressing objects:  55% (94/170)        
-remote: Compressing objects:  56% (96/170)        
-remote: Compressing objects:  57% (97/170)        
-remote: Compressing objects:  58% (99/170)        
-remote: Compressing objects:  59% (101/170)        
-remote: Compressing objects:  60% (102/170)        
-remote: Compressing objects:  61% (104/170)        
-remote: Compressing objects:  62% (106/170)        
-remote: Compressing objects:  63% (108/170)        
-remote: Compressing objects:  64% (109/170)        
-remote: Compressing objects:  65% (111/170)        
-remote: Compressing objects:  66% (113/170)        
-remote: Compressing objects:  67% (114/170)        
-remote: Compressing objects:  68% (116/170)        
-remote: Compressing objects:  69% (118/170)        
-remote: Compressing objects:  70% (119/170)        
-remote: Compressing objects:  71% (121/170)        
-remote: Compressing objects:  72% (123/170)        
-remote: Compressing objects:  73% (125/170)        
-remote: Compressing objects:  74% (126/170)        
-remote: Compressing objects:  75% (128/170)        
-remote: Compressing objects:  76% (130/170)        
-remote: Compressing objects:  77% (131/170)        
-remote: Compressing objects:  78% (133/170)        
-remote: Compressing objects:  79% (135/170)        
-remote: Compressing objects:  80% (136/170)        
-remote: Compressing objects:  81% (138/170)        
-remote: Compressing objects:  82% (140/170)        
-remote: Compressing objects:  83% (142/170)        
-remote: Compressing objects:  84% (143/170)        
-remote: Compressing objects:  85% (145/170)        
-remote: Compressing objects:  86% (147/170)        
-remote: Compressing objects:  87% (148/170)        
-remote: Compressing objects:  88% (150/170)        
-remote: Compressing objects:  89% (152/170)        
-remote: Compressing objects:  90% (153/170)        
-remote: Compressing objects:  91% (155/170)        
-remote: Compressing objects:  92% (157/170)        
-remote: Compressing objects:  93% (159/170)        
-remote: Compressing objects:  94% (160/170)        
-remote: Compressing objects:  95% (162/170)        
-remote: Compressing objects:  96% (164/170)        
-remote: Compressing objects:  97% (165/170)        
-remote: Compressing objects:  98% (167/170)        
-remote: Compressing objects:  99% (169/170)        
-remote: Compressing objects: 100% (170/170)        
-remote: Compressing objects: 100% (170/170), done.
-Receiving objects:   0% (1/230)
-Receiving objects:   1% (3/230)
-Receiving objects:   2% (5/230)
-Receiving objects:   3% (7/230)
-Receiving objects:   4% (10/230)
-Receiving objects:   5% (12/230)
-Receiving objects:   6% (14/230)
-Receiving objects:   7% (17/230)
-Receiving objects:   8% (19/230)
-Receiving objects:   9% (21/230)
-Receiving objects:  10% (23/230)
-Receiving objects:  11% (26/230)
-Receiving objects:  12% (28/230)
-Receiving objects:  13% (30/230)
-Receiving objects:  14% (33/230)
-Receiving objects:  15% (35/230)
-Receiving objects:  16% (37/230)
-Receiving objects:  17% (40/230)
-Receiving objects:  18% (42/230)
-Receiving objects:  19% (44/230)
-Receiving objects:  20% (46/230)
-Receiving objects:  21% (49/230)
-Receiving objects:  22% (51/230)
-Receiving objects:  23% (53/230)
-Receiving objects:  24% (56/230)
-Receiving objects:  25% (58/230)
-Receiving objects:  26% (60/230)
-Receiving objects:  27% (63/230)
-Receiving objects:  28% (65/230)
-Receiving objects:  29% (67/230)
-Receiving objects:  30% (69/230)
-Receiving objects:  31% (72/230)
-Receiving objects:  32% (74/230)
-Receiving objects:  33% (76/230)
-Receiving objects:  34% (79/230)
-Receiving objects:  35% (81/230)
-Receiving objects:  36% (83/230)
-Receiving objects:  37% (86/230)
-Receiving objects:  38% (88/230)
-Receiving objects:  39% (90/230)
-Receiving objects:  40% (92/230)
-Receiving objects:  41% (95/230)
-Receiving objects:  42% (97/230)
-Receiving objects:  43% (99/230)
-Receiving objects:  44% (102/230)
-Receiving objects:  45% (104/230)
-Receiving objects:  46% (106/230)
-Receiving objects:  47% (109/230)
-Receiving objects:  48% (111/230)
-Receiving objects:  49% (113/230)
-Receiving objects:  50% (115/230)
-Receiving objects:  51% (118/230)
-Receiving objects:  52% (120/230)
-Receiving objects:  53% (122/230)
-Receiving objects:  54% (125/230)
-Receiving objects:  55% (127/230)
-Receiving objects:  56% (129/230)
-Receiving objects:  57% (132/230)
-Receiving objects:  58% (134/230)
-Receiving objects:  59% (136/230)
-Receiving objects:  60% (138/230)
-Receiving objects:  61% (141/230)
-Receiving objects:  62% (143/230)
-remote: Total 230 (delta 29), reused 230 (delta 29), pack-reused 0 (from 0)
-Receiving objects:  63% (145/230)
-Receiving objects:  64% (148/230)
-Receiving objects:  65% (150/230)
-Receiving objects:  66% (152/230)
-Receiving objects:  67% (155/230)
-Receiving objects:  68% (157/230)
-Receiving objects:  69% (159/230)
-Receiving objects:  70% (161/230)
-Receiving objects:  71% (164/230)
-Receiving objects:  72% (166/230)
-Receiving objects:  73% (168/230)
-Receiving objects:  74% (171/230)
-Receiving objects:  75% (173/230)
-Receiving objects:  76% (175/230)
-Receiving objects:  77% (178/230)
-Receiving objects:  78% (180/230)
-Receiving objects:  79% (182/230)
-Receiving objects:  80% (184/230)
-Receiving objects:  81% (187/230)
-Receiving objects:  82% (189/230)
-Receiving objects:  83% (191/230)
-Receiving objects:  84% (194/230)
-Receiving objects:  85% (196/230)
-Receiving objects:  86% (198/230)
-Receiving objects:  87% (201/230)
-Receiving objects:  88% (203/230)
-Receiving objects:  89% (205/230)
-Receiving objects:  90% (207/230)
-Receiving objects:  91% (210/230)
-Receiving objects:  92% (212/230)
-Receiving objects:  93% (214/230)
-Receiving objects:  94% (217/230)
-Receiving objects:  95% (219/230)
-Receiving objects:  96% (221/230)
-Receiving objects:  97% (224/230)
-Receiving objects:  98% (226/230)
-Receiving objects:  99% (228/230)
-Receiving objects: 100% (230/230)
-Receiving objects: 100% (230/230), 236.04 KiB | 9.08 MiB/s, done.
-Resolving deltas:   0% (0/29)
-Resolving deltas:   3% (1/29)
-Resolving deltas:   6% (2/29)
-Resolving deltas:  10% (3/29)
-Resolving deltas:  13% (4/29)
-Resolving deltas:  17% (5/29)
-Resolving deltas:  20% (6/29)
-Resolving deltas:  24% (7/29)
-Resolving deltas:  27% (8/29)
-Resolving deltas:  31% (9/29)
-Resolving deltas:  34% (10/29)
-Resolving deltas:  37% (11/29)
-Resolving deltas:  41% (12/29)
-Resolving deltas:  44% (13/29)
-Resolving deltas:  51% (15/29)
-Resolving deltas:  55% (16/29)
-Resolving deltas:  58% (17/29)
-Resolving deltas:  62% (18/29)
-Resolving deltas:  65% (19/29)
-Resolving deltas:  68% (20/29)
-Resolving deltas:  72% (21/29)
-Resolving deltas:  75% (22/29)
-Resolving deltas:  79% (23/29)
-Resolving deltas:  82% (24/29)
-Resolving deltas:  86% (25/29)
-Resolving deltas:  89% (26/29)
-Resolving deltas:  93% (27/29)
-Resolving deltas:  96% (28/29)
-Resolving deltas: 100% (29/29)
-Resolving deltas: 100% (29/29), done.
+remote: Enumerating objects: 234, done.
+remote: Counting objects:   0% (1/234)        
+remote: Counting objects:   1% (3/234)        
+remote: Counting objects:   2% (5/234)        
+remote: Counting objects:   3% (8/234)        
+remote: Counting objects:   4% (10/234)        
+remote: Counting objects:   5% (12/234)        
+remote: Counting objects:   6% (15/234)        
+remote: Counting objects:   7% (17/234)        
+remote: Counting objects:   8% (19/234)        
+remote: Counting objects:   9% (22/234)        
+remote: Counting objects:  10% (24/234)        
+remote: Counting objects:  11% (26/234)        
+remote: Counting objects:  12% (29/234)        
+remote: Counting objects:  13% (31/234)        
+remote: Counting objects:  14% (33/234)        
+remote: Counting objects:  15% (36/234)        
+remote: Counting objects:  16% (38/234)        
+remote: Counting objects:  17% (40/234)        
+remote: Counting objects:  18% (43/234)        
+remote: Counting objects:  19% (45/234)        
+remote: Counting objects:  20% (47/234)        
+remote: Counting objects:  21% (50/234)        
+remote: Counting objects:  22% (52/234)        
+remote: Counting objects:  23% (54/234)        
+remote: Counting objects:  24% (57/234)        
+remote: Counting objects:  25% (59/234)        
+remote: Counting objects:  26% (61/234)        
+remote: Counting objects:  27% (64/234)        
+remote: Counting objects:  28% (66/234)        
+remote: Counting objects:  29% (68/234)        
+remote: Counting objects:  30% (71/234)        
+remote: Counting objects:  31% (73/234)        
+remote: Counting objects:  32% (75/234)        
+remote: Counting objects:  33% (78/234)        
+remote: Counting objects:  34% (80/234)        
+remote: Counting objects:  35% (82/234)        
+remote: Counting objects:  36% (85/234)        
+remote: Counting objects:  37% (87/234)        
+remote: Counting objects:  38% (89/234)        
+remote: Counting objects:  39% (92/234)        
+remote: Counting objects:  40% (94/234)        
+remote: Counting objects:  41% (96/234)        
+remote: Counting objects:  42% (99/234)        
+remote: Counting objects:  43% (101/234)        
+remote: Counting objects:  44% (103/234)        
+remote: Counting objects:  45% (106/234)        
+remote: Counting objects:  46% (108/234)        
+remote: Counting objects:  47% (110/234)        
+remote: Counting objects:  48% (113/234)        
+remote: Counting objects:  49% (115/234)        
+remote: Counting objects:  50% (117/234)        
+remote: Counting objects:  51% (120/234)        
+remote: Counting objects:  52% (122/234)        
+remote: Counting objects:  53% (125/234)        
+remote: Counting objects:  54% (127/234)        
+remote: Counting objects:  55% (129/234)        
+remote: Counting objects:  56% (132/234)        
+remote: Counting objects:  57% (134/234)        
+remote: Counting objects:  58% (136/234)        
+remote: Counting objects:  59% (139/234)        
+remote: Counting objects:  60% (141/234)        
+remote: Counting objects:  61% (143/234)        
+remote: Counting objects:  62% (146/234)        
+remote: Counting objects:  63% (148/234)        
+remote: Counting objects:  64% (150/234)        
+remote: Counting objects:  65% (153/234)        
+remote: Counting objects:  66% (155/234)        
+remote: Counting objects:  67% (157/234)        
+remote: Counting objects:  68% (160/234)        
+remote: Counting objects:  69% (162/234)        
+remote: Counting objects:  70% (164/234)        
+remote: Counting objects:  71% (167/234)        
+remote: Counting objects:  72% (169/234)        
+remote: Counting objects:  73% (171/234)        
+remote: Counting objects:  74% (174/234)        
+remote: Counting objects:  75% (176/234)        
+remote: Counting objects:  76% (178/234)        
+remote: Counting objects:  77% (181/234)        
+remote: Counting objects:  78% (183/234)        
+remote: Counting objects:  79% (185/234)        
+remote: Counting objects:  80% (188/234)        
+remote: Counting objects:  81% (190/234)        
+remote: Counting objects:  82% (192/234)        
+remote: Counting objects:  83% (195/234)        
+remote: Counting objects:  84% (197/234)        
+remote: Counting objects:  85% (199/234)        
+remote: Counting objects:  86% (202/234)        
+remote: Counting objects:  87% (204/234)        
+remote: Counting objects:  88% (206/234)        
+remote: Counting objects:  89% (209/234)        
+remote: Counting objects:  90% (211/234)        
+remote: Counting objects:  91% (213/234)        
+remote: Counting objects:  92% (216/234)        
+remote: Counting objects:  93% (218/234)        
+remote: Counting objects:  94% (220/234)        
+remote: Counting objects:  95% (223/234)        
+remote: Counting objects:  96% (225/234)        
+remote: Counting objects:  97% (227/234)        
+remote: Counting objects:  98% (230/234)        
+remote: Counting objects:  99% (232/234)        
+remote: Counting objects: 100% (234/234)        
+remote: Counting objects: 100% (234/234), done.
+remote: Compressing objects:   0% (1/176)        
+remote: Compressing objects:   1% (2/176)        
+remote: Compressing objects:   2% (4/176)        
+remote: Compressing objects:   3% (6/176)        
+remote: Compressing objects:   4% (8/176)        
+remote: Compressing objects:   5% (9/176)        
+remote: Compressing objects:   6% (11/176)        
+remote: Compressing objects:   7% (13/176)        
+remote: Compressing objects:   8% (15/176)        
+remote: Compressing objects:   9% (16/176)        
+remote: Compressing objects:  10% (18/176)        
+remote: Compressing objects:  11% (20/176)        
+remote: Compressing objects:  12% (22/176)        
+remote: Compressing objects:  13% (23/176)        
+remote: Compressing objects:  14% (25/176)        
+remote: Compressing objects:  15% (27/176)        
+remote: Compressing objects:  16% (29/176)        
+remote: Compressing objects:  17% (30/176)        
+remote: Compressing objects:  18% (32/176)        
+remote: Compressing objects:  19% (34/176)        
+remote: Compressing objects:  20% (36/176)        
+remote: Compressing objects:  21% (37/176)        
+remote: Compressing objects:  22% (39/176)        
+remote: Compressing objects:  23% (41/176)        
+remote: Compressing objects:  24% (43/176)        
+remote: Compressing objects:  25% (44/176)        
+remote: Compressing objects:  26% (46/176)        
+remote: Compressing objects:  27% (48/176)        
+remote: Compressing objects:  28% (50/176)        
+remote: Compressing objects:  29% (52/176)        
+remote: Compressing objects:  30% (53/176)        
+remote: Compressing objects:  31% (55/176)        
+remote: Compressing objects:  32% (57/176)        
+remote: Compressing objects:  33% (59/176)        
+remote: Compressing objects:  34% (60/176)        
+remote: Compressing objects:  35% (62/176)        
+remote: Compressing objects:  36% (64/176)        
+remote: Compressing objects:  37% (66/176)        
+remote: Compressing objects:  38% (67/176)        
+remote: Compressing objects:  39% (69/176)        
+remote: Compressing objects:  40% (71/176)        
+remote: Compressing objects:  41% (73/176)        
+remote: Compressing objects:  42% (74/176)        
+remote: Compressing objects:  43% (76/176)        
+remote: Compressing objects:  44% (78/176)        
+remote: Compressing objects:  45% (80/176)        
+remote: Compressing objects:  46% (81/176)        
+remote: Compressing objects:  47% (83/176)        
+remote: Compressing objects:  48% (85/176)        
+remote: Compressing objects:  49% (87/176)        
+remote: Compressing objects:  50% (88/176)        
+remote: Compressing objects:  51% (90/176)        
+remote: Compressing objects:  52% (92/176)        
+remote: Compressing objects:  53% (94/176)        
+remote: Compressing objects:  54% (96/176)        
+remote: Compressing objects:  55% (97/176)        
+remote: Compressing objects:  56% (99/176)        
+remote: Compressing objects:  57% (101/176)        
+remote: Compressing objects:  58% (103/176)        
+remote: Compressing objects:  59% (104/176)        
+remote: Compressing objects:  60% (106/176)        
+remote: Compressing objects:  61% (108/176)        
+remote: Compressing objects:  62% (110/176)        
+remote: Compressing objects:  63% (111/176)        
+remote: Compressing objects:  64% (113/176)        
+remote: Compressing objects:  65% (115/176)        
+remote: Compressing objects:  66% (117/176)        
+remote: Compressing objects:  67% (118/176)        
+remote: Compressing objects:  68% (120/176)        
+remote: Compressing objects:  69% (122/176)        
+remote: Compressing objects:  70% (124/176)        
+remote: Compressing objects:  71% (125/176)        
+remote: Compressing objects:  72% (127/176)        
+remote: Compressing objects:  73% (129/176)        
+remote: Compressing objects:  74% (131/176)        
+remote: Compressing objects:  75% (132/176)        
+remote: Compressing objects:  76% (134/176)        
+remote: Compressing objects:  77% (136/176)        
+remote: Compressing objects:  78% (138/176)        
+remote: Compressing objects:  79% (140/176)        
+remote: Compressing objects:  80% (141/176)        
+remote: Compressing objects:  81% (143/176)        
+remote: Compressing objects:  82% (145/176)        
+remote: Compressing objects:  83% (147/176)        
+remote: Compressing objects:  84% (148/176)        
+remote: Compressing objects:  85% (150/176)        
+remote: Compressing objects:  86% (152/176)        
+remote: Compressing objects:  87% (154/176)        
+remote: Compressing objects:  88% (155/176)        
+remote: Compressing objects:  89% (157/176)        
+remote: Compressing objects:  90% (159/176)        
+remote: Compressing objects:  91% (161/176)        
+remote: Compressing objects:  92% (162/176)        
+remote: Compressing objects:  93% (164/176)        
+remote: Compressing objects:  94% (166/176)        
+remote: Compressing objects:  95% (168/176)        
+remote: Compressing objects:  96% (169/176)        
+remote: Compressing objects:  97% (171/176)        
+remote: Compressing objects:  98% (173/176)        
+remote: Compressing objects:  99% (175/176)        
+remote: Compressing objects: 100% (176/176)        
+remote: Compressing objects: 100% (176/176), done.
+Receiving objects:   0% (1/234)
+Receiving objects:   1% (3/234)
+Receiving objects:   2% (5/234)
+Receiving objects:   3% (8/234)
+Receiving objects:   4% (10/234)
+Receiving objects:   5% (12/234)
+Receiving objects:   6% (15/234)
+Receiving objects:   7% (17/234)
+Receiving objects:   8% (19/234)
+Receiving objects:   9% (22/234)
+Receiving objects:  10% (24/234)
+Receiving objects:  11% (26/234)
+Receiving objects:  12% (29/234)
+Receiving objects:  13% (31/234)
+Receiving objects:  14% (33/234)
+Receiving objects:  15% (36/234)
+Receiving objects:  16% (38/234)
+Receiving objects:  17% (40/234)
+Receiving objects:  18% (43/234)
+Receiving objects:  19% (45/234)
+Receiving objects:  20% (47/234)
+Receiving objects:  21% (50/234)
+Receiving objects:  22% (52/234)
+Receiving objects:  23% (54/234)
+Receiving objects:  24% (57/234)
+Receiving objects:  25% (59/234)
+Receiving objects:  26% (61/234)
+Receiving objects:  27% (64/234)
+Receiving objects:  28% (66/234)
+Receiving objects:  29% (68/234)
+Receiving objects:  30% (71/234)
+Receiving objects:  31% (73/234)
+Receiving objects:  32% (75/234)
+Receiving objects:  33% (78/234)
+Receiving objects:  34% (80/234)
+Receiving objects:  35% (82/234)
+Receiving objects:  36% (85/234)
+Receiving objects:  37% (87/234)
+Receiving objects:  38% (89/234)
+Receiving objects:  39% (92/234)
+Receiving objects:  40% (94/234)
+Receiving objects:  41% (96/234)
+Receiving objects:  42% (99/234)
+Receiving objects:  43% (101/234)
+Receiving objects:  44% (103/234)
+Receiving objects:  45% (106/234)
+Receiving objects:  46% (108/234)
+Receiving objects:  47% (110/234)
+Receiving objects:  48% (113/234)
+Receiving objects:  49% (115/234)
+Receiving objects:  50% (117/234)
+Receiving objects:  51% (120/234)
+Receiving objects:  52% (122/234)
+Receiving objects:  53% (125/234)
+Receiving objects:  54% (127/234)
+Receiving objects:  55% (129/234)
+Receiving objects:  56% (132/234)
+Receiving objects:  57% (134/234)
+Receiving objects:  58% (136/234)
+Receiving objects:  59% (139/234)
+Receiving objects:  60% (141/234)
+Receiving objects:  61% (143/234)
+Receiving objects:  62% (146/234)
+Receiving objects:  63% (148/234)
+Receiving objects:  64% (150/234)
+Receiving objects:  65% (153/234)
+Receiving objects:  66% (155/234)
+Receiving objects:  67% (157/234)
+Receiving objects:  68% (160/234)
+Receiving objects:  69% (162/234)
+Receiving objects:  70% (164/234)
+Receiving objects:  71% (167/234)
+Receiving objects:  72% (169/234)
+Receiving objects:  73% (171/234)
+Receiving objects:  74% (174/234)
+Receiving objects:  75% (176/234)
+Receiving objects:  76% (178/234)
+Receiving objects:  77% (181/234)
+Receiving objects:  78% (183/234)
+Receiving objects:  79% (185/234)
+Receiving objects:  80% (188/234)
+Receiving objects:  81% (190/234)
+Receiving objects:  82% (192/234)
+remote: Total 234 (delta 32), reused 221 (delta 27), pack-reused 0 (from 0)
+Receiving objects:  83% (195/234)
+Receiving objects:  84% (197/234)
+Receiving objects:  85% (199/234)
+Receiving objects:  86% (202/234)
+Receiving objects:  87% (204/234)
+Receiving objects:  88% (206/234)
+Receiving objects:  89% (209/234)
+Receiving objects:  90% (211/234)
+Receiving objects:  91% (213/234)
+Receiving objects:  92% (216/234)
+Receiving objects:  93% (218/234)
+Receiving objects:  94% (220/234)
+Receiving objects:  95% (223/234)
+Receiving objects:  96% (225/234)
+Receiving objects:  97% (227/234)
+Receiving objects:  98% (230/234)
+Receiving objects:  99% (232/234)
+Receiving objects: 100% (234/234)
+Receiving objects: 100% (234/234), 247.12 KiB | 14.54 MiB/s, done.
+Resolving deltas:   0% (0/32)
+Resolving deltas:   3% (1/32)
+Resolving deltas:   6% (2/32)
+Resolving deltas:   9% (3/32)
+Resolving deltas:  12% (4/32)
+Resolving deltas:  15% (5/32)
+Resolving deltas:  18% (6/32)
+Resolving deltas:  25% (8/32)
+Resolving deltas:  28% (9/32)
+Resolving deltas:  31% (10/32)
+Resolving deltas:  34% (11/32)
+Resolving deltas:  37% (12/32)
+Resolving deltas:  40% (13/32)
+Resolving deltas:  43% (14/32)
+Resolving deltas:  46% (15/32)
+Resolving deltas:  50% (16/32)
+Resolving deltas:  53% (17/32)
+Resolving deltas:  56% (18/32)
+Resolving deltas:  59% (19/32)
+Resolving deltas:  62% (20/32)
+Resolving deltas:  65% (21/32)
+Resolving deltas:  68% (22/32)
+Resolving deltas:  71% (23/32)
+Resolving deltas:  75% (24/32)
+Resolving deltas:  78% (25/32)
+Resolving deltas:  81% (26/32)
+Resolving deltas:  84% (27/32)
+Resolving deltas:  87% (28/32)
+Resolving deltas:  90% (29/32)
+Resolving deltas:  93% (30/32)
+Resolving deltas:  96% (31/32)
+Resolving deltas: 100% (32/32)
+Resolving deltas: 100% (32/32), done.
 Starting nixpacks build...
 ╔════════ Nixpacks v1.41.0 ═══════╗
-║ setup      │ nodejs_18, npm-9_x ║
+║ setup      │ nodejs_24, npm-9_x ║
 ║─────────────────────────────────║
 ║ install    │ npm ci             ║
 ║─────────────────────────────────║
@@ -351,349 +354,341 @@ Starting nixpacks build...
 ╚═════════════════════════════════╝
 #0 building with "default" instance using docker driver
 #1 [internal] load build definition from Dockerfile
-#1 transferring dockerfile: 1.29kB 0.0s done
-#1 DONE 0.1s
+#1 transferring dockerfile: 1.29kB done
+#1 DONE 0.0s
 #2 [internal] load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
-#2 DONE 1.3s
+#2 DONE 0.4s
 #3 [internal] load .dockerignore
 #3 transferring context: 2B done
 #3 DONE 0.0s
 #4 [stage-0  1/10] FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
-#4 resolve ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de 0.0s done
-#4 ...
-#5 [internal] load build context
-#5 transferring context: 1.21MB 0.1s done
-#5 DONE 0.2s
-#4 [stage-0  1/10] FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
-#4 sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de 1.61kB / 1.61kB done
-#4 sha256:98801a2e9c74b1236de01aa97bc99349f700f53f81d3bbab4411e2a8a9dd316d 1.06kB / 1.06kB done
-#4 sha256:75908e6a244aa7c07bd16c59f1a88c832d0735edf545bd28f86d6bee4a5536a0 4.43kB / 4.43kB done
-#4 DONE 0.4s
-#6 [stage-0  2/10] WORKDIR /app/
+#4 DONE 0.0s
+#5 [stage-0  2/10] WORKDIR /app/
+#5 CACHED
+#6 [internal] load build context
+#6 transferring context: 1.28MB 0.1s done
 #6 DONE 0.1s
-#7 [stage-0  3/10] COPY .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix
+#7 [stage-0  3/10] COPY .nixpacks/nixpkgs-23f9169c4ccce521379e602cc82ed873a1f1b52b.nix .nixpacks/nixpkgs-23f9169c4ccce521379e602cc82ed873a1f1b52b.nix
 #7 DONE 0.1s
-#8 [stage-0  4/10] RUN nix-env -if .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix && nix-collect-garbage -d
-#8 1.501 unpacking 'https://github.com/NixOS/nixpkgs/archive/ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.tar.gz' into the Git cache...
-#8 79.92 unpacking 'https://github.com/railwayapp/nix-npm-overlay/archive/main.tar.gz' into the Git cache...
-#8 81.13 installing 'ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7-env'
-#8 82.64 these 5 derivations will be built:
-#8 82.64   /nix/store/1f4a312hz9m6y1ssip52drgkim8az4d6-libraries.drv
-#8 82.64   /nix/store/79g4v87v1cgrx5vlwzcagcs6v8ps8fk2-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7-env.drv
-#8 82.64   /nix/store/6vy68gykpxfphbmmyd59ya88xvrwvvaa-npm-9.9.4.tgz.drv
-#8 82.64   /nix/store/w9h0z1lhfwxc0m38f3w5brfdqrzm4wyj-npm.drv
-#8 82.64   /nix/store/69jikgj7ilzvyagynzacn8fxpp6wffww-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7-env.drv
-#8 82.65 these 75 paths will be fetched (116.25 MiB download, 554.76 MiB unpacked):
-#8 82.65   /nix/store/cf7gkacyxmm66lwl5nj6j6yykbrg4q5c-acl-2.3.2
-#8 82.65   /nix/store/a9jgnlhkjkxav6qrc3rzg2q84pkl2wvr-attr-2.5.2
-#8 82.65   /nix/store/5mh7kaj2fyv8mk4sfq1brwxgc02884wi-bash-5.2p37
-#8 82.65   /nix/store/j7p46r8v9gcpbxx89pbqlh61zhd33gzv-binutils-2.43.1
-#8 82.65   /nix/store/df2a8k58k00f2dh2x930dg6xs6g6mliv-binutils-2.43.1-lib
-#8 82.65   /nix/store/srcmmqi8kxjfygd0hyy42c8hv6cws83b-binutils-wrapper-2.43.1
-#8 82.65   /nix/store/wf5zj2gbib3gjqllkabxaw4dh0gzcla3-builder.pl
-#8 82.65   /nix/store/ivl2v8rgg7qh1jkj5pwpqycax3rc2hnl-bzip2-1.0.8
-#8 82.65   /nix/store/mglixp03lsp0w986svwdvm7vcy17rdax-bzip2-1.0.8-bin
-#8 82.65   /nix/store/4s9rah4cwaxflicsk5cndnknqlk9n4p3-coreutils-9.5
-#8 82.65   /nix/store/pkc7mb4a4qvyz73srkqh4mwl70w98dsv-curl-8.11.0
-#8 82.65   /nix/store/p123cq20klajcl9hj8jnkjip5nw6awhz-curl-8.11.0-bin
-#8 82.65   /nix/store/5f5linrxzhhb3mrclkwdpm9bd8ygldna-curl-8.11.0-dev
-#8 82.65   /nix/store/agvks3qmzja0yj54szi3vja6vx3cwkkw-curl-8.11.0-man
-#8 82.65   /nix/store/00g69vw7c9lycy63h45ximy0wmzqx5y6-diffutils-3.10
-#8 82.65   /nix/store/74h4z8k82pmp24xryflv4lxkz8jlpqqd-ed-1.20.2
-#8 82.65   /nix/store/qbry6090vlr9ar33kdmmbq2p5apzbga8-expand-response-params
-#8 82.65   /nix/store/c4rj90r2m89rxs64hmm857mipwjhig5d-file-5.46
-#8 82.65   /nix/store/jqrz1vq5nz4lnv9pqzydj0ir58wbjfy1-findutils-4.10.0
-#8 82.65   /nix/store/a3c47r5z1q2c4rz0kvq8hlilkhx2s718-gawk-5.3.1
-#8 82.65   /nix/store/l89iqc7am6i60y8vk507zwrzxf0wcd3v-gcc-14-20241116
-#8 82.65   /nix/store/bpq1s72cw9qb2fs8mnmlw6hn2c7iy0ss-gcc-14-20241116-lib
-#8 82.65   /nix/store/17v0ywnr3akp85pvdi56gwl99ljv95kx-gcc-14-20241116-libgcc
-#8 82.65   /nix/store/xcn9p4xxfbvlkpah7pwchpav4ab9d135-gcc-wrapper-14-20241116
-#8 82.65   /nix/store/65h17wjrrlsj2rj540igylrx7fqcd6vq-glibc-2.40-36
-#8 82.65   /nix/store/1c6bmxrrhm8bd26ai2rjqld2yyjrxhds-glibc-2.40-36-bin
-#8 82.65   /nix/store/kj8hbqx4ds9qm9mq7hyikxyfwwg13kzj-glibc-2.40-36-dev
-#8 82.65   /nix/store/kryrg7ds05iwcmy81amavk8w13y4lxbs-gmp-6.3.0
-#8 82.65   /nix/store/a2byxfv4lc8f2g5xfzw8cz5q8k05wi29-gmp-with-cxx-6.3.0
-#8 82.65   /nix/store/1m67ipsk39xvhyqrxnzv2m2p48pil8kl-gnu-config-2024-01-01
-#8 82.65   /nix/store/aap6cq56amx4mzbyxp2wpgsf1kqjcr1f-gnugrep-3.11
-#8 82.65   /nix/store/fp6cjl1zcmm6mawsnrb5yak1wkz2ma8l-gnumake-4.4.1
-#8 82.65   /nix/store/abm77lnrkrkb58z6xp1qwjcr1xgkcfwm-gnused-4.9
-#8 82.65   /nix/store/9cwwj1c9csmc85l2cqzs3h9hbf1vwl6c-gnutar-1.35
-#8 82.65   /nix/store/nvvj6sk0k6px48436drlblf4gafgbvzr-gzip-1.13
-#8 82.65   /nix/store/wwipgdqb4p2fr46kmw9c5wlk799kbl68-icu4c-74.2
-#8 82.65   /nix/store/m8w3mf0i4862q22bxad0wspkgdy4jnkk-icu4c-74.2-dev
-#8 82.65   /nix/store/xmbv8s4p4i4dbxgkgdrdfb0ym25wh6gk-isl-0.20
-#8 82.65   /nix/store/2wh1gqyzf5xsvxpdz2k0bxiz583wwq29-keyutils-1.6.3-lib
-#8 82.65   /nix/store/milph81dilrh96isyivh5n50agpx39k2-krb5-1.21.3
-#8 82.65   /nix/store/b56mswksrql15knpb1bnhv3ysif340kd-krb5-1.21.3-dev
-#8 82.65   /nix/store/v9c1s50x7magpiqgycxxkn36avzbcg0g-krb5-1.21.3-lib
-#8 82.65   /nix/store/34z2792zyd4ayl5186vx0s98ckdaccz9-libidn2-2.3.7
-#8 82.65   /nix/store/2a3anh8vl3fcgk0fvaravlimrqawawza-libmpc-1.3.1
-#8 82.65   /nix/store/8675pnfr4fqnwv4pzjl67hdwls4q13aa-libssh2-1.11.1
-#8 82.65   /nix/store/d7zhcrcc7q3yfbm3qkqpgc3daq82spwi-libssh2-1.11.1-dev
-#8 82.65   /nix/store/xcqcgqazykf6s7fsn08k0blnh0wisdcl-libunistring-1.3
-#8 82.65   /nix/store/r9ac2hwnmb0nxwsrvr6gi9wsqf2whfqj-libuv-1.49.2
-#8 82.65   /nix/store/ll14czvpxglf6nnwmmrmygplm830fvlv-libuv-1.49.2-dev
-#8 82.65   /nix/store/6cr0spsvymmrp1hj5n0kbaxw55w1lqyp-libxcrypt-4.4.36
-#8 82.65   /nix/store/pc74azbkr19rkd5bjalq2xwx86cj3cga-linux-headers-6.12
-#8 82.65   /nix/store/fv7gpnvg922frkh81w5hkdhpz0nw3iiz-mirrors-list
-#8 82.65   /nix/store/qs22aazzrdd4dnjf9vffl0n31hvls43h-mpfr-4.2.1
-#8 82.65   /nix/store/grixvx878884hy8x3xs0c0s1i00j632k-nghttp2-1.64.0
-#8 82.65   /nix/store/dz97fw51rm5bl9kz1vg0haj1j1a7r1mr-nghttp2-1.64.0-dev
-#8 82.65   /nix/store/qcghigzrz56vczwlzg9c02vbs6zr9jkz-nghttp2-1.64.0-lib
-#8 82.65   /nix/store/wlpq101dsifq98z2bk300x4dk80wcybr-nodejs-18.20.5
-#8 82.65   /nix/store/9l9n7a0v4aibcz0sgd0crs209an9p7dz-openssl-3.3.2
-#8 82.65   /nix/store/h1ydpxkw9qhjdxjpic1pdc2nirggyy6f-openssl-3.3.2
-#8 82.65   /nix/store/lygl27c44xv73kx1spskcgvzwq7z337c-openssl-3.3.2-bin
-#8 82.65   /nix/store/qq5q0alyzywdazhmybi7m69akz0ppk05-openssl-3.3.2-bin
-#8 82.65   /nix/store/kqm7wpqkzc4bwjlzqizcbz0mgkj06a9x-openssl-3.3.2-dev
-#8 82.65   /nix/store/pp2zf8bdgyz60ds8vcshk2603gcjgp72-openssl-3.3.2-dev
-#8 82.65   /nix/store/5yja5dpk2qw1v5mbfbl2d7klcdfrh90w-patch-2.7.6
-#8 82.65   /nix/store/srfxqk119fijwnprgsqvn68ys9kiw0bn-patchelf-0.15.0
-#8 82.65   /nix/store/3j1p598fivxs69wx3a657ysv3rw8k06l-pcre2-10.44
-#8 82.65   /nix/store/1i003ijlh9i0mzp6alqby5hg3090pjdx-perl-5.40.0
-#8 82.65   /nix/store/4ig84cyqi6qy4n0sanrbzsw1ixa497jx-stdenv-linux
-#8 82.65   /nix/store/d0gfdcag8bxzvg7ww4s7px4lf8sxisyx-stdenv-linux
-#8 82.65   /nix/store/d29r1bdmlvwmj52apgcdxfl1mm9c5782-update-autotools-gnu-config-scripts-hook
-#8 82.65   /nix/store/acfkqzj5qrqs88a4a6ixnybbjxja663d-xgcc-14-20241116-libgcc
-#8 82.65   /nix/store/c2njy6bv84kw1i4bjf5k5gn7gz8hn57n-xz-5.6.3
-#8 82.65   /nix/store/h18s640fnhhj2qdh5vivcfbxvz377srg-xz-5.6.3-bin
-#8 82.65   /nix/store/cqlaa2xf6lslnizyj9xqa8j0ii1yqw0x-zlib-1.3.1
-#8 82.65   /nix/store/1lggwqzapn5mn49l9zy4h566ysv9kzdb-zlib-1.3.1-dev
-#8 82.69 copying path '/nix/store/wf5zj2gbib3gjqllkabxaw4dh0gzcla3-builder.pl' from 'https://cache.nixos.org'...
-#8 82.70 copying path '/nix/store/1m67ipsk39xvhyqrxnzv2m2p48pil8kl-gnu-config-2024-01-01' from 'https://cache.nixos.org'...
-#8 82.70 copying path '/nix/store/17v0ywnr3akp85pvdi56gwl99ljv95kx-gcc-14-20241116-libgcc' from 'https://cache.nixos.org'...
-#8 82.71 copying path '/nix/store/xcqcgqazykf6s7fsn08k0blnh0wisdcl-libunistring-1.3' from 'https://cache.nixos.org'...
-#8 82.71 copying path '/nix/store/acfkqzj5qrqs88a4a6ixnybbjxja663d-xgcc-14-20241116-libgcc' from 'https://cache.nixos.org'...
-#8 82.72 copying path '/nix/store/pc74azbkr19rkd5bjalq2xwx86cj3cga-linux-headers-6.12' from 'https://cache.nixos.org'...
-#8 82.72 copying path '/nix/store/fv7gpnvg922frkh81w5hkdhpz0nw3iiz-mirrors-list' from 'https://cache.nixos.org'...
-#8 82.72 copying path '/nix/store/grixvx878884hy8x3xs0c0s1i00j632k-nghttp2-1.64.0' from 'https://cache.nixos.org'...
-#8 82.73 copying path '/nix/store/agvks3qmzja0yj54szi3vja6vx3cwkkw-curl-8.11.0-man' from 'https://cache.nixos.org'...
-#8 82.74 copying path '/nix/store/d29r1bdmlvwmj52apgcdxfl1mm9c5782-update-autotools-gnu-config-scripts-hook' from 'https://cache.nixos.org'...
-#8 82.81 copying path '/nix/store/34z2792zyd4ayl5186vx0s98ckdaccz9-libidn2-2.3.7' from 'https://cache.nixos.org'...
-#8 82.90 copying path '/nix/store/65h17wjrrlsj2rj540igylrx7fqcd6vq-glibc-2.40-36' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/a9jgnlhkjkxav6qrc3rzg2q84pkl2wvr-attr-2.5.2' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/5mh7kaj2fyv8mk4sfq1brwxgc02884wi-bash-5.2p37' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/ivl2v8rgg7qh1jkj5pwpqycax3rc2hnl-bzip2-1.0.8' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/bpq1s72cw9qb2fs8mnmlw6hn2c7iy0ss-gcc-14-20241116-lib' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/1c6bmxrrhm8bd26ai2rjqld2yyjrxhds-glibc-2.40-36-bin' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/r9ac2hwnmb0nxwsrvr6gi9wsqf2whfqj-libuv-1.49.2' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/kryrg7ds05iwcmy81amavk8w13y4lxbs-gmp-6.3.0' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/2wh1gqyzf5xsvxpdz2k0bxiz583wwq29-keyutils-1.6.3-lib' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/qcghigzrz56vczwlzg9c02vbs6zr9jkz-nghttp2-1.64.0-lib' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/fp6cjl1zcmm6mawsnrb5yak1wkz2ma8l-gnumake-4.4.1' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/74h4z8k82pmp24xryflv4lxkz8jlpqqd-ed-1.20.2' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/abm77lnrkrkb58z6xp1qwjcr1xgkcfwm-gnused-4.9' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/qbry6090vlr9ar33kdmmbq2p5apzbga8-expand-response-params' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/6cr0spsvymmrp1hj5n0kbaxw55w1lqyp-libxcrypt-4.4.36' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/a3c47r5z1q2c4rz0kvq8hlilkhx2s718-gawk-5.3.1' from 'https://cache.nixos.org'...
-#8 83.75 copying path '/nix/store/9l9n7a0v4aibcz0sgd0crs209an9p7dz-openssl-3.3.2' from 'https://cache.nixos.org'...
-#8 83.77 copying path '/nix/store/h1ydpxkw9qhjdxjpic1pdc2nirggyy6f-openssl-3.3.2' from 'https://cache.nixos.org'...
-#8 83.78 copying path '/nix/store/3j1p598fivxs69wx3a657ysv3rw8k06l-pcre2-10.44' from 'https://cache.nixos.org'...
-#8 83.78 copying path '/nix/store/mglixp03lsp0w986svwdvm7vcy17rdax-bzip2-1.0.8-bin' from 'https://cache.nixos.org'...
-#8 83.79 copying path '/nix/store/c2njy6bv84kw1i4bjf5k5gn7gz8hn57n-xz-5.6.3' from 'https://cache.nixos.org'...
-#8 83.80 copying path '/nix/store/cf7gkacyxmm66lwl5nj6j6yykbrg4q5c-acl-2.3.2' from 'https://cache.nixos.org'...
-#8 83.80 copying path '/nix/store/5yja5dpk2qw1v5mbfbl2d7klcdfrh90w-patch-2.7.6' from 'https://cache.nixos.org'...
-#8 83.83 copying path '/nix/store/dz97fw51rm5bl9kz1vg0haj1j1a7r1mr-nghttp2-1.64.0-dev' from 'https://cache.nixos.org'...
-#8 83.86 copying path '/nix/store/nvvj6sk0k6px48436drlblf4gafgbvzr-gzip-1.13' from 'https://cache.nixos.org'...
-#8 83.87 copying path '/nix/store/cqlaa2xf6lslnizyj9xqa8j0ii1yqw0x-zlib-1.3.1' from 'https://cache.nixos.org'...
-#8 83.91 copying path '/nix/store/ll14czvpxglf6nnwmmrmygplm830fvlv-libuv-1.49.2-dev' from 'https://cache.nixos.org'...
-#8 83.91 copying path '/nix/store/9cwwj1c9csmc85l2cqzs3h9hbf1vwl6c-gnutar-1.35' from 'https://cache.nixos.org'...
-#8 83.94 copying path '/nix/store/xmbv8s4p4i4dbxgkgdrdfb0ym25wh6gk-isl-0.20' from 'https://cache.nixos.org'...
-#8 83.95 copying path '/nix/store/qs22aazzrdd4dnjf9vffl0n31hvls43h-mpfr-4.2.1' from 'https://cache.nixos.org'...
-#8 83.97 copying path '/nix/store/df2a8k58k00f2dh2x930dg6xs6g6mliv-binutils-2.43.1-lib' from 'https://cache.nixos.org'...
-#8 83.97 copying path '/nix/store/c4rj90r2m89rxs64hmm857mipwjhig5d-file-5.46' from 'https://cache.nixos.org'...
-#8 83.97 copying path '/nix/store/1lggwqzapn5mn49l9zy4h566ysv9kzdb-zlib-1.3.1-dev' from 'https://cache.nixos.org'...
-#8 84.00 copying path '/nix/store/h18s640fnhhj2qdh5vivcfbxvz377srg-xz-5.6.3-bin' from 'https://cache.nixos.org'...
-#8 84.02 copying path '/nix/store/kj8hbqx4ds9qm9mq7hyikxyfwwg13kzj-glibc-2.40-36-dev' from 'https://cache.nixos.org'...
-#8 84.02 copying path '/nix/store/aap6cq56amx4mzbyxp2wpgsf1kqjcr1f-gnugrep-3.11' from 'https://cache.nixos.org'...
-#8 84.18 copying path '/nix/store/2a3anh8vl3fcgk0fvaravlimrqawawza-libmpc-1.3.1' from 'https://cache.nixos.org'...
-#8 84.27 copying path '/nix/store/a2byxfv4lc8f2g5xfzw8cz5q8k05wi29-gmp-with-cxx-6.3.0' from 'https://cache.nixos.org'...
-#8 84.27 copying path '/nix/store/wwipgdqb4p2fr46kmw9c5wlk799kbl68-icu4c-74.2' from 'https://cache.nixos.org'...
-#8 84.27 copying path '/nix/store/srfxqk119fijwnprgsqvn68ys9kiw0bn-patchelf-0.15.0' from 'https://cache.nixos.org'...
-#8 84.45 copying path '/nix/store/lygl27c44xv73kx1spskcgvzwq7z337c-openssl-3.3.2-bin' from 'https://cache.nixos.org'...
-#8 84.49 copying path '/nix/store/j7p46r8v9gcpbxx89pbqlh61zhd33gzv-binutils-2.43.1' from 'https://cache.nixos.org'...
-#8 84.55 copying path '/nix/store/4s9rah4cwaxflicsk5cndnknqlk9n4p3-coreutils-9.5' from 'https://cache.nixos.org'...
-#8 84.60 copying path '/nix/store/v9c1s50x7magpiqgycxxkn36avzbcg0g-krb5-1.21.3-lib' from 'https://cache.nixos.org'...
-#8 84.60 copying path '/nix/store/8675pnfr4fqnwv4pzjl67hdwls4q13aa-libssh2-1.11.1' from 'https://cache.nixos.org'...
-#8 84.60 copying path '/nix/store/qq5q0alyzywdazhmybi7m69akz0ppk05-openssl-3.3.2-bin' from 'https://cache.nixos.org'...
-#8 84.62 copying path '/nix/store/l89iqc7am6i60y8vk507zwrzxf0wcd3v-gcc-14-20241116' from 'https://cache.nixos.org'...
-#8 84.73 copying path '/nix/store/pp2zf8bdgyz60ds8vcshk2603gcjgp72-openssl-3.3.2-dev' from 'https://cache.nixos.org'...
-#8 84.93 copying path '/nix/store/kqm7wpqkzc4bwjlzqizcbz0mgkj06a9x-openssl-3.3.2-dev' from 'https://cache.nixos.org'...
-#8 85.01 copying path '/nix/store/jqrz1vq5nz4lnv9pqzydj0ir58wbjfy1-findutils-4.10.0' from 'https://cache.nixos.org'...
-#8 85.02 copying path '/nix/store/1i003ijlh9i0mzp6alqby5hg3090pjdx-perl-5.40.0' from 'https://cache.nixos.org'...
-#8 85.02 copying path '/nix/store/00g69vw7c9lycy63h45ximy0wmzqx5y6-diffutils-3.10' from 'https://cache.nixos.org'...
-#8 85.02 copying path '/nix/store/milph81dilrh96isyivh5n50agpx39k2-krb5-1.21.3' from 'https://cache.nixos.org'...
-#8 85.02 copying path '/nix/store/pkc7mb4a4qvyz73srkqh4mwl70w98dsv-curl-8.11.0' from 'https://cache.nixos.org'...
-#8 85.41 copying path '/nix/store/m8w3mf0i4862q22bxad0wspkgdy4jnkk-icu4c-74.2-dev' from 'https://cache.nixos.org'...
-#8 85.48 copying path '/nix/store/p123cq20klajcl9hj8jnkjip5nw6awhz-curl-8.11.0-bin' from 'https://cache.nixos.org'...
-#8 85.49 copying path '/nix/store/srcmmqi8kxjfygd0hyy42c8hv6cws83b-binutils-wrapper-2.43.1' from 'https://cache.nixos.org'...
-#8 85.54 copying path '/nix/store/d7zhcrcc7q3yfbm3qkqpgc3daq82spwi-libssh2-1.11.1-dev' from 'https://cache.nixos.org'...
-#8 85.54 copying path '/nix/store/4ig84cyqi6qy4n0sanrbzsw1ixa497jx-stdenv-linux' from 'https://cache.nixos.org'...
-#8 85.55 copying path '/nix/store/b56mswksrql15knpb1bnhv3ysif340kd-krb5-1.21.3-dev' from 'https://cache.nixos.org'...
-#8 86.09 building '/nix/store/1f4a312hz9m6y1ssip52drgkim8az4d6-libraries.drv'...
-#8 86.14 copying path '/nix/store/5f5linrxzhhb3mrclkwdpm9bd8ygldna-curl-8.11.0-dev' from 'https://cache.nixos.org'...
-#8 86.27 copying path '/nix/store/wlpq101dsifq98z2bk300x4dk80wcybr-nodejs-18.20.5' from 'https://cache.nixos.org'...
-#8 87.46 building '/nix/store/79g4v87v1cgrx5vlwzcagcs6v8ps8fk2-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7-env.drv'...
-#8 87.61 building '/nix/store/6vy68gykpxfphbmmyd59ya88xvrwvvaa-npm-9.9.4.tgz.drv'...
-#8 88.45
-#8 88.45 trying https://registry.npmjs.org/npm/-/npm-9.9.4.tgz
-#8 88.51   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-#8 88.51                                  Dload  Upload   Total   Spent    Left  Speed
-#8 88.68 100 2648k  100 2648k    0     0  14.3M      0 --:--:-- --:--:-- --:--:-- 14.2M
-#8 92.70 copying path '/nix/store/xcn9p4xxfbvlkpah7pwchpav4ab9d135-gcc-wrapper-14-20241116' from 'https://cache.nixos.org'...
-#8 92.72 copying path '/nix/store/d0gfdcag8bxzvg7ww4s7px4lf8sxisyx-stdenv-linux' from 'https://cache.nixos.org'...
-#8 92.85 building '/nix/store/w9h0z1lhfwxc0m38f3w5brfdqrzm4wyj-npm.drv'...
-#8 92.99 Running phase: unpackPhase
-#8 93.00 unpacking source archive /nix/store/fkd1ma3nify8r9wp463yg5rqz9hdcyf1-npm-9.9.4.tgz
-#8 93.37 source root is package
-#8 93.49 setting SOURCE_DATE_EPOCH to timestamp 499162500 of file package/package.json
-#8 93.50 Running phase: installPhase
-#8 95.42 building '/nix/store/69jikgj7ilzvyagynzacn8fxpp6wffww-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7-env.drv'...
-#8 95.59 created 33 symlinks in user environment
-#8 95.91 building '/nix/store/2s6nns61yczxvy2yaddrzp6952709a4j-user-environment.drv'...
-#8 96.66 removing old generations of profile /nix/var/nix/profiles/per-user/root/channels
-#8 96.66 removing old generations of profile /nix/var/nix/profiles/per-user/root/profile
-#8 96.66 removing profile version 1
-#8 96.66 removing old generations of profile /nix/var/nix/profiles/per-user/root/channels
-#8 96.66 removing old generations of profile /nix/var/nix/profiles/per-user/root/profile
-#8 96.67 finding garbage collector roots...
-#8 96.68 removing stale link from '/nix/var/nix/gcroots/auto/lzjbmb2ry0z7lma2fvpqprb12921pnb5' to '/nix/var/nix/profiles/per-user/root/profile-1-link'
-#8 96.68 deleting garbage...
-#8 96.70 deleting '/nix/store/a9qf4wwhympzs35ncp80r185j6a21w07-user-environment'
-#8 96.73 deleting '/nix/store/253kwn1730vnay87xkjgxa2v97w3y079-user-environment.drv'
-#8 96.73 deleting '/nix/store/hn5mrh362n52x8wwab9s1v6bgn4n5c94-env-manifest.nix'
-#8 96.76 deleting '/nix/store/9fxr7753z31rn59i64dqaajgsx0ap91p-libraries'
-#8 96.76 deleting '/nix/store/5f5linrxzhhb3mrclkwdpm9bd8ygldna-curl-8.11.0-dev'
-#8 96.76 deleting '/nix/store/p123cq20klajcl9hj8jnkjip5nw6awhz-curl-8.11.0-bin'
-#8 96.76 deleting '/nix/store/pkc7mb4a4qvyz73srkqh4mwl70w98dsv-curl-8.11.0'
-#8 96.76 deleting '/nix/store/d7zhcrcc7q3yfbm3qkqpgc3daq82spwi-libssh2-1.11.1-dev'
-#8 96.76 deleting '/nix/store/kqm7wpqkzc4bwjlzqizcbz0mgkj06a9x-openssl-3.3.2-dev'
-#8 96.77 deleting '/nix/store/qq5q0alyzywdazhmybi7m69akz0ppk05-openssl-3.3.2-bin'
-#8 96.77 deleting '/nix/store/8675pnfr4fqnwv4pzjl67hdwls4q13aa-libssh2-1.11.1'
-#8 96.77 deleting '/nix/store/b56mswksrql15knpb1bnhv3ysif340kd-krb5-1.21.3-dev'
-#8 96.77 deleting '/nix/store/milph81dilrh96isyivh5n50agpx39k2-krb5-1.21.3'
-#8 96.78 deleting '/nix/store/v9c1s50x7magpiqgycxxkn36avzbcg0g-krb5-1.21.3-lib'
-#8 96.78 deleting '/nix/store/9l9n7a0v4aibcz0sgd0crs209an9p7dz-openssl-3.3.2'
-#8 96.78 deleting '/nix/store/d0gfdcag8bxzvg7ww4s7px4lf8sxisyx-stdenv-linux'
-#8 96.78 deleting '/nix/store/4ig84cyqi6qy4n0sanrbzsw1ixa497jx-stdenv-linux'
-#8 96.78 deleting '/nix/store/h18s640fnhhj2qdh5vivcfbxvz377srg-xz-5.6.3-bin'
-#8 96.79 deleting '/nix/store/c2njy6bv84kw1i4bjf5k5gn7gz8hn57n-xz-5.6.3'
-#8 96.79 deleting '/nix/store/a3c47r5z1q2c4rz0kvq8hlilkhx2s718-gawk-5.3.1'
-#8 96.80 deleting '/nix/store/mglixp03lsp0w986svwdvm7vcy17rdax-bzip2-1.0.8-bin'
-#8 96.81 deleting '/nix/store/ivl2v8rgg7qh1jkj5pwpqycax3rc2hnl-bzip2-1.0.8'
-#8 96.81 deleting '/nix/store/9cwwj1c9csmc85l2cqzs3h9hbf1vwl6c-gnutar-1.35'
-#8 96.82 deleting '/nix/store/xcn9p4xxfbvlkpah7pwchpav4ab9d135-gcc-wrapper-14-20241116'
-#8 96.82 deleting '/nix/store/srcmmqi8kxjfygd0hyy42c8hv6cws83b-binutils-wrapper-2.43.1'
-#8 96.82 deleting '/nix/store/l89iqc7am6i60y8vk507zwrzxf0wcd3v-gcc-14-20241116'
-#8 96.88 deleting '/nix/store/kj8hbqx4ds9qm9mq7hyikxyfwwg13kzj-glibc-2.40-36-dev'
-#8 96.90 deleting '/nix/store/pc74azbkr19rkd5bjalq2xwx86cj3cga-linux-headers-6.12'
-#8 96.97 deleting '/nix/store/c4rj90r2m89rxs64hmm857mipwjhig5d-file-5.46'
-#8 96.97 deleting '/nix/store/d29r1bdmlvwmj52apgcdxfl1mm9c5782-update-autotools-gnu-config-scripts-hook'
-#8 96.97 deleting '/nix/store/1i003ijlh9i0mzp6alqby5hg3090pjdx-perl-5.40.0'
-#8 97.09 deleting '/nix/store/6cr0spsvymmrp1hj5n0kbaxw55w1lqyp-libxcrypt-4.4.36'
-#8 97.09 deleting '/nix/store/fp6cjl1zcmm6mawsnrb5yak1wkz2ma8l-gnumake-4.4.1'
-#8 97.10 deleting '/nix/store/fkd1ma3nify8r9wp463yg5rqz9hdcyf1-npm-9.9.4.tgz'
-#8 97.10 deleting '/nix/store/j7p46r8v9gcpbxx89pbqlh61zhd33gzv-binutils-2.43.1'
-#8 97.12 deleting '/nix/store/df2a8k58k00f2dh2x930dg6xs6g6mliv-binutils-2.43.1-lib'
-#8 97.14 deleting '/nix/store/fv7gpnvg922frkh81w5hkdhpz0nw3iiz-mirrors-list'
-#8 97.14 deleting '/nix/store/1c6bmxrrhm8bd26ai2rjqld2yyjrxhds-glibc-2.40-36-bin'
-#8 97.15 deleting '/nix/store/srfxqk119fijwnprgsqvn68ys9kiw0bn-patchelf-0.15.0'
-#8 97.15 deleting '/nix/store/jqrz1vq5nz4lnv9pqzydj0ir58wbjfy1-findutils-4.10.0'
-#8 97.16 deleting '/nix/store/00g69vw7c9lycy63h45ximy0wmzqx5y6-diffutils-3.10'
-#8 97.17 deleting '/nix/store/2a3anh8vl3fcgk0fvaravlimrqawawza-libmpc-1.3.1'
-#8 97.17 deleting '/nix/store/qbry6090vlr9ar33kdmmbq2p5apzbga8-expand-response-params'
-#8 97.18 deleting '/nix/store/5yja5dpk2qw1v5mbfbl2d7klcdfrh90w-patch-2.7.6'
-#8 97.18 deleting '/nix/store/dz97fw51rm5bl9kz1vg0haj1j1a7r1mr-nghttp2-1.64.0-dev'
-#8 97.18 deleting '/nix/store/qcghigzrz56vczwlzg9c02vbs6zr9jkz-nghttp2-1.64.0-lib'
-#8 97.18 deleting '/nix/store/qs22aazzrdd4dnjf9vffl0n31hvls43h-mpfr-4.2.1'
-#8 97.19 deleting '/nix/store/lwi59jcfwk2lnrakmm1y5vw85hj3n1bi-source'
-#8 111.4 deleting '/nix/store/aap6cq56amx4mzbyxp2wpgsf1kqjcr1f-gnugrep-3.11'
-#8 111.4 deleting '/nix/store/3j1p598fivxs69wx3a657ysv3rw8k06l-pcre2-10.44'
-#8 111.4 deleting '/nix/store/abm77lnrkrkb58z6xp1qwjcr1xgkcfwm-gnused-4.9'
-#8 111.4 deleting '/nix/store/grixvx878884hy8x3xs0c0s1i00j632k-nghttp2-1.64.0'
-#8 111.4 deleting '/nix/store/xmbv8s4p4i4dbxgkgdrdfb0ym25wh6gk-isl-0.20'
-#8 111.5 deleting '/nix/store/agvks3qmzja0yj54szi3vja6vx3cwkkw-curl-8.11.0-man'
-#8 111.5 deleting '/nix/store/nvvj6sk0k6px48436drlblf4gafgbvzr-gzip-1.13'
-#8 111.5 deleting '/nix/store/2wh1gqyzf5xsvxpdz2k0bxiz583wwq29-keyutils-1.6.3-lib'
-#8 111.5 deleting '/nix/store/1m67ipsk39xvhyqrxnzv2m2p48pil8kl-gnu-config-2024-01-01'
-#8 111.5 deleting '/nix/store/w03v94xpvkni794qvd12x2l76gyhm9wv-source'
-#8 111.5 deleting '/nix/store/wf5zj2gbib3gjqllkabxaw4dh0gzcla3-builder.pl'
-#8 111.5 deleting '/nix/store/74h4z8k82pmp24xryflv4lxkz8jlpqqd-ed-1.20.2'
-#8 111.5 deleting '/nix/store/kryrg7ds05iwcmy81amavk8w13y4lxbs-gmp-6.3.0'
-#8 111.5 deleting unused links...
-#8 118.1 note: currently hard linking saves 1.71 MiB
-#8 118.1 61 store paths deleted, 559.40 MiB freed
-#8 DONE 118.3s
+#8 [stage-0  4/10] RUN nix-env -if .nixpacks/nixpkgs-23f9169c4ccce521379e602cc82ed873a1f1b52b.nix && nix-collect-garbage -d
+#8 0.429 unpacking 'https://github.com/NixOS/nixpkgs/archive/23f9169c4ccce521379e602cc82ed873a1f1b52b.tar.gz' into the Git cache...
+#8 77.16 unpacking 'https://github.com/railwayapp/nix-npm-overlay/archive/main.tar.gz' into the Git cache...
+#8 78.36 installing '23f9169c4ccce521379e602cc82ed873a1f1b52b-env'
+#8 80.23 these 5 derivations will be built:
+#8 80.23   /nix/store/11yax1kv8y5kqj7cgh461k6jwi8rc49d-npm-9.9.4.tgz.drv
+#8 80.23   /nix/store/l53bwr725gp7k4831cygqrihvaxv36b9-libraries.drv
+#8 80.23   /nix/store/93ik6f5038k47a4d72i9r9fjl15fvr3f-23f9169c4ccce521379e602cc82ed873a1f1b52b-env.drv
+#8 80.23   /nix/store/y968iv743l2z9zklglx9blcjpiflgww9-npm.drv
+#8 80.23   /nix/store/ksgssb28saaxrgrzy6abs51r4hnx1743-23f9169c4ccce521379e602cc82ed873a1f1b52b-env.drv
+#8 80.23 these 81 paths will be fetched (127.95 MiB download, 612.90 MiB unpacked):
+#8 80.23   /nix/store/jj3knbpiiwbwmplin208h775gzm86rc3-acl-2.3.2
+#8 80.23   /nix/store/2mwbf3viqfqd3lr946slqby9y4k7d9lw-attr-2.5.2
+#8 80.23   /nix/store/cl2gkgnh26mmpka81pc2g5bzjfrili92-bash-5.3p3
+#8 80.23   /nix/store/2j7r5np0vaz4cnqkymp1mqivmjj1x9xl-bash-interactive-5.3p3
+#8 80.23   /nix/store/7h3qnwgvkw6z2r8lq4j5mks4l6r5x2cq-binutils-2.44
+#8 80.23   /nix/store/9a4lmf0swjwjizlkv11ibhnmj0ql7p1s-binutils-2.44-lib
+#8 80.23   /nix/store/0fq1mnfqjl9ain4jg5j56kl6h8bbmy1h-binutils-wrapper-2.44
+#8 80.23   /nix/store/1dw13nzqf9v8w7jcy205hkp7s7ggi0cc-builder.pl
+#8 80.23   /nix/store/j59qq0cqb364kzzrx2r32swfljwklxlq-bzip2-1.0.8
+#8 80.23   /nix/store/xnd0ld68fzj1g1qr19gg0va486snwj22-bzip2-1.0.8-bin
+#8 80.23   /nix/store/00bc157nm93q5fjz551fwk60ihlbilvj-coreutils-9.7
+#8 80.23   /nix/store/di12yqc8952k9scn46kd48ii266v2yn8-curl-8.16.0
+#8 80.23   /nix/store/9bfd6c1f2nzrx7j5f0gc6i9n2clngndn-curl-8.16.0-bin
+#8 80.23   /nix/store/n5d9hl0jb4gzd3p886rb4nrprym4gwkp-curl-8.16.0-dev
+#8 80.23   /nix/store/9vcd7xzvs6zbi42hywh7khvvy2pfnihq-curl-8.16.0-man
+#8 80.23   /nix/store/c7qlkpbivy2znqxd25prgh9pwjxdri6w-diffutils-3.12
+#8 80.23   /nix/store/wgvx9p6h00aijb9jw95am7095wjzm9mv-ed-1.22.2
+#8 80.23   /nix/store/5ipaaiqy3dmngyp3a3yschy4g4kh1jl7-expand-response-params
+#8 80.23   /nix/store/5qm0vivgc7lmiyfbf5d5a55s40d996bd-file-5.45
+#8 80.23   /nix/store/wq1cxh4s8rz8vs4ssp2z49v96m0nhxhj-findutils-4.10.0
+#8 80.23   /nix/store/swbmnc2s8g2zxzxh62hx1vbbcg6i2r5b-gawk-5.3.2
+#8 80.23   /nix/store/k6gpflj398qaxzx4bmqhnnj4l328vabk-gcc-14.3.0
+#8 80.23   /nix/store/xp989kyfg52803fmkzbz5py35jphcpgd-gcc-14.3.0-lib
+#8 80.23   /nix/store/8b9srwwmrwmh1yl613cwwj7gydl87br6-gcc-14.3.0-libgcc
+#8 80.23   /nix/store/dmypp1h4ldn0vfk3fi6yfyf5yxp9yz0k-gcc-wrapper-14.3.0
+#8 80.23   /nix/store/qhw0sp183mqd04x5jp75981kwya64npv-glibc-2.40-66
+#8 80.23   /nix/store/gf1xp3sizlc0nkq3man8ys0mwhs1bp44-glibc-2.40-66-bin
+#8 80.23   /nix/store/0zv32kh0zb4s1v4ld6mc99vmzydj9nm9-glibc-2.40-66-dev
+#8 80.23   /nix/store/szvrzng4wfxc9xljqjipxhrrayjfy0vj-gmp-6.3.0
+#8 80.23   /nix/store/78xkc7z5m21chq7p6awrzgznz83xyml0-gmp-with-cxx-6.3.0
+#8 80.23   /nix/store/2j08vib6rf81vwi6mv3s544wi8rj3xn7-gnu-config-2024-01-01
+#8 80.23   /nix/store/6q57mnfak3q8ss656qgp245qzqvnniyr-gnugrep-3.12
+#8 80.23   /nix/store/lmn1m0giq5bkgdqvdpiryb9a2ly28w6g-gnumake-4.4.1
+#8 80.23   /nix/store/7zy6jnnpqh16b18j6ar289vhwp17msh0-gnused-4.9
+#8 80.23   /nix/store/n09s57l86zxyjydkxagawxpkhh3d3dlh-gnutar-1.35
+#8 80.23   /nix/store/wd4i398mh329vhw93mvmamw3hrnhl257-gzip-1.14
+#8 80.23   /nix/store/hpyfq2n0qr4qj3z1f7d2diw8sql5m84f-icu4c-76.1
+#8 80.23   /nix/store/zc7w3ii28j4kagmlznjdajf0nzd0z60a-icu4c-76.1-dev
+#8 80.23   /nix/store/0fml1xim5c5wdn32a5bm7wgwn1ai0am6-isl-0.20
+#8 80.23   /nix/store/a3jg8g5fam9klp5ila9javf2q4wgjish-keyutils-1.6.3-lib
+#8 80.23   /nix/store/g6hcs7jbchxawmf1nvhchapn3mmxgl51-krb5-1.22.1
+#8 80.23   /nix/store/nl0asb7spb7z9q0kzi9yb3kf34z8pnnz-krb5-1.22.1-dev
+#8 80.23   /nix/store/1h8fc0raix2hx3xh6z9bjk3n1pnhd7is-krb5-1.22.1-lib
+#8 80.23   /nix/store/wwqyxsvmg41q5ckfvvv6wa50nwvz9dv4-libidn2-2.3.8
+#8 80.23   /nix/store/f21qz37q6da2bwm4cngj21ia6ivq3v23-libmpc-1.3.1
+#8 80.23   /nix/store/2sv91m724m3ydpzvyv89y40va91b4643-libssh2-1.11.1
+#8 80.23   /nix/store/prfzs45jji50w53bri2d2xyk5vlqzqan-libssh2-1.11.1-dev
+#8 80.23   /nix/store/7ndy5820h69n1pgd13viph1qjq6zhhkj-libunistring-1.3
+#8 80.23   /nix/store/2pi0ddhdi6m4fnxw9w42qksz9jk1ja1i-libuv-1.51.0
+#8 80.23   /nix/store/adklcnjpc31n6jabha2qd60y2s9wm133-libuv-1.51.0-dev
+#8 80.23   /nix/store/nkn950vf2i29k4v3z6w9717pjrg483ng-libxcrypt-4.4.38
+#8 80.23   /nix/store/qzkhd1k8dsdah1ja0wjj6q8bibxk5zq6-linux-headers-6.16.7
+#8 80.23   /nix/store/dddyfnkixnqr8jy74rc2zs3bjfy55z6q-mirrors-list
+#8 80.23   /nix/store/vc3mb134w3cd0m1mh3kph079xr7mbvnn-mpfr-4.2.2
+#8 80.23   /nix/store/lm4wm3f4ynilxw8yvgqq0hj2ng8ky9xy-ncurses-6.5
+#8 80.23   /nix/store/1a7g7jhnbcdaqn3lfb8xdg755x0kw0bi-nghttp2-1.67.1
+#8 80.23   /nix/store/aisb0lgxik1sfq3c47x1xjab0rg9q0n0-nghttp2-1.67.1-dev
+#8 80.23   /nix/store/2bf6s3nngcrb4rh9hb57isam6k5xl9i6-nghttp2-1.67.1-lib
+#8 80.23   /nix/store/p2sk3402d788hqn5diy5gba8cskjffzz-nodejs-24.10.0
+#8 80.23   /nix/store/0837wpkjb27cr70bi3pc4g2rw5v9r63l-openssl-3.5.2
+#8 80.23   /nix/store/h95q41jsmizcqk4iffkxm52q8lar13fm-openssl-3.5.2
+#8 80.23   /nix/store/3kasb92ri5cmp7gwxgj8jgk87pr83y7p-openssl-3.5.2-bin
+#8 80.23   /nix/store/jr64633vy5ca03fdq4ymnrjcy1swvdii-openssl-3.5.2-bin
+#8 80.23   /nix/store/cz9k6nhxjppa1kmyf5npd0g8l89xzilw-openssl-3.5.2-dev
+#8 80.23   /nix/store/ln0p4bzkpmsgh0z49l3r1q96r6pgnz05-openssl-3.5.2-dev
+#8 80.23   /nix/store/r9lif1a0naanr8kdapwnbnr39lr7d56a-patch-2.8
+#8 80.23   /nix/store/0032synbfqd0ylgf9szgp724nmw2fq89-patchelf-0.15.2
+#8 80.23   /nix/store/wqlkv0cjacnm7arca156p3d3vh0kdbmk-pcre2-10.46
+#8 80.23   /nix/store/k2y9xpcdqxma66kag80nhbv0pq2bznzf-perl-5.40.0
+#8 80.23   /nix/store/zqkjn730gir222v3mkp82c1pmqfb2j0l-readline-8.3p1
+#8 80.23   /nix/store/jqrf546vxc6nzf4575m4am3w4ywq765i-sqlite-3.50.4
+#8 80.23   /nix/store/7p5yg8li32wgxxsydbzblnjgs8hvl9wd-sqlite-3.50.4-bin
+#8 80.23   /nix/store/3a7y8k7fh6xldnpvd3bx3ygnx5044xw6-sqlite-3.50.4-dev
+#8 80.23   /nix/store/87ds8jf53m7n8xscxgkfgwcc8dyj1qki-stdenv-linux
+#8 80.23   /nix/store/x1d0ad98h92lp5g59pfryjzk4ca84i3r-stdenv-linux
+#8 80.23   /nix/store/ka03rs4a3bybjhqpvg388sdszbybvbff-update-autotools-gnu-config-scripts-hook
+#8 80.23   /nix/store/0ja5daq2yay3svg6f48spyfby7pgy5bm-xgcc-14.3.0-libgcc
+#8 80.23   /nix/store/swqs30pymm3ymv2qnkzs353xmpgr80jr-xz-5.8.1
+#8 80.23   /nix/store/77jyjqy2b9l2a0139im9ds28zkdv0ybc-xz-5.8.1-bin
+#8 80.23   /nix/store/6qi8skh85ci2k9gvl27nnh3kiy32qnsz-zlib-1.3.1
+#8 80.23   /nix/store/6fqij3sy1mlsnq1n679bzbl5bkqs7yvk-zlib-1.3.1-dev
+#8 80.25 copying path '/nix/store/1dw13nzqf9v8w7jcy205hkp7s7ggi0cc-builder.pl' from 'https://cache.nixos.org'...
+#8 80.26 copying path '/nix/store/8b9srwwmrwmh1yl613cwwj7gydl87br6-gcc-14.3.0-libgcc' from 'https://cache.nixos.org'...
+#8 80.26 copying path '/nix/store/2j08vib6rf81vwi6mv3s544wi8rj3xn7-gnu-config-2024-01-01' from 'https://cache.nixos.org'...
+#8 80.26 copying path '/nix/store/0ja5daq2yay3svg6f48spyfby7pgy5bm-xgcc-14.3.0-libgcc' from 'https://cache.nixos.org'...
+#8 80.26 copying path '/nix/store/7ndy5820h69n1pgd13viph1qjq6zhhkj-libunistring-1.3' from 'https://cache.nixos.org'...
+#8 80.27 copying path '/nix/store/qzkhd1k8dsdah1ja0wjj6q8bibxk5zq6-linux-headers-6.16.7' from 'https://cache.nixos.org'...
+#8 80.27 copying path '/nix/store/9vcd7xzvs6zbi42hywh7khvvy2pfnihq-curl-8.16.0-man' from 'https://cache.nixos.org'...
+#8 80.27 copying path '/nix/store/dddyfnkixnqr8jy74rc2zs3bjfy55z6q-mirrors-list' from 'https://cache.nixos.org'...
+#8 80.27 copying path '/nix/store/1a7g7jhnbcdaqn3lfb8xdg755x0kw0bi-nghttp2-1.67.1' from 'https://cache.nixos.org'...
+#8 80.27 copying path '/nix/store/ka03rs4a3bybjhqpvg388sdszbybvbff-update-autotools-gnu-config-scripts-hook' from 'https://cache.nixos.org'...
+#8 80.33 copying path '/nix/store/wwqyxsvmg41q5ckfvvv6wa50nwvz9dv4-libidn2-2.3.8' from 'https://cache.nixos.org'...
+#8 80.38 copying path '/nix/store/qhw0sp183mqd04x5jp75981kwya64npv-glibc-2.40-66' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/2mwbf3viqfqd3lr946slqby9y4k7d9lw-attr-2.5.2' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/wgvx9p6h00aijb9jw95am7095wjzm9mv-ed-1.22.2' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/cl2gkgnh26mmpka81pc2g5bzjfrili92-bash-5.3p3' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/j59qq0cqb364kzzrx2r32swfljwklxlq-bzip2-1.0.8' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/5ipaaiqy3dmngyp3a3yschy4g4kh1jl7-expand-response-params' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/swbmnc2s8g2zxzxh62hx1vbbcg6i2r5b-gawk-5.3.2' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/xp989kyfg52803fmkzbz5py35jphcpgd-gcc-14.3.0-lib' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/gf1xp3sizlc0nkq3man8ys0mwhs1bp44-glibc-2.40-66-bin' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/lmn1m0giq5bkgdqvdpiryb9a2ly28w6g-gnumake-4.4.1' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/7zy6jnnpqh16b18j6ar289vhwp17msh0-gnused-4.9' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/a3jg8g5fam9klp5ila9javf2q4wgjish-keyutils-1.6.3-lib' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/2pi0ddhdi6m4fnxw9w42qksz9jk1ja1i-libuv-1.51.0' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/nkn950vf2i29k4v3z6w9717pjrg483ng-libxcrypt-4.4.38' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/lm4wm3f4ynilxw8yvgqq0hj2ng8ky9xy-ncurses-6.5' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/2bf6s3nngcrb4rh9hb57isam6k5xl9i6-nghttp2-1.67.1-lib' from 'https://cache.nixos.org'...
+#8 81.18 copying path '/nix/store/szvrzng4wfxc9xljqjipxhrrayjfy0vj-gmp-6.3.0' from 'https://cache.nixos.org'...
+#8 81.21 copying path '/nix/store/0837wpkjb27cr70bi3pc4g2rw5v9r63l-openssl-3.5.2' from 'https://cache.nixos.org'...
+#8 81.21 copying path '/nix/store/h95q41jsmizcqk4iffkxm52q8lar13fm-openssl-3.5.2' from 'https://cache.nixos.org'...
+#8 81.21 copying path '/nix/store/xnd0ld68fzj1g1qr19gg0va486snwj22-bzip2-1.0.8-bin' from 'https://cache.nixos.org'...
+#8 81.21 copying path '/nix/store/r9lif1a0naanr8kdapwnbnr39lr7d56a-patch-2.8' from 'https://cache.nixos.org'...
+#8 81.26 copying path '/nix/store/jj3knbpiiwbwmplin208h775gzm86rc3-acl-2.3.2' from 'https://cache.nixos.org'...
+#8 81.26 copying path '/nix/store/wqlkv0cjacnm7arca156p3d3vh0kdbmk-pcre2-10.46' from 'https://cache.nixos.org'...
+#8 81.27 copying path '/nix/store/wd4i398mh329vhw93mvmamw3hrnhl257-gzip-1.14' from 'https://cache.nixos.org'...
+#8 81.29 copying path '/nix/store/swqs30pymm3ymv2qnkzs353xmpgr80jr-xz-5.8.1' from 'https://cache.nixos.org'...
+#8 81.34 copying path '/nix/store/6qi8skh85ci2k9gvl27nnh3kiy32qnsz-zlib-1.3.1' from 'https://cache.nixos.org'...
+#8 81.34 copying path '/nix/store/adklcnjpc31n6jabha2qd60y2s9wm133-libuv-1.51.0-dev' from 'https://cache.nixos.org'...
+#8 81.34 copying path '/nix/store/aisb0lgxik1sfq3c47x1xjab0rg9q0n0-nghttp2-1.67.1-dev' from 'https://cache.nixos.org'...
+#8 81.36 copying path '/nix/store/n09s57l86zxyjydkxagawxpkhh3d3dlh-gnutar-1.35' from 'https://cache.nixos.org'...
+#8 81.44 copying path '/nix/store/0fml1xim5c5wdn32a5bm7wgwn1ai0am6-isl-0.20' from 'https://cache.nixos.org'...
+#8 81.45 copying path '/nix/store/vc3mb134w3cd0m1mh3kph079xr7mbvnn-mpfr-4.2.2' from 'https://cache.nixos.org'...
+#8 81.49 copying path '/nix/store/9a4lmf0swjwjizlkv11ibhnmj0ql7p1s-binutils-2.44-lib' from 'https://cache.nixos.org'...
+#8 81.49 copying path '/nix/store/5qm0vivgc7lmiyfbf5d5a55s40d996bd-file-5.45' from 'https://cache.nixos.org'...
+#8 81.49 copying path '/nix/store/7p5yg8li32wgxxsydbzblnjgs8hvl9wd-sqlite-3.50.4-bin' from 'https://cache.nixos.org'...
+#8 81.49 copying path '/nix/store/6fqij3sy1mlsnq1n679bzbl5bkqs7yvk-zlib-1.3.1-dev' from 'https://cache.nixos.org'...
+#8 81.49 copying path '/nix/store/jqrf546vxc6nzf4575m4am3w4ywq765i-sqlite-3.50.4' from 'https://cache.nixos.org'...
+#8 81.59 copying path '/nix/store/0zv32kh0zb4s1v4ld6mc99vmzydj9nm9-glibc-2.40-66-dev' from 'https://cache.nixos.org'...
+#8 81.68 copying path '/nix/store/6q57mnfak3q8ss656qgp245qzqvnniyr-gnugrep-3.12' from 'https://cache.nixos.org'...
+#8 81.69 copying path '/nix/store/77jyjqy2b9l2a0139im9ds28zkdv0ybc-xz-5.8.1-bin' from 'https://cache.nixos.org'...
+#8 81.72 copying path '/nix/store/hpyfq2n0qr4qj3z1f7d2diw8sql5m84f-icu4c-76.1' from 'https://cache.nixos.org'...
+#8 81.72 copying path '/nix/store/78xkc7z5m21chq7p6awrzgznz83xyml0-gmp-with-cxx-6.3.0' from 'https://cache.nixos.org'...
+#8 81.72 copying path '/nix/store/0032synbfqd0ylgf9szgp724nmw2fq89-patchelf-0.15.2' from 'https://cache.nixos.org'...
+#8 81.81 copying path '/nix/store/f21qz37q6da2bwm4cngj21ia6ivq3v23-libmpc-1.3.1' from 'https://cache.nixos.org'...
+#8 82.00 copying path '/nix/store/00bc157nm93q5fjz551fwk60ihlbilvj-coreutils-9.7' from 'https://cache.nixos.org'...
+#8 82.02 copying path '/nix/store/7h3qnwgvkw6z2r8lq4j5mks4l6r5x2cq-binutils-2.44' from 'https://cache.nixos.org'...
+#8 82.05 copying path '/nix/store/1h8fc0raix2hx3xh6z9bjk3n1pnhd7is-krb5-1.22.1-lib' from 'https://cache.nixos.org'...
+#8 82.05 copying path '/nix/store/2sv91m724m3ydpzvyv89y40va91b4643-libssh2-1.11.1' from 'https://cache.nixos.org'...
+#8 82.06 copying path '/nix/store/jr64633vy5ca03fdq4ymnrjcy1swvdii-openssl-3.5.2-bin' from 'https://cache.nixos.org'...
+#8 82.09 copying path '/nix/store/3a7y8k7fh6xldnpvd3bx3ygnx5044xw6-sqlite-3.50.4-dev' from 'https://cache.nixos.org'...
+#8 82.09 copying path '/nix/store/3kasb92ri5cmp7gwxgj8jgk87pr83y7p-openssl-3.5.2-bin' from 'https://cache.nixos.org'...
+#8 82.18 copying path '/nix/store/k6gpflj398qaxzx4bmqhnnj4l328vabk-gcc-14.3.0' from 'https://cache.nixos.org'...
+#8 82.47 copying path '/nix/store/ln0p4bzkpmsgh0z49l3r1q96r6pgnz05-openssl-3.5.2-dev' from 'https://cache.nixos.org'...
+#8 82.49 copying path '/nix/store/cz9k6nhxjppa1kmyf5npd0g8l89xzilw-openssl-3.5.2-dev' from 'https://cache.nixos.org'...
+#8 82.49 copying path '/nix/store/wq1cxh4s8rz8vs4ssp2z49v96m0nhxhj-findutils-4.10.0' from 'https://cache.nixos.org'...
+#8 82.49 copying path '/nix/store/c7qlkpbivy2znqxd25prgh9pwjxdri6w-diffutils-3.12' from 'https://cache.nixos.org'...
+#8 82.49 copying path '/nix/store/k2y9xpcdqxma66kag80nhbv0pq2bznzf-perl-5.40.0' from 'https://cache.nixos.org'...
+#8 82.56 copying path '/nix/store/di12yqc8952k9scn46kd48ii266v2yn8-curl-8.16.0' from 'https://cache.nixos.org'...
+#8 82.56 copying path '/nix/store/g6hcs7jbchxawmf1nvhchapn3mmxgl51-krb5-1.22.1' from 'https://cache.nixos.org'...
+#8 83.12 copying path '/nix/store/9bfd6c1f2nzrx7j5f0gc6i9n2clngndn-curl-8.16.0-bin' from 'https://cache.nixos.org'...
+#8 83.14 copying path '/nix/store/nl0asb7spb7z9q0kzi9yb3kf34z8pnnz-krb5-1.22.1-dev' from 'https://cache.nixos.org'...
+#8 83.21 copying path '/nix/store/x1d0ad98h92lp5g59pfryjzk4ca84i3r-stdenv-linux' from 'https://cache.nixos.org'...
+#8 83.27 copying path '/nix/store/prfzs45jji50w53bri2d2xyk5vlqzqan-libssh2-1.11.1-dev' from 'https://cache.nixos.org'...
+#8 83.29 copying path '/nix/store/zc7w3ii28j4kagmlznjdajf0nzd0z60a-icu4c-76.1-dev' from 'https://cache.nixos.org'...
+#8 83.78 building '/nix/store/l53bwr725gp7k4831cygqrihvaxv36b9-libraries.drv'...
+#8 83.79 copying path '/nix/store/0fq1mnfqjl9ain4jg5j56kl6h8bbmy1h-binutils-wrapper-2.44' from 'https://cache.nixos.org'...
+#8 83.84 copying path '/nix/store/n5d9hl0jb4gzd3p886rb4nrprym4gwkp-curl-8.16.0-dev' from 'https://cache.nixos.org'...
+#8 84.47 building '/nix/store/93ik6f5038k47a4d72i9r9fjl15fvr3f-23f9169c4ccce521379e602cc82ed873a1f1b52b-env.drv'...
+#8 84.52 copying path '/nix/store/zqkjn730gir222v3mkp82c1pmqfb2j0l-readline-8.3p1' from 'https://cache.nixos.org'...
+#8 84.59 building '/nix/store/11yax1kv8y5kqj7cgh461k6jwi8rc49d-npm-9.9.4.tgz.drv'...
+#8 84.81
+#8 84.81 trying https://registry.npmjs.org/npm/-/npm-9.9.4.tgz
+#8 84.82   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#8 84.83                                  Dload  Upload   Total   Spent    Left  Speed
+#8 84.96 copying path '/nix/store/2j7r5np0vaz4cnqkymp1mqivmjj1x9xl-bash-interactive-5.3p3' from 'https://cache.nixos.org'...
+#8 85.53 100 2648k  100 2648k    0     0  3743k      0 --:--:-- --:--:-- --:--:-- 3745k
+#8 85.62 copying path '/nix/store/p2sk3402d788hqn5diy5gba8cskjffzz-nodejs-24.10.0' from 'https://cache.nixos.org'...
+#8 90.04 copying path '/nix/store/dmypp1h4ldn0vfk3fi6yfyf5yxp9yz0k-gcc-wrapper-14.3.0' from 'https://cache.nixos.org'...
+#8 90.06 copying path '/nix/store/87ds8jf53m7n8xscxgkfgwcc8dyj1qki-stdenv-linux' from 'https://cache.nixos.org'...
+#8 90.16 building '/nix/store/y968iv743l2z9zklglx9blcjpiflgww9-npm.drv'...
+#8 90.29 Running phase: unpackPhase
+#8 90.31 unpacking source archive /nix/store/fkd1ma3nify8r9wp463yg5rqz9hdcyf1-npm-9.9.4.tgz
+#8 90.63 source root is package
+#8 90.81 setting SOURCE_DATE_EPOCH to timestamp 499162500 of file "package/package.json"
+#8 90.83 Running phase: installPhase
+#8 92.39 building '/nix/store/ksgssb28saaxrgrzy6abs51r4hnx1743-23f9169c4ccce521379e602cc82ed873a1f1b52b-env.drv'...
+#8 92.60 created 33 symlinks in user environment
+#8 92.89 building '/nix/store/kpf9irm1g7axs09v4b8cyylpxifwhcd3-user-environment.drv'...
+#8 93.33 removing old generations of profile /nix/var/nix/profiles/per-user/root/channels
+#8 93.33 removing old generations of profile /nix/var/nix/profiles/per-user/root/profile
+#8 93.33 removing profile version 1
+#8 93.33 removing old generations of profile /nix/var/nix/profiles/per-user/root/channels
+#8 93.33 removing old generations of profile /nix/var/nix/profiles/per-user/root/profile
+#8 93.34 finding garbage collector roots...
+#8 93.34 removing stale link from '/nix/var/nix/gcroots/auto/lzjbmb2ry0z7lma2fvpqprb12921pnb5' to '/nix/var/nix/profiles/per-user/root/profile-1-link'
+#8 93.35 deleting garbage...
+#8 93.37 deleting '/nix/store/a9qf4wwhympzs35ncp80r185j6a21w07-user-environment'
+#8 93.38 deleting '/nix/store/253kwn1730vnay87xkjgxa2v97w3y079-user-environment.drv'
+#8 93.38 deleting '/nix/store/hn5mrh362n52x8wwab9s1v6bgn4n5c94-env-manifest.nix'
+#8 93.41 deleting '/nix/store/x1d0ad98h92lp5g59pfryjzk4ca84i3r-stdenv-linux'
+#8 93.41 deleting '/nix/store/87ds8jf53m7n8xscxgkfgwcc8dyj1qki-stdenv-linux'
+#8 93.41 deleting '/nix/store/xnd0ld68fzj1g1qr19gg0va486snwj22-bzip2-1.0.8-bin'
+#8 93.41 deleting '/nix/store/ka03rs4a3bybjhqpvg388sdszbybvbff-update-autotools-gnu-config-scripts-hook'
+#8 93.41 deleting '/nix/store/2j08vib6rf81vwi6mv3s544wi8rj3xn7-gnu-config-2024-01-01'
+#8 93.41 deleting '/nix/store/wq1cxh4s8rz8vs4ssp2z49v96m0nhxhj-findutils-4.10.0'
+#8 93.42 deleting '/nix/store/n5d9hl0jb4gzd3p886rb4nrprym4gwkp-curl-8.16.0-dev'
+#8 93.42 deleting '/nix/store/9bfd6c1f2nzrx7j5f0gc6i9n2clngndn-curl-8.16.0-bin'
+#8 93.42 deleting '/nix/store/dmypp1h4ldn0vfk3fi6yfyf5yxp9yz0k-gcc-wrapper-14.3.0'
+#8 93.43 deleting '/nix/store/k6gpflj398qaxzx4bmqhnnj4l328vabk-gcc-14.3.0'
+#8 93.47 deleting '/nix/store/f21qz37q6da2bwm4cngj21ia6ivq3v23-libmpc-1.3.1'
+#8 93.47 deleting '/nix/store/di12yqc8952k9scn46kd48ii266v2yn8-curl-8.16.0'
+#8 93.48 deleting '/nix/store/prfzs45jji50w53bri2d2xyk5vlqzqan-libssh2-1.11.1-dev'
+#8 93.48 deleting '/nix/store/nl0asb7spb7z9q0kzi9yb3kf34z8pnnz-krb5-1.22.1-dev'
+#8 93.48 deleting '/nix/store/ln0p4bzkpmsgh0z49l3r1q96r6pgnz05-openssl-3.5.2-dev'
+#8 93.49 deleting '/nix/store/jr64633vy5ca03fdq4ymnrjcy1swvdii-openssl-3.5.2-bin'
+#8 93.49 deleting '/nix/store/g6hcs7jbchxawmf1nvhchapn3mmxgl51-krb5-1.22.1'
+#8 93.49 deleting '/nix/store/2sv91m724m3ydpzvyv89y40va91b4643-libssh2-1.11.1'
+#8 93.49 deleting '/nix/store/1h8fc0raix2hx3xh6z9bjk3n1pnhd7is-krb5-1.22.1-lib'
+#8 93.49 deleting '/nix/store/h95q41jsmizcqk4iffkxm52q8lar13fm-openssl-3.5.2'
+#8 93.50 deleting '/nix/store/0fq1mnfqjl9ain4jg5j56kl6h8bbmy1h-binutils-wrapper-2.44'
+#8 93.50 deleting '/nix/store/vc3mb134w3cd0m1mh3kph079xr7mbvnn-mpfr-4.2.2'
+#8 93.50 deleting '/nix/store/0fml1xim5c5wdn32a5bm7wgwn1ai0am6-isl-0.20'
+#8 93.50 deleting '/nix/store/szvrzng4wfxc9xljqjipxhrrayjfy0vj-gmp-6.3.0'
+#8 93.50 deleting '/nix/store/n09s57l86zxyjydkxagawxpkhh3d3dlh-gnutar-1.35'
+#8 93.51 deleting '/nix/store/r9lif1a0naanr8kdapwnbnr39lr7d56a-patch-2.8'
+#8 93.51 deleting '/nix/store/0zv32kh0zb4s1v4ld6mc99vmzydj9nm9-glibc-2.40-66-dev'
+#8 93.53 deleting '/nix/store/gf1xp3sizlc0nkq3man8ys0mwhs1bp44-glibc-2.40-66-bin'
+#8 93.53 deleting '/nix/store/aisb0lgxik1sfq3c47x1xjab0rg9q0n0-nghttp2-1.67.1-dev'
+#8 93.53 deleting '/nix/store/wd4i398mh329vhw93mvmamw3hrnhl257-gzip-1.14'
+#8 93.53 deleting '/nix/store/6q57mnfak3q8ss656qgp245qzqvnniyr-gnugrep-3.12'
+#8 93.55 deleting '/nix/store/wqlkv0cjacnm7arca156p3d3vh0kdbmk-pcre2-10.46'
+#8 93.55 deleting '/nix/store/fkd1ma3nify8r9wp463yg5rqz9hdcyf1-npm-9.9.4.tgz'
+#8 93.55 deleting '/nix/store/j59qq0cqb364kzzrx2r32swfljwklxlq-bzip2-1.0.8'
+#8 93.55 deleting '/nix/store/cvw5asqga7k27zb1jlippfrkqm084ml7-libraries'
+#8 93.55 deleting '/nix/store/7zy6jnnpqh16b18j6ar289vhwp17msh0-gnused-4.9'
+#8 93.56 deleting '/nix/store/77jyjqy2b9l2a0139im9ds28zkdv0ybc-xz-5.8.1-bin'
+#8 93.56 deleting '/nix/store/1a7g7jhnbcdaqn3lfb8xdg755x0kw0bi-nghttp2-1.67.1'
+#8 93.57 deleting '/nix/store/i6c20krnakaiv6zbraxl2q60hn8rmjwq-exec.drv'
+#8 93.57 deleting '/nix/store/k2y9xpcdqxma66kag80nhbv0pq2bznzf-perl-5.40.0'
+#8 93.67 deleting '/nix/store/nkn950vf2i29k4v3z6w9717pjrg483ng-libxcrypt-4.4.38'
+#8 93.67 deleting '/nix/store/dddyfnkixnqr8jy74rc2zs3bjfy55z6q-mirrors-list'
+#8 93.67 deleting '/nix/store/9vcd7xzvs6zbi42hywh7khvvy2pfnihq-curl-8.16.0-man'
+#8 93.67 deleting '/nix/store/7h3qnwgvkw6z2r8lq4j5mks4l6r5x2cq-binutils-2.44'
+#8 93.70 deleting '/nix/store/qzkhd1k8dsdah1ja0wjj6q8bibxk5zq6-linux-headers-6.16.7'
+#8 93.75 deleting '/nix/store/1dw13nzqf9v8w7jcy205hkp7s7ggi0cc-builder.pl'
+#8 93.75 deleting '/nix/store/9a4lmf0swjwjizlkv11ibhnmj0ql7p1s-binutils-2.44-lib'
+#8 93.75 deleting '/nix/store/0032synbfqd0ylgf9szgp724nmw2fq89-patchelf-0.15.2'
+#8 93.75 deleting '/nix/store/a3jg8g5fam9klp5ila9javf2q4wgjish-keyutils-1.6.3-lib'
+#8 93.75 deleting '/nix/store/2bf6s3nngcrb4rh9hb57isam6k5xl9i6-nghttp2-1.67.1-lib'
+#8 93.75 deleting '/nix/store/w03v94xpvkni794qvd12x2l76gyhm9wv-source'
+#8 93.78 deleting '/nix/store/z6gs6c7h492l4zq99mrmbwfwkjykaf0d-source'
+#8 111.0 deleting '/nix/store/swqs30pymm3ymv2qnkzs353xmpgr80jr-xz-5.8.1'
+#8 111.0 deleting '/nix/store/5ipaaiqy3dmngyp3a3yschy4g4kh1jl7-expand-response-params'
+#8 111.0 deleting '/nix/store/swbmnc2s8g2zxzxh62hx1vbbcg6i2r5b-gawk-5.3.2'
+#8 111.0 deleting '/nix/store/5qm0vivgc7lmiyfbf5d5a55s40d996bd-file-5.45'
+#8 111.0 deleting '/nix/store/lmn1m0giq5bkgdqvdpiryb9a2ly28w6g-gnumake-4.4.1'
+#8 111.0 deleting '/nix/store/c7qlkpbivy2znqxd25prgh9pwjxdri6w-diffutils-3.12'
+#8 111.1 deleting '/nix/store/wgvx9p6h00aijb9jw95am7095wjzm9mv-ed-1.22.2'
+#8 111.1 deleting unused links...
+#8 116.9 note: currently hard linking saves 1.21 MiB
+#8 116.9 62 store paths deleted, 560.00 MiB freed
+#8 DONE 117.2s
 #9 [stage-0  5/10] COPY . /app/.
-#9 DONE 0.4s
+#9 DONE 0.2s
 #10 [stage-0  6/10] RUN --mount=type=cache,id=KBJiPX57Xfg-/root/npm,target=/root/.npm npm ci
-#10 1.337 npm warn config production Use `--omit=dev` instead.
-#10 2.806 npm warn EBADENGINE Unsupported engine {
-#10 2.806 npm warn EBADENGINE   package: '@supabase/auth-js@2.90.1',
-#10 2.806 npm warn EBADENGINE   required: { node: '>=20.0.0' },
-#10 2.806 npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
-#10 2.806 npm warn EBADENGINE }
-#10 2.807 npm warn EBADENGINE Unsupported engine {
-#10 2.807 npm warn EBADENGINE   package: '@supabase/functions-js@2.90.1',
-#10 2.807 npm warn EBADENGINE   required: { node: '>=20.0.0' },
-#10 2.807 npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
-#10 2.807 npm warn EBADENGINE }
-#10 2.809 npm warn EBADENGINE Unsupported engine {
-#10 2.809 npm warn EBADENGINE   package: '@supabase/postgrest-js@2.90.1',
-#10 2.809 npm warn EBADENGINE   required: { node: '>=20.0.0' },
-#10 2.809 npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
-#10 2.809 npm warn EBADENGINE }
-#10 2.810 npm warn EBADENGINE Unsupported engine {
-#10 2.810 npm warn EBADENGINE   package: '@supabase/realtime-js@2.90.1',
-#10 2.810 npm warn EBADENGINE   required: { node: '>=20.0.0' },
-#10 2.810 npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
-#10 2.810 npm warn EBADENGINE }
-#10 2.810 npm warn EBADENGINE Unsupported engine {
-#10 2.810 npm warn EBADENGINE   package: '@supabase/storage-js@2.90.1',
-#10 2.810 npm warn EBADENGINE   required: { node: '>=20.0.0' },
-#10 2.810 npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
-#10 2.810 npm warn EBADENGINE }
-#10 2.811 npm warn EBADENGINE Unsupported engine {
-#10 2.811 npm warn EBADENGINE   package: '@supabase/supabase-js@2.90.1',
-#10 2.811 npm warn EBADENGINE   required: { node: '>=20.0.0' },
-#10 2.811 npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
-#10 2.811 npm warn EBADENGINE }
-#10 2.816 npm warn EBADENGINE Unsupported engine {
-#10 2.816 npm warn EBADENGINE   package: 'iceberg-js@0.8.1',
-#10 2.816 npm warn EBADENGINE   required: { node: '>=20.0.0' },
-#10 2.816 npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
-#10 2.816 npm warn EBADENGINE }
-#10 2.818 npm warn EBADENGINE Unsupported engine {
-#10 2.818 npm warn EBADENGINE   package: 'next@16.1.3',
-#10 2.818 npm warn EBADENGINE   required: { node: '>=20.9.0' },
-#10 2.818 npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
-#10 2.818 npm warn EBADENGINE }
-#10 43.05
-#10 43.05 added 575 packages, and audited 576 packages in 42s
-#10 43.05
-#10 43.05 167 packages are looking for funding
-#10 43.05   run `npm fund` for details
-#10 43.05
-#10 43.05 found 0 vulnerabilities
-#10 DONE 43.4s
+#10 1.197 npm warn config production Use `--omit=dev` instead.
+#10 27.11
+#10 27.11 added 637 packages, and audited 638 packages in 26s
+#10 27.11
+#10 27.11 196 packages are looking for funding
+#10 27.11   run `npm fund` for details
+#10 27.12
+#10 27.12 found 0 vulnerabilities
+#10 DONE 27.7s
 #11 [stage-0  7/10] COPY . /app/.
 #11 DONE 0.3s
 #12 [stage-0  8/10] RUN --mount=type=cache,id=KBJiPX57Xfg-next/cache,target=/app/.next/cache --mount=type=cache,id=KBJiPX57Xfg-node_modules/cache,target=/app/node_modules/.cache npm run build
-#12 0.595 npm warn config production Use `--omit=dev` instead.
-#12 0.645
-#12 0.645 > web@0.1.0 build
-#12 0.645 > next build
-#12 0.645
-#12 0.938 You are using Node.js 18.20.5. For Next.js, Node.js version ">=20.9.0" is required.
+#12 0.778 npm warn config production Use `--omit=dev` instead.
+#12 0.825
+#12 0.825 > web@0.1.0 build
+#12 0.825 > next build
+#12 0.825
+#12 2.973 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#12 2.974 This information is used to shape Next.js' roadmap and prioritize features.
+#12 2.974 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#12 2.974 https://nextjs.org/telemetry
+#12 2.974
+#12 3.003 ▲ Next.js 16.1.3 (Turbopack)
+#12 3.003
+#12 3.011 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+#12 3.104   Creating an optimized production build ...
+#12 25.60 ✓ Compiled successfully in 21.6s
+#12 25.64   Running TypeScript ...
+#12 38.82 Failed to compile.
+#12 38.82
+#12 38.82 ./src/app/(dashboard)/customers/[id]/page.tsx:1:32
+#12 38.82 Type error: Cannot find module './page_client' or its corresponding type declarations.
+#12 38.82
+#12 38.82 [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m [33mCustomerDetailPage[39m [36mfrom[39m [32m"./page_client"[39m[33m;[39m [90m// We will rename the file to page_client.tsx effectively or just put content here.[39m
+#12 38.82  [90m   |[39m                                [31m[1m^[22m[39m
+#12 38.82  [90m 2 |[39m [90m// Wait, Next.js App Router: [id]/page.tsx is the page. [39m
+#12 38.82  [90m 3 |[39m [90m// I will write the content directly.[39m
+#12 38.82  [90m 4 |[39m[0m
+#12 39.02 Next.js build worker exited with code: 1 and signal: null
 #12 ERROR: process "/bin/bash -ol pipefail -c npm run build" did not complete successfully: exit code: 1
 ------
 > [stage-0  8/10] RUN --mount=type=cache,id=KBJiPX57Xfg-next/cache,target=/app/.next/cache --mount=type=cache,id=KBJiPX57Xfg-node_modules/cache,target=/app/node_modules/.cache npm run build:
-0.595 npm warn config production Use `--omit=dev` instead.
-0.645
-0.645 > web@0.1.0 build
-0.645 > next build
-0.645
-0.938 You are using Node.js 18.20.5. For Next.js, Node.js version ">=20.9.0" is required.
+38.82
+38.82 ./src/app/(dashboard)/customers/[id]/page.tsx:1:32
+38.82 Type error: Cannot find module './page_client' or its corresponding type declarations.
+38.82
+38.82 [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m [33mCustomerDetailPage[39m [36mfrom[39m [32m"./page_client"[39m[33m;[39m [90m// We will rename the file to page_client.tsx effectively or just put content here.[39m
+38.82  [90m   |[39m                                [31m[1m^[22m[39m
+38.82  [90m 2 |[39m [90m// Wait, Next.js App Router: [id]/page.tsx is the page. [39m
+38.82  [90m 3 |[39m [90m// I will write the content directly.[39m
+38.82  [90m 4 |[39m[0m
+39.02 Next.js build worker exited with code: 1 and signal: null
 ------
 [33m3 warnings found (use docker --debug to expand):
 [0m - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "SUPABASE_SERVICE_ROLE_KEY") (line 11)

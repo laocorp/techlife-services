@@ -1,6 +1,3 @@
-import CustomerDetailPage from "./page_client"; // We will rename the file to page_client.tsx effectively or just put content here.
-// Wait, Next.js App Router: [id]/page.tsx is the page. 
-// I will write the content directly.
 
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
