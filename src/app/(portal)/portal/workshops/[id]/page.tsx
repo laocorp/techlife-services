@@ -1,22 +1,7 @@
 // ... imports
 import Image from 'next/image'
 
-// ... (in the products loop)
-{
-    (product.images && product.images.length > 0) || product.image_url ? (
-        <div className="relative w-full h-full">
-            <Image
-                src={product.images?.[0] || product.image_url}
-                alt={product.name}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-        </div>
-    ) : (
-    <ImageIcon className="h-10 w-10 text-slate-300" />
-)
-}
+
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -270,12 +255,15 @@ export default async function WorkshopProfilePage({
                             <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-slate-200 flex flex-col">
                                 <div className="aspect-square bg-slate-100 relative overflow-hidden flex items-center justify-center">
                                     {(product.images && product.images.length > 0) || product.image_url ? (
-                                        /* eslint-disable-next-line @next/next/no-img-element */
-                                        <img
-                                            src={product.images?.[0] || product.image_url}
-                                            alt={product.name}
-                                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                                        />
+                                        <div className="relative w-full h-full">
+                                            <Image
+                                                src={product.images?.[0] || product.image_url}
+                                                alt={product.name}
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        </div>
                                     ) : (
                                         <ImageIcon className="h-10 w-10 text-slate-300" />
                                     )}
