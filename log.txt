@@ -265,8 +265,8 @@ Receiving objects:  55% (131/237)
 Receiving objects:  56% (133/237)
 Receiving objects:  57% (136/237)
 Receiving objects:  58% (138/237)
-remote: Total 237 (delta 31), reused 221 (delta 26), pack-reused 0 (from 0)
 Receiving objects:  59% (140/237)
+remote: Total 237 (delta 31), reused 218 (delta 26), pack-reused 0 (from 0)
 Receiving objects:  60% (143/237)
 Receiving objects:  61% (145/237)
 Receiving objects:  62% (147/237)
@@ -308,12 +308,13 @@ Receiving objects:  97% (230/237)
 Receiving objects:  98% (233/237)
 Receiving objects:  99% (235/237)
 Receiving objects: 100% (237/237)
-Receiving objects: 100% (237/237), 250.83 KiB | 8.65 MiB/s, done.
+Receiving objects: 100% (237/237), 245.81 KiB | 7.02 MiB/s, done.
 Resolving deltas:   0% (0/31)
 Resolving deltas:   3% (1/31)
 Resolving deltas:   6% (2/31)
 Resolving deltas:   9% (3/31)
 Resolving deltas:  12% (4/31)
+Resolving deltas:  16% (5/31)
 Resolving deltas:  19% (6/31)
 Resolving deltas:  22% (7/31)
 Resolving deltas:  25% (8/31)
@@ -322,11 +323,9 @@ Resolving deltas:  32% (10/31)
 Resolving deltas:  35% (11/31)
 Resolving deltas:  38% (12/31)
 Resolving deltas:  41% (13/31)
-Resolving deltas:  45% (14/31)
 Resolving deltas:  48% (15/31)
-Resolving deltas:  51% (16/31)
-Resolving deltas:  54% (17/31)
 Resolving deltas:  58% (18/31)
+Resolving deltas:  61% (19/31)
 Resolving deltas:  64% (20/31)
 Resolving deltas:  67% (21/31)
 Resolving deltas:  70% (22/31)
@@ -335,7 +334,6 @@ Resolving deltas:  77% (24/31)
 Resolving deltas:  80% (25/31)
 Resolving deltas:  83% (26/31)
 Resolving deltas:  87% (27/31)
-Resolving deltas:  90% (28/31)
 Resolving deltas:  93% (29/31)
 Resolving deltas:  96% (30/31)
 Resolving deltas: 100% (31/31)
@@ -358,12 +356,12 @@ Starting nixpacks build...
 #2 DONE 0.4s
 #3 [internal] load .dockerignore
 #3 transferring context: 2B done
-#3 DONE 0.1s
+#3 DONE 0.0s
 #4 [stage-0  1/10] FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
 #4 DONE 0.0s
 #5 [internal] load build context
-#5 transferring context: 1.30MB 0.1s done
-#5 DONE 0.2s
+#5 transferring context: 1.27MB 0.1s done
+#5 DONE 0.1s
 #6 [stage-0  2/10] WORKDIR /app/
 #6 CACHED
 #7 [stage-0  3/10] COPY .nixpacks/nixpkgs-23f9169c4ccce521379e602cc82ed873a1f1b52b.nix .nixpacks/nixpkgs-23f9169c4ccce521379e602cc82ed873a1f1b52b.nix
@@ -373,60 +371,60 @@ Starting nixpacks build...
 #9 [stage-0  5/10] COPY . /app/.
 #9 DONE 0.2s
 #10 [stage-0  6/10] RUN --mount=type=cache,id=KBJiPX57Xfg-/root/npm,target=/root/.npm npm ci
-#10 1.353 npm warn config production Use `--omit=dev` instead.
-#10 30.12
-#10 30.12 added 637 packages, and audited 638 packages in 29s
-#10 30.12
-#10 30.12 196 packages are looking for funding
-#10 30.12   run `npm fund` for details
-#10 30.12
-#10 30.12 found 0 vulnerabilities
-#10 DONE 30.8s
+#10 1.116 npm warn config production Use `--omit=dev` instead.
+#10 27.29
+#10 27.29 added 637 packages, and audited 638 packages in 26s
+#10 27.29
+#10 27.29 196 packages are looking for funding
+#10 27.29   run `npm fund` for details
+#10 27.29
+#10 27.29 found 0 vulnerabilities
+#10 DONE 27.8s
 #11 [stage-0  7/10] COPY . /app/.
 #11 DONE 0.5s
 #12 [stage-0  8/10] RUN --mount=type=cache,id=KBJiPX57Xfg-next/cache,target=/app/.next/cache --mount=type=cache,id=KBJiPX57Xfg-node_modules/cache,target=/app/node_modules/.cache npm run build
-#12 0.957 npm warn config production Use `--omit=dev` instead.
-#12 1.011
-#12 1.011 > web@0.1.0 build
-#12 1.011 > next build
-#12 1.011
-#12 3.548 ▲ Next.js 16.1.3 (Turbopack)
-#12 3.549
-#12 3.557 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
-#12 3.645   Creating an optimized production build ...
-#12 26.87 ✓ Compiled successfully in 22.1s
-#12 26.90   Running TypeScript ...
-#12 40.07 Failed to compile.
-#12 40.07
-#12 40.07 ./src/app/(portal)/portal/workshops/[id]/page.tsx:6:6
-#12 40.07 Type error: Cannot find name 'product'.
-#12 40.07
-#12 40.07 [0m [90m 4 |[39m [90m// ... (in the products loop)[39m
-#12 40.07  [90m 5 |[39m {
-#12 40.07 [31m[1m>[22m[39m[90m 6 |[39m     (product[33m.[39mimages [33m&&[39m product[33m.[39mimages[33m.[39mlength [33m>[39m [35m0[39m) [33m||[39m product[33m.[39mimage_url [33m?[39m (
-#12 40.07  [90m   |[39m      [31m[1m^[22m[39m
-#12 40.07  [90m 7 |[39m         [33m<[39m[33mdiv[39m className[33m=[39m[32m"relative w-full h-full"[39m[33m>[39m
-#12 40.07  [90m 8 |[39m             [33m<[39m[33mImage[39m
-#12 40.07  [90m 9 |[39m                 src[33m=[39m{product[33m.[39mimages[33m?[39m[33m.[39m[[35m0[39m] [33m||[39m product[33m.[39mimage_url}[0m
-#12 40.43 Next.js build worker exited with code: 1 and signal: null
+#12 0.784 npm warn config production Use `--omit=dev` instead.
+#12 0.826
+#12 0.826 > web@0.1.0 build
+#12 0.826 > next build
+#12 0.826
+#12 2.944 ▲ Next.js 16.1.3 (Turbopack)
+#12 2.945
+#12 2.950 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+#12 3.147   Creating an optimized production build ...
+#12 25.09 ✓ Compiled successfully in 20.9s
+#12 25.14   Running TypeScript ...
+#12 42.57 Failed to compile.
+#12 42.57
+#12 42.57 ./src/app/(portal)/portal/workshops/[id]/page.tsx:22:31
+#12 42.57 Type error: Cannot find name 'cookies'.
+#12 42.57
+#12 42.57 [0m [90m 20 |[39m     [32m'use server'[39m
+#12 42.57  [90m 21 |[39m     [36mconst[39m tenantId [33m=[39m formData[33m.[39m[36mget[39m([32m'tenantId'[39m) [36mas[39m string
+#12 42.57 [31m[1m>[22m[39m[90m 22 |[39m     [36mconst[39m cookieStore [33m=[39m [36mawait[39m cookies()
+#12 42.57  [90m    |[39m                               [31m[1m^[22m[39m
+#12 42.57  [90m 23 |[39m     [36mconst[39m supabase [33m=[39m createClient(cookieStore)
+#12 42.57  [90m 24 |[39m     [36mconst[39m { data[33m:[39m { user } } [33m=[39m [36mawait[39m supabase[33m.[39mauth[33m.[39mgetUser()
+#12 42.57  [90m 25 |[39m[0m
+#12 42.87 Next.js build worker exited with code: 1 and signal: null
 #12 ERROR: process "/bin/bash -ol pipefail -c npm run build" did not complete successfully: exit code: 1
 ------
 > [stage-0  8/10] RUN --mount=type=cache,id=KBJiPX57Xfg-next/cache,target=/app/.next/cache --mount=type=cache,id=KBJiPX57Xfg-node_modules/cache,target=/app/node_modules/.cache npm run build:
-40.07 Type error: Cannot find name 'product'.
-40.07
-40.07 [0m [90m 4 |[39m [90m// ... (in the products loop)[39m
-40.07  [90m 5 |[39m {
-40.07 [31m[1m>[22m[39m[90m 6 |[39m     (product[33m.[39mimages [33m&&[39m product[33m.[39mimages[33m.[39mlength [33m>[39m [35m0[39m) [33m||[39m product[33m.[39mimage_url [33m?[39m (
-40.07  [90m   |[39m      [31m[1m^[22m[39m
-40.07  [90m 7 |[39m         [33m<[39m[33mdiv[39m className[33m=[39m[32m"relative w-full h-full"[39m[33m>[39m
-40.07  [90m 8 |[39m             [33m<[39m[33mImage[39m
-40.07  [90m 9 |[39m                 src[33m=[39m{product[33m.[39mimages[33m?[39m[33m.[39m[[35m0[39m] [33m||[39m product[33m.[39mimage_url}[0m
-40.43 Next.js build worker exited with code: 1 and signal: null
+42.57 Type error: Cannot find name 'cookies'.
+42.57
+42.57 [0m [90m 20 |[39m     [32m'use server'[39m
+42.57  [90m 21 |[39m     [36mconst[39m tenantId [33m=[39m formData[33m.[39m[36mget[39m([32m'tenantId'[39m) [36mas[39m string
+42.57 [31m[1m>[22m[39m[90m 22 |[39m     [36mconst[39m cookieStore [33m=[39m [36mawait[39m cookies()
+42.57  [90m    |[39m                               [31m[1m^[22m[39m
+42.57  [90m 23 |[39m     [36mconst[39m supabase [33m=[39m createClient(cookieStore)
+42.57  [90m 24 |[39m     [36mconst[39m { data[33m:[39m { user } } [33m=[39m [36mawait[39m supabase[33m.[39mauth[33m.[39mgetUser()
+42.57  [90m 25 |[39m[0m
+42.87 Next.js build worker exited with code: 1 and signal: null
 ------
 [33m3 warnings found (use docker --debug to expand):
-[0m - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "SUPABASE_SERVICE_ROLE_KEY") (line 12)
+[0m - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "SUPABASE_SERVICE_ROLE_KEY") (line 11)
+- SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "SUPABASE_SERVICE_ROLE_KEY") (line 12)
 - UndefinedVar: Usage of undefined variable '$NIXPACKS_PATH' (line 18)
-- SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "SUPABASE_SERVICE_ROLE_KEY") (line 11)
 Dockerfile:24
 --------------------
 |     # build phase
