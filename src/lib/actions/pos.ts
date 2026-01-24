@@ -129,6 +129,8 @@ export async function createPosOrderAction(data: PosOrderData) {
 
     revalidatePath('/pos')
     revalidatePath('/inventory')
+    revalidatePath('/finance')
+    revalidatePath('/dashboard/finance')
 
     return { success: true, orderId: order.id }
 }

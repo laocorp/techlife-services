@@ -73,7 +73,13 @@ export async function getRevenueChartDataAction() {
         .select('amount, created_at')
         .eq('tenant_id', tenantId)
         .gte('created_at', sevenDaysAgo.toISOString())
-        .order('created_at', { ascending: true })
+
+    const { data: sales } = await supabase
+        .from('sales_orders')
+        .select('total_amount, created_at')
+        .eq('tenant_id', tenantId)
+        .eq('payment_status', 'paid')
+        .gte('created_at', sevenDaysAgo.toISOString())
 
     // Aggregate by day
     const chartData = []
@@ -82,12 +88,16 @@ export async function getRevenueChartDataAction() {
         d.setDate(d.getDate() + i)
         const dateStr = d.toISOString().split('T')[0] // YYYY-MM-DD
 
-        const dayTotal = (payments || [])
+        const dayServiceTotal = (payments || [])
             .filter(p => p.created_at.startsWith(dateStr))
             .reduce((sum, p) => sum + p.amount, 0)
 
+        const daySalesTotal = (sales || [])
+            .filter(s => s.created_at.startsWith(dateStr))
+            .reduce((sum, s) => sum + s.total_amount, 0)
+
         const dayName = d.toLocaleDateString('es-ES', { weekday: 'short' })
-        chartData.push({ date: dayName, revenue: dayTotal })
+        chartData.push({ date: dayName, revenue: dayServiceTotal + daySalesTotal })
     }
 
     return chartData

@@ -55,11 +55,14 @@ async function connectToWorkshop(formData: FormData) {
 }
 
 export default async function WorkshopProfilePage({
-    params
+    params,
+    searchParams
 }: {
     params: Promise<{ id: string }>
+    searchParams: Promise<{ q?: string; category?: string }>
 }) {
     const { id } = await params
+    const { q, category } = await searchParams
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
     const { data: { user } } = await supabase.auth.getUser()

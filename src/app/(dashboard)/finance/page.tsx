@@ -1,12 +1,15 @@
 import { getDailyIncomeAction } from '@/lib/actions/finance'
+import { getRevenueChartDataAction } from '@/lib/actions/bi'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, CreditCard, Banknote, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import RevenueChart from '@/components/features/bi/RevenueChart'
 
 export default async function FinancePage() {
     const today = new Date()
     const { total, breakdown } = await getDailyIncomeAction(today)
+    const chartData = await getRevenueChartDataAction()
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
@@ -50,17 +53,17 @@ export default async function FinancePage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            ${((breakdown.card || 0) + (breakdown.transfer || 0)).toFixed(2)}
+                            ${((breakdown.card || 0) + (breakdown.transfer || 0) + (breakdown.pos_web || 0)).toFixed(2)}
                         </div>
-                        <div className="text-xs text-slate-500 mt-1">Tarjeta + Transferencia</div>
+                        <div className="text-xs text-slate-500 mt-1">Tarjeta + Transferencia + Web/POS</div>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Todo: Add History Table or Charts here later */}
-            <div className="bg-slate-50 border rounded-lg p-8 text-center text-slate-500">
-                <Calendar className="h-10 w-10 mx-auto mb-2 text-slate-300" />
-                <p>Próximamente: Historial completo de ingresos y filtros por fecha.</p>
+            {/* Revenue Chart */}
+            <div className="bg-white border rounded-lg p-6 shadow-sm">
+                <h2 className="text-lg font-bold text-slate-900 mb-4">Tendencia de Ingresos</h2>
+                <RevenueChart data={chartData} />
             </div>
         </div>
     )
