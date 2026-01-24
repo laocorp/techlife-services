@@ -155,7 +155,7 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
                 </div>
                 <div className="bg-red-50 p-3 rounded-lg border border-red-100">
                     <div className="text-xs text-red-600 uppercase font-bold">Pendiente</div>
-                    <div className="text-xl font-bold text-red-700">${balance.gt(0) ? balance.toFixed(2) : '0.00'}</div>
+                    <div className="text-xl font-bold text-red-700">${balance > 0 ? balance.toFixed(2) : '0.00'}</div>
                 </div>
             </div>
 
@@ -204,8 +204,4 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
     )
 }
 
-// Helper for Balance calculation display since toFixed might behave oddly with negatives if not handled, 
-// though logic above handles it.
-// Added a small .gt(0) check replacement naturally in the JSX logic: Math.max(0, balance)
-Number.prototype.gt = function (n: number) { return this > n }
-declare global { interface Number { gt(n: number): boolean; } }
+
