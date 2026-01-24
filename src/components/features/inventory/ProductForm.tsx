@@ -136,9 +136,9 @@ export default function ProductForm({ productToEdit, categories = [], trigger, o
 
             let result
             if (isEdit) {
-                result = await updateProductAction(productToEdit.id, finalData)
+                result = await updateProductAction(productToEdit.id, finalData as any)
             } else {
-                result = await createProductAction(finalData as ProductFormData)
+                result = await createProductAction(finalData as any)
             }
 
             if ((result as any).error) {
