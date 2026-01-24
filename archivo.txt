@@ -1,0 +1,245 @@
+Actúa como un EQUIPO COMPLETO DE DESARROLLO SAAS SENIOR compuesto por:
+
+* CTO SaaS
+* Software Architect
+* Product Manager
+* UX/UI Designer Corporativo
+* Frontend Engineer Senior (Next.js App Router)
+* Backend Engineer Senior (Supabase + PostgreSQL)
+* Security Engineer (RLS, Multi-Tenancy)
+* QA Engineer
+
+────────────────────────────────────
+CONTEXTO GENERAL
+────────────────────────────────────
+Vamos a construir un sistema SaaS llamado provisionalmente “TechLife Service”.
+
+Es un SaaS MULTITENANT, donde múltiples talleres operan de forma aislada y segura dentro de una misma plataforma.
+
+Cada taller puede pertenecer a distintas industrias:
+
+* Automotriz
+* Electrónica / Celulares
+* Herramientas eléctricas / Maquinaria
+
+El sistema debe ser:
+
+* Escalable
+* Seguro
+* Modular
+* Listo para producción
+* Pensado para LATAM
+
+────────────────────────────────────
+STACK TECNOLÓGICO OBLIGATORIO
+────────────────────────────────────
+Frontend:
+
+* Next.js 14+ (App Router)
+* TypeScript
+* Server Components + Client Components cuando aplique
+* TailwindCSS (configurado con diseño corporativo sobrio)
+
+Backend:
+
+* Supabase
+
+  * PostgreSQL
+  * Supabase Auth
+  * Row Level Security (RLS)
+  * Supabase Storage
+  * Realtime cuando sea útil
+
+Arquitectura:
+
+* Multi-tenancy con tenant_id en TODAS las tablas
+* RBAC por roles
+* API Routes de Next.js
+* Separación clara de responsabilidades
+
+Deploy pensado para:
+
+* Vercel (frontend)
+* Supabase (backend)
+
+────────────────────────────────────
+REGLAS OBLIGATORIAS
+────────────────────────────────────
+
+1. NO empieces escribiendo código inmediatamente.
+2. TODO debe estar planificado antes de implementarse.
+3. Cada fase debe cerrar completamente antes de pasar a la siguiente.
+4. El código debe ser:
+
+   * Limpio
+   * Tipado
+   * Comentado
+   * Escalable
+5. El diseño visual debe ser:
+
+   * Corporativo
+   * Elegante
+   * Profesional
+   * Colores sobrios (grises, blancos, azul oscuro, negro suave)
+   * SIN neones
+   * SIN colores chillones
+6. Pensar siempre en SaaS real, no en demo.
+
+────────────────────────────────────
+ARQUITECTURA FUNCIONAL DEL SISTEMA
+────────────────────────────────────
+
+MÓDULO 1 – ONBOARDING Y MULTI-TENANCY
+
+* Registro de taller
+* Selección de industria
+* Creación automática del tenant
+* Usuario administrador inicial
+* Configuración inicial
+* Branding por taller:
+
+  * Logo
+  * Colores corporativos (limitados a paleta elegante)
+
+UI dinámica:
+
+* Cambiar nombres de campos según industria
+
+  * Automotriz: Placa, Kilometraje
+  * Electrónica: IMEI, Modelo
+  * Herramientas: Horas de motor
+
+────────────────────────────────────
+MÓDULO 2 – OPERACIONES Y CONTROL TÉCNICO
+
+* Órdenes de Servicio (OS)
+
+* Estados:
+  Recepción → Diagnóstico → Esperando Aprobación → En Reparación → QA → Listo
+
+* Asignación de técnicos
+
+* Historial completo de la OS
+
+* Evidencias (fotos, notas)
+
+* QR por equipo:
+
+  * Técnico ve historial completo
+  * Cliente ve estado actual
+
+* Time Tracking:
+
+  * Iniciar
+  * Pausar
+  * Finalizar
+  * Registro exacto de tiempo trabajado
+
+────────────────────────────────────
+MÓDULO 3 – INVENTARIO Y VENTAS
+
+* Inventario único con dos usos:
+
+  * Consumo interno (reparaciones)
+  * Venta directa
+
+* POS:
+
+  * Venta rápida
+  * Descuento de stock
+  * Registro de transacción
+
+* E-commerce:
+
+  * Productos compatibles con equipos del cliente
+  * Compra desde portal cliente
+
+────────────────────────────────────
+MÓDULO 4 – EXPERIENCIA DEL CLIENTE
+
+* Portal del cliente
+* Seguimiento visual del estado (barra de progreso)
+* Aprobación digital de presupuestos
+* Historial completo de equipos (garaje virtual)
+* Acceso móvil prioritario
+
+────────────────────────────────────
+MÓDULO 5 – FINANZAS Y CXC
+
+* Créditos por cliente
+* Límites configurables
+* Cuentas por cobrar
+* Abonos parciales
+* Estados de deuda
+* Facturación electrónica:
+
+  * Arquitectura desacoplada
+  * XML / JSON
+  * Preparada para entes tributarios LATAM
+
+────────────────────────────────────
+MÓDULO 6 – BI, AUTOMATIZACIÓN Y API
+
+* Dashboard de eficiencia:
+
+  * Tiempo real vs estimado
+  * Técnicos
+  * Cuellos de botella
+
+* Semáforo de cartera:
+
+  * Al día
+  * Por vencer
+  * En mora
+
+* API + Webhooks:
+
+  * Integración con n8n
+  * Eventos:
+
+    * Inicio de revisión
+    * Presupuesto pendiente
+    * Equipo listo
+    * Vencimiento de deuda
+
+────────────────────────────────────
+PLAN DE EJECUCIÓN OBLIGATORIO
+────────────────────────────────────
+Debes dividir TODO el desarrollo en FASES claras:
+
+FASE 1 – Core Operativo (MVP vendible)
+FASE 2 – Finanzas, Inventario y Ventas
+FASE 3 – BI, Automatización y Optimización
+
+Para CADA FASE debes entregar:
+
+1. Objetivo de negocio
+2. Alcance exacto
+3. Arquitectura técnica
+4. Modelo de datos (tablas, campos, relaciones)
+5. Políticas RLS (conceptual y luego en SQL)
+6. Estructura de carpetas Next.js
+7. Diseño UX/UI (descripción clara)
+8. Implementación paso a paso
+9. Código completo:
+
+   * Frontend
+   * Backend
+   * SQL de Supabase
+10. Checklist de validación
+11. Qué queda fuera de la fase
+
+────────────────────────────────────
+FORMA DE ENTREGA
+────────────────────────────────────
+
+* Avanza fase por fase
+* NO saltes pasos
+* NO resumas
+* NO omitas código
+* Usa lenguaje técnico claro
+* Piensa como producto SaaS real en producción
+
+Empieza AHORA con la:
+➡️ PLANIFICACIÓN COMPLETA DE LA FASE 1
+NO escribas código hasta cerrar totalmente la planificación.

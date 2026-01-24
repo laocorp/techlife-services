@@ -1,0 +1,97 @@
+'use server'
+
+import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
+import { revalidatePath } from 'next/cache'
+
+export async function registerPaymentAction(data: {
+    orderId: string
+    amount: number
+    method: 'cash' | 'card' | 'transfer' | 'other'
+    notes?: string
+}) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    // Get tenant
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user.id)
+        .single()
+
+    if (!profile?.tenant_id) throw new Error('Usuario sin taller asignado')
+
+    const { error } = await supabase
+        .from('payments')
+        .insert({
+            tenant_id: profile.tenant_id,
+            service_order_id: data.orderId,
+            amount: data.amount,
+            method: data.method,
+            notes: data.notes,
+            created_by: user.id
+        })
+
+    if (error) {
+        console.error('Error registering payment:', error)
+        return { error: 'No se pudo registrar el pago.' }
+    }
+
+    revalidatePath(`/orders/${data.orderId}`)
+    return { success: true }
+}
+
+export async function getOrderPaymentsAction(orderId: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data, error } = await supabase
+        .from('payments')
+        .select(`
+            *,
+            profiles (full_name)
+        `)
+        .eq('service_order_id', orderId)
+        .order('created_at', { ascending: false })
+
+    if (error) {
+        console.error('Error fetching payments:', error)
+        return []
+    }
+
+    return data
+}
+
+export async function getDailyIncomeAction(date: Date) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    // Start/End of day
+    const start = new Date(date)
+    start.setHours(0, 0, 0, 0)
+    const end = new Date(date)
+    end.setHours(23, 59, 59, 999)
+
+    const { data, error } = await supabase
+        .from('payments')
+        .select('amount, method')
+        .gte('created_at', start.toISOString())
+        .lte('created_at', end.toISOString())
+
+    if (error) {
+        console.error('Error fetching daily income:', error)
+        return { total: 0, breakdown: {} }
+    }
+
+    const total = data.reduce((sum, p) => sum + p.amount, 0)
+    const breakdown = data.reduce((acc: any, p) => {
+        acc[p.method] = (acc[p.method] || 0) + p.amount
+        return acc
+    }, {})
+
+    return { total, breakdown }
+}
