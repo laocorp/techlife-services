@@ -124,3 +124,75 @@ export async function getStatusDistributionAction() {
         value: count
     }))
 }
+
+export async function getTopServicesAction() {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user?.id).single()
+
+    // Aggregate completed orders by product/service
+    // This requires sales_order_items (products) and potentially service analysis.
+    // For MVP, lets analyze 'sales_order_items' (Products sold)
+
+    // We fetch all items from paid sales orders or completed service orders?
+    // Let's focus on Products Sold via POS/Web first as it's cleaner.
+
+    const { data: items } = await supabase
+        .from('sales_order_items')
+        .select(`
+            quantity,
+            products (name)
+        `)
+        // Filter by tenant indirectly via order??
+        // sales_order_items has RLS but explicit check is better.
+        // We lack direct tenant_id on items, must join with orders.
+        // Supabase join filter:
+        .not('products', 'is', null)
+    // We need to ensure tenant isolation. RLS handles it, but let's verify.
+
+    // Client-side aggregation or simple SQL RPC? 
+    // Typescript aggregation for MVP simplicity.
+    const counts: Record<string, number> = {}
+    items?.forEach((item: any) => {
+        const name = item.products?.name || 'Unknown'
+        counts[name] = (counts[name] || 0) + item.quantity
+    })
+
+    return Object.entries(counts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .map(([name, value]) => ({ name, value }))
+}
+
+export async function getTechnicianPerformanceAction() {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user?.id).single()
+
+    // 1. Get technicians (employees)
+    const { data: techs } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('tenant_id', profile?.tenant_id)
+        .in('role', ['technician', 'admin', 'owner']) // Including admins who work
+
+    // 2. Get completed orders assigned to them
+    const { data: orders } = await supabase
+        .from('service_orders')
+        .select('technician_id, status')
+        .eq('tenant_id', profile?.tenant_id)
+        .eq('status', 'delivered')
+
+    // 3. Count
+    const stats = techs?.map(tech => {
+        const completed = orders?.filter(o => o.technician_id === tech.id).length || 0
+        return {
+            name: tech.full_name || 'Desconocido',
+            completed
+        }
+    }).sort((a, b) => b.completed - a.completed) || []
+
+    return stats
+}

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { LayoutDashboard, Users, Wrench, Package, Settings, LogOut, DollarSign } from 'lucide-react'
+import { LayoutDashboard, Users, Wrench, Package, Settings, LogOut, DollarSign, BarChart2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -48,6 +48,11 @@ export default async function DashboardLayout({
                     <Link href="/finance" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
                         <DollarSign className="h-5 w-5" />
                         Finanzas
+                    </Link>
+
+                    <Link href="/analytics" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                        <BarChart2 className="h-5 w-5" />
+                        Analítica
                     </Link>
 
                     <Link href="/pos" className="flex items-center gap-3 px-4 py-3 text-emerald-400 font-bold bg-emerald-950/30 hover:bg-emerald-900/50 rounded-md transition-colors border border-emerald-900/50 mt-2">
