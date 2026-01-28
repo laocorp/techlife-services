@@ -8,9 +8,22 @@ export async function getProductsAction(term?: string) {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
+    // Security: Verify user and tenant
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user.id)
+        .single()
+
+    if (!profile?.tenant_id) return []
+
     let query = supabase
         .from('products')
         .select('*')
+        .eq('tenant_id', profile.tenant_id) // Force tenant isolation
         .order('name')
 
     if (term) {
@@ -31,10 +44,23 @@ export async function getProductByIdAction(id: string) {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
+    // Security: Verify user and tenant
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user.id)
+        .single()
+
+    if (!profile?.tenant_id) return null
+
     const { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('id', id)
+        .eq('tenant_id', profile.tenant_id) // Force tenant isolation
         .single()
 
     if (error) {
@@ -147,10 +173,23 @@ export async function updateProductAction(id: string, data: Partial<ProductFormD
         images: data.images
     }
 
+    // Security: Verify user and tenant
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
+
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user.id)
+        .single()
+
+    if (!profile?.tenant_id) return { error: 'Unauthorized' }
+
     const { error } = await supabase
         .from('products')
         .update(updateData)
         .eq('id', id)
+        .eq('tenant_id', profile.tenant_id) // Force tenant isolation
 
     if (error) {
         console.error('Error updating product:', error)
@@ -223,11 +262,21 @@ export async function getInventoryHistoryAction(productId: string) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return []
 
+    // 0. Get Tenant ID Security Check
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user.id)
+        .single()
+
+    if (!profile?.tenant_id) return []
+
     // 1. Fetch movements first (Critical Data)
     const { data: movements, error: moveError } = await supabase
         .from('inventory_movements')
         .select('*')
         .eq('product_id', productId)
+        .eq('tenant_id', profile.tenant_id) // Force tenant isolation
         .order('created_at', { ascending: false })
 
     if (moveError) {
@@ -276,7 +325,7 @@ export async function deleteProductAction(productId: string) {
     // 1. Get User Role
     const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, tenant_id')
         .eq('id', user.id)
         .single()
 
@@ -289,6 +338,7 @@ export async function deleteProductAction(productId: string) {
         .from('products')
         .delete()
         .eq('id', productId)
+        .eq('tenant_id', profile.tenant_id) // Force tenant isolation
 
     if (error) {
         console.error('Error deleting product:', error)
