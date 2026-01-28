@@ -114,18 +114,24 @@ export async function createPosOrderAction(data: PosOrderData) {
         })
     }
 
-    // 5. Register Payment in Finance (Optional but good practice)
-    // We already have 'payments' table from Phase 2 Finance.
-    await supabase.from('payments').insert({
+    // 5. Register Payment in Finance
+    // Now supporting sales_order_id via our new migration schema
+    // @ts-ignore - Database types might not be regenerated yet
+    const { error: paymentError } = await supabase.from('payments').insert({
         tenant_id: profile.tenant_id,
-        // service_order_id: ... wait, this links to service_orders, not ecommerce_orders.
-        // We might need to update payments table to support ecommerce_order_id or make it polymorphic.
-        // For now, we skip or add a TODO.
+        sales_order_id: order.id, // Linking to the Sales Order
+        service_order_id: null,   // Explicitly null for POS sales
         amount: totalAmount,
         method: data.paymentMethod,
         notes: `Venta POS #${order.id.slice(0, 8)}`,
         created_by: user.id
     })
+
+    if (paymentError) {
+        console.error('POS Payment Error:', paymentError)
+        // We don't fail the order if payment registration fails, but log it.
+        // In strict mode we might want to alert.
+    }
 
     revalidatePath('/pos')
     revalidatePath('/inventory')

@@ -1,7 +1,9 @@
 import { getDailyIncomeAction } from '@/lib/actions/finance'
 import { getRevenueChartDataAction } from '@/lib/actions/bi'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DollarSign, CreditCard, Banknote, Calendar } from 'lucide-react'
+import { DollarSign, CreditCard, Banknote, Calendar, BarChart3, Settings } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import RevenueChart from '@/components/features/bi/RevenueChart'
@@ -49,7 +51,19 @@ export default async function FinancePage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Bancos / Digital</CardTitle>
-                        <CreditCard className="h-4 w-4 text-blue-600" />
+                        <div className="flex gap-2">
+                            <Link href="/finance/reports">
+                                <Button variant="outline">
+                                    <BarChart3 className="mr-2 h-4 w-4" />
+                                    Reportes Detallados
+                                </Button>
+                            </Link>
+                            <Link href="/finance/settings">
+                                <Button variant="ghost" size="icon">
+                                    <Settings className="h-4 w-4" />
+                                </Button>
+                            </Link>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">

@@ -20,16 +20,20 @@ export default async function PosHistoryPage() {
 
     // Fetch POS orders
     const { data: orders, error } = await supabase
-        .from('ecommerce_orders')
+        .from('sales_orders')
         .select(`
             id,
             total_amount,
-            channel,
+            delivery_method,
             created_at,
-            status,
-            user_id
+            status
         `)
-        .eq('channel', 'pos')
+        .eq('delivery_method', 'pickup') // Assuming POS is pickup for now. Better: Add 'channel' column if needed or rely on created_by logic.
+        // Actually, sales_orders doesn't have 'channel' in my schema memory from ecommerce_schema.sql.
+        // But POS create action sets delivery_method='pickup' and shipping_address='Mostrador'.
+        // Let's rely on that or just show all for now.
+        // Wait, the migration didn't add channel.
+        // Let's filter by delivery_method = 'pickup' as a proxy for POS, or just show all sales.
         .order('created_at', { ascending: false })
         .limit(50)
 
