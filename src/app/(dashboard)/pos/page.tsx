@@ -6,7 +6,14 @@ import { createPosOrderAction, PosCartItem } from '@/lib/actions/pos'
 import ProductGrid from '@/components/features/pos/ProductGrid'
 import PosCart from '@/components/features/pos/PosCart'
 import { useToast } from '@/components/ui/use-toast'
-import { Loader2, History } from 'lucide-react'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog"
+import { Loader2, History, Plus, Search, Barcode, Printer, CheckCircle } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -19,6 +26,8 @@ export default function PosPage() {
     const [cart, setCart] = useState<PosCartItem[]>([])
     const [loading, setLoading] = useState(true)
     const [processing, setProcessing] = useState(false)
+    const [successOpen, setSuccessOpen] = useState(false)
+    const [lastOrderId, setLastOrderId] = useState<string | null>(null)
     const { toast } = useToast()
 
     useEffect(() => {
@@ -103,11 +112,9 @@ export default function PosPage() {
                 throw new Error(result.error)
             }
 
-            toast({
-                title: 'Alerta de venta',
-                description: `Venta registrada con éxito. ID: ${(result as any).orderId.slice(0, 8)}`,
-                className: "bg-green-500 text-white border-none"
-            })
+            // Success Handling
+            setLastOrderId((result as any).orderId)
+            setSuccessOpen(true)
 
             // Clear cart
             setCart([])
@@ -157,6 +164,43 @@ export default function PosPage() {
                     />
                 </div>
             </div>
+            {/* Success Dialog */}
+            <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+                <DialogContent className="sm:max-w-md text-center">
+                    <DialogHeader>
+                        <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4">
+                            <CheckCircle className="h-8 w-8 text-green-600" />
+                        </div>
+                        <DialogTitle className="text-center text-xl">¡Venta Exitosa!</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <p className="text-slate-600">
+                            La venta ha sido registrada correctamente.
+                        </p>
+                        <p className="font-mono font-bold mt-2">#{lastOrderId?.slice(0, 8)}</p>
+                    </div>
+                    <DialogFooter className="flex-col gap-3 sm:flex-col">
+                        <a
+                            href={`/print/sales/${lastOrderId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full"
+                        >
+                            <Button className="w-full h-12 text-lg gap-2" variant="outline">
+                                <Printer className="h-5 w-5" />
+                                Imprimir Recibo
+                            </Button>
+                        </a>
+                        <Button
+                            className="w-full h-12 text-lg bg-indigo-600 hover:bg-indigo-700"
+                            onClick={() => setSuccessOpen(false)}
+                        >
+                            <Plus className="h-5 w-5 mr-2" />
+                            Nueva Venta
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

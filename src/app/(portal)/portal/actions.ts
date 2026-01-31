@@ -55,13 +55,23 @@ export async function approveOrderAction(formData: FormData) {
     })
 
     // Create Notification for Workshop Staff
-    await supabase.from('notifications').insert({
-        tenant_id: tenantId,
-        title: `Reparación Aprobada: Orden #${folioId}`,
-        message: 'El cliente ha aprobado el presupuesto desde el portal. El equipo ya puede comenzar a trabajar.',
-        link: `/orders/${orderId}`,
-        is_read: false
-    })
+    // 1. Get all staff for this tenant securely using RPC (Bypasses RLS)
+    const { data: staffMembers } = await supabase
+        .rpc('get_tenant_staff_ids', { p_tenant_id: tenantId })
+
+    // 2. Notify each staff member
+    if (staffMembers && staffMembers.length > 0) {
+        const notifications = staffMembers.map((staff: any) => ({
+            user_id: staff.user_id, // RPC returns { user_id }
+            title: `Reparación Aprobada: Orden #${folioId}`,
+            message: 'El cliente ha aprobado el presupuesto desde el portal. El equipo ya puede comenzar a trabajar.',
+            link: `/orders/${orderId}`,
+            read: false,
+            type: 'success'
+        }))
+
+        await supabase.from('notifications').insert(notifications)
+    }
 
     revalidatePath(`/portal/orders/${orderId}`)
     revalidatePath('/portal/garage')

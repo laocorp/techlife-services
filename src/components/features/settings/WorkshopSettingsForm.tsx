@@ -151,6 +151,43 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
                         <Input id="city" name="city" defaultValue={tenant.city} />
                     </div>
 
+                    <div className="border-t pt-4">
+                        <h3 className="text-lg font-medium text-slate-900 mb-4 flex items-center gap-2">
+                            <Building2 className="h-5 w-5 text-slate-500" />
+                            Datos Bancarios (Para Transferencias)
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="bank_name">Banco</Label>
+                                <Input id="bank_name" name="bank_name" defaultValue={tenant.settings?.bank_account?.bank_name} placeholder="Ej. Banco Pichincha" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="account_type">Tipo de Cuenta</Label>
+                                <select
+                                    id="account_type"
+                                    name="account_type"
+                                    className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    defaultValue={tenant.settings?.bank_account?.account_type || 'Ahorros'}
+                                >
+                                    <option value="Ahorros">Ahorros</option>
+                                    <option value="Corriente">Corriente</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="account_number">Número de Cuenta</Label>
+                                <Input id="account_number" name="account_number" defaultValue={tenant.settings?.bank_account?.account_number} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="account_holder">Titular de la Cuenta</Label>
+                                <Input id="account_holder" name="account_holder" defaultValue={tenant.settings?.bank_account?.account_holder} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="holder_id">C.I. / RUC del Titular</Label>
+                                <Input id="holder_id" name="holder_id" defaultValue={tenant.settings?.bank_account?.holder_id} />
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="pt-2 flex justify-end">
                         <Button type="submit" disabled={loading}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

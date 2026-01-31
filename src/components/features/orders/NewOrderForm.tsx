@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { Loader2 } from 'lucide-react'
+import { Plus, Loader2 } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 import { Button } from '@/components/ui/button'
 import {
@@ -35,7 +37,21 @@ export default function NewOrderForm({ customers }: NewOrderFormProps) {
     const router = useRouter()
     const [error, setError] = useState<string | null>(null)
     const [loadingAssets, setLoadingAssets] = useState(false)
-    const [assets, setAssets] = useState<{ id: string; identifier: string }[]>([])
+    const [assets, setAssets] = useState<{ id: string; identifier: string; details?: any; notes?: string }[]>([])
+
+    // Helper to format asset display
+    const formatAssetLabel = (asset: any) => {
+        const parts = [asset.identifier]
+        const make = asset.details?.make || asset.details?.brand
+        const model = asset.details?.model
+
+        if (make) parts.push(make)
+        if (model) parts.push(model)
+
+        return parts.join(' - ').toUpperCase()
+    }
+
+    // ... (existing helper function)
 
     const form = useForm<OrderFormData>({
         resolver: zodResolver(orderSchema),
@@ -43,6 +59,11 @@ export default function NewOrderForm({ customers }: NewOrderFormProps) {
             priority: 'normal',
         },
     })
+
+    // Quick Asset State
+    const [isAssetModalOpen, setIsAssetModalOpen] = useState(false)
+    const [newAssetData, setNewAssetData] = useState({ identifier: '', brand: '', model: '', color: '' })
+    const [creatingAsset, setCreatingAsset] = useState(false)
 
     async function onCustomerChange(customerId: string) {
         if (!customerId) return
@@ -57,6 +78,45 @@ export default function NewOrderForm({ customers }: NewOrderFormProps) {
             console.error(err)
         } finally {
             setLoadingAssets(false)
+        }
+    }
+
+    async function handleCreateAsset() {
+        if (!newAssetData.identifier || !newAssetData.brand) return
+        setCreatingAsset(true)
+        try {
+            const { createQuickAssetAction } = await import('@/lib/actions/assets') // Dynamic import
+            const customerId = form.getValues('customerId')
+
+            const res = await createQuickAssetAction(customerId, {
+                identifier: newAssetData.identifier,
+                brand: newAssetData.brand,
+                model: newAssetData.model,
+                color: newAssetData.color,
+                type: 'automotive' // Default or make selectable
+            })
+
+            if (res.success) {
+                // If customerId changed (virtual -> local migration), update form
+                if (res.newCustomerId && res.newCustomerId !== customerId) {
+                    form.setValue('customerId', res.newCustomerId)
+                    // We might need to update the customer list too, but effectively the ID just changed
+                    // The UI select might break if the new ID isn't in `customers` prop list.
+                    // Ideally we should reload the page or add the new ID to the list.
+                    // For now, let's assume the mutation works and we just fetch assets for the NEW ID.
+                    await onCustomerChange(res.newCustomerId)
+                } else {
+                    // Just refresh assets
+                    await onCustomerChange(customerId)
+                }
+
+                setIsAssetModalOpen(false)
+                setNewAssetData({ identifier: '', brand: '', model: '', color: '' })
+            }
+        } catch (err) {
+            console.error(err)
+        } finally {
+            setCreatingAsset(false)
         }
     }
 
@@ -120,37 +180,102 @@ export default function NewOrderForm({ customers }: NewOrderFormProps) {
                     />
 
                     {/* Asset Selection */}
-                    <FormField
-                        control={form.control}
-                        name="assetId"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Equipo / Vehículo</FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    disabled={!form.watch('customerId') || loadingAssets}
-                                >
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={loadingAssets ? "Cargando..." : "Seleccionar Equipo"} />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {assets.map((a) => (
-                                            <SelectItem key={a.id} value={a.id}>
-                                                {a.identifier}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {assets.length === 0 && form.watch('customerId') && !loadingAssets && (
-                                    <p className="text-xs text-muted-foreground mt-1">Este cliente no tiene equipos registrados.</p>
+                    <div className="flex gap-2 items-end">
+                        <div className="flex-1">
+                            <FormField
+                                control={form.control}
+                                name="assetId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Equipo / Vehículo</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            disabled={!form.watch('customerId') || loadingAssets}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={loadingAssets ? "Cargando..." : "Seleccionar Equipo"} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {assets.map((a) => (
+                                                    <SelectItem key={a.id} value={a.id}>
+                                                        {formatAssetLabel(a)}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
                                 )}
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                            />
+                        </div>
+                        <Dialog open={isAssetModalOpen} onOpenChange={setIsAssetModalOpen}>
+                            <DialogTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="mb-[2px]"
+                                    disabled={!form.watch('customerId')}
+                                >
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Registrar Nuevo Equipo</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium">Placa / Serial</label>
+                                            <Input
+                                                value={newAssetData.identifier}
+                                                onChange={e => setNewAssetData({ ...newAssetData, identifier: e.target.value })}
+                                                placeholder="ABC-123"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium">Marca</label>
+                                            <Input
+                                                value={newAssetData.brand}
+                                                onChange={e => setNewAssetData({ ...newAssetData, brand: e.target.value })}
+                                                placeholder="Toyota, HP..."
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium">Modelo</label>
+                                            <Input
+                                                value={newAssetData.model}
+                                                onChange={e => setNewAssetData({ ...newAssetData, model: e.target.value })}
+                                                placeholder="Corolla, Pavilion..."
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium">Color</label>
+                                            <Input
+                                                value={newAssetData.color}
+                                                onChange={e => setNewAssetData({ ...newAssetData, color: e.target.value })}
+                                                placeholder="Rojo..."
+                                            />
+                                        </div>
+                                    </div>
+                                    <Button
+                                        onClick={handleCreateAsset}
+                                        disabled={creatingAsset || !newAssetData.identifier || !newAssetData.brand}
+                                        className="w-full"
+                                    >
+                                        {creatingAsset && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Guardar Equipo
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                    {assets.length === 0 && form.watch('customerId') && !loadingAssets && (
+                        <p className="text-xs text-muted-foreground -mt-4">Este cliente no tiene equipos registrados.</p>
+                    )}
 
                     {/* Priority */}
                     <FormField

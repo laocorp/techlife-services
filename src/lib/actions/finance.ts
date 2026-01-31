@@ -85,16 +85,8 @@ export async function getDailyIncomeAction(date: Date) {
 
     // Fetch Ecommerce Sales
     const { data: sales, error: salesError } = await supabase
-        .from('sales_orders')
-        .select('total_amount, delivery_method') // We could map delivery_method to payment method logic if stored?
-        // Actually sales_orders doesn't have a 'payment_method' column in my schema memory (it has delivery_method).
-        // POS sets payment_status='paid'. 
-        // We might need to assume 'cash' or 'card' for now, OR rely on a future 'payment_method' column on sales_orders.
-        // POS action didn't save the method to sales_orders, it only saved to 'payments' table?
-        // WAIT: In pos.ts, I commented out the 'payments' insert because of ID mismatch.
-        // So POS sales are currently NOT in 'payments' table.
-        // And 'sales_orders' table lacks 'payment_method' column in strict schema?
-        // Let's check schema. If missing, I'll default to 'other' or just count total.
+        .from('ecommerce_orders')
+        .select('total_amount, delivery_method')
         .eq('payment_status', 'paid')
         .gte('created_at', start.toISOString())
         .lte('created_at', end.toISOString())
@@ -157,7 +149,7 @@ export async function getIncomeHistoryAction(startDate: Date, endDate: Date) {
 
     // 2. Fetch Sales Orders (POS/Web)
     const { data: sales, error: salesError } = await supabase
-        .from('sales_orders')
+        .from('ecommerce_orders')
         .select('total_amount, created_at')
         .eq('tenant_id', profile.tenant_id)
         .or('payment_status.eq.paid,status.eq.completed,status.eq.delivered') // Ensure we catch paid orders

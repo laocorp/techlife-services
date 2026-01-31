@@ -1,16 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+import StoreOrderList from '@/components/features/pos/StoreOrderList'
 import { Badge } from '@/components/ui/badge'
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,22 +9,39 @@ export default async function PosHistoryPage() {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    // Fetch POS orders
+    // Fetch POS orders (Now stored in ecommerce_orders)
+    // We assume POS orders have 'pending' or 'delivered' status and shipping_address containing 'Mostrador' or similar marker,
+    // OR we just show all ecommerce orders for this tenant. 
+    // Given the single-db MVP, we filter by tenant if possible (but header check handles it for profiles).
+    // Let's rely on profiles RLS (which we set up for 'ecommerce_orders' to allow insert/select? No, we set 'Enable select for all' for ID check)
+    // Wait, check_policies.sql said "Enable select for all users" using (true).
+    // So we need to filter by tenant manually here or via RLS if we had a tenant-specific policy.
+    // Ideally we should have restricted RLS to tenant for "SELECT *". The current "using (true)" is risky for multi-tenant isolation if we don't filter.
+    // BUT for this fix: query 'ecommerce_orders' and potentially filter by some POS characteristic?
+    // ecommerce_orders has 'shipping_address' jsonb.
+    // For now, let's just show all orders for the current user's tenant?
+    // We need to fetch tenant_id first to be safe, or just query.
+
+    // Get Tenant ID Security Check
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user?.id)
+        .single()
+
+    if (!profile?.tenant_id) return <div>No autorizado</div>
+
     const { data: orders, error } = await supabase
-        .from('sales_orders')
+        .from('ecommerce_orders')
         .select(`
             id,
             total_amount,
-            delivery_method,
+            status,
             created_at,
-            status
+            payment_status
         `)
-        .eq('delivery_method', 'pickup') // Assuming POS is pickup for now. Better: Add 'channel' column if needed or rely on created_by logic.
-        // Actually, sales_orders doesn't have 'channel' in my schema memory from ecommerce_schema.sql.
-        // But POS create action sets delivery_method='pickup' and shipping_address='Mostrador'.
-        // Let's rely on that or just show all for now.
-        // Wait, the migration didn't add channel.
-        // Let's filter by delivery_method = 'pickup' as a proxy for POS, or just show all sales.
+        .eq('tenant_id', profile.tenant_id)
         .order('created_at', { ascending: false })
         .limit(50)
 
@@ -60,46 +68,7 @@ export default async function PosHistoryPage() {
                 <Badge variant="outline">Últimas 50 transacciones</Badge>
             </div>
 
-            <div className="bg-white rounded-lg border shadow-sm">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>ID Venta</TableHead>
-                            <TableHead>Fecha</TableHead>
-                            <TableHead>Monto</TableHead>
-                            <TableHead>Estado</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {orders.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={4} className="text-center py-10 text-slate-500">
-                                    No hay ventas registradas aún.
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            orders.map((order) => (
-                                <TableRow key={order.id}>
-                                    <TableCell className="font-mono text-xs">
-                                        {order.id.slice(0, 8)}
-                                    </TableCell>
-                                    <TableCell>
-                                        {format(new Date(order.created_at), 'dd MMM yyyy HH:mm', { locale: es })}
-                                    </TableCell>
-                                    <TableCell className="font-bold text-green-600">
-                                        ${order.total_amount.toFixed(2)}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant={order.status === 'delivered' ? 'default' : 'secondary'}>
-                                            {order.status === 'delivered' ? 'Completado' : order.status}
-                                        </Badge>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+            <StoreOrderList orders={orders} />
         </div>
     )
 }

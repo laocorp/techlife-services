@@ -4,6 +4,16 @@ import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
+export interface Webhook {
+    id: string
+    name: string
+    url: string
+    event_type: string
+    is_active: boolean
+    secret?: string
+    created_at: string
+}
+
 export async function getWebhooksAction() {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
@@ -11,37 +21,41 @@ export async function getWebhooksAction() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return []
 
-    // RLS handles tenant filtering
-    const { data: webhooks } = await supabase
+    const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+    if (!profile?.tenant_id) return []
+
+    const { data } = await supabase
         .from('webhooks')
         .select('*')
+        .eq('tenant_id', profile.tenant_id)
         .order('created_at', { ascending: false })
 
-    return webhooks || []
+    return data as Webhook[]
 }
 
-export async function createWebhookAction(data: { url: string; eventType: string; description: string }) {
+export async function createWebhookAction(data: { name: string, url: string, event_type: string, secret?: string }) {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Unauthorized')
+    if (!user) return { error: 'Unauthorized' }
 
-    // Get tenant
     const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
-    if (!profile?.tenant_id) throw new Error('No tenant found')
+
+    if (!profile?.tenant_id) return { error: 'No tenant' }
 
     const { error } = await supabase.from('webhooks').insert({
         tenant_id: profile.tenant_id,
+        name: data.name,
         url: data.url,
-        event_type: data.eventType,
-        description: data.description,
-        created_by: user.id
+        event_type: data.event_type,
+        secret: data.secret,
+        is_active: true
     })
 
     if (error) {
-        console.error('Error creating webhook:', error)
-        throw new Error('Failed to create webhook')
+        console.log("Create webhook error", error)
+        return { error: 'Failed to create webhook' }
     }
 
     revalidatePath('/settings')
@@ -52,15 +66,21 @@ export async function deleteWebhookAction(id: string) {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const { error } = await supabase
-        .from('webhooks')
-        .delete()
-        .eq('id', id)
+    const { error } = await supabase.from('webhooks').delete().eq('id', id)
 
-    if (error) {
-        console.error('Error deleting webhook:', error)
-        throw new Error('Failed to delete webhook')
-    }
+    if (error) return { error: 'Failed to delete' }
+
+    revalidatePath('/settings')
+    return { success: true }
+}
+
+export async function toggleWebhookAction(id: string, currentState: boolean) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { error } = await supabase.from('webhooks').update({ is_active: !currentState }).eq('id', id)
+
+    if (error) return { error: 'Failed to update' }
 
     revalidatePath('/settings')
     return { success: true }

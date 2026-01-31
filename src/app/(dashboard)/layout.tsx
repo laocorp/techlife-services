@@ -3,7 +3,8 @@ import { LayoutDashboard, Users, Wrench, Package, Settings, LogOut, DollarSign, 
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { NotificationsBell } from '@/components/common/NotificationsBell'
+import { NotificationBell } from '@/components/common/NotificationBell'
+import { FloatingNotification } from '@/components/common/FloatingNotification'
 
 export default async function DashboardLayout({
     children,
@@ -15,6 +16,12 @@ export default async function DashboardLayout({
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
+
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user.id)
+        .single()
 
     return (
         <div className="flex h-screen bg-slate-50">
@@ -33,6 +40,11 @@ export default async function DashboardLayout({
                     <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
                         <Wrench className="h-5 w-5" />
                         Órdenes
+                    </Link>
+
+                    <Link href="/dashboard/kanban" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                        <LayoutDashboard className="h-5 w-5" />
+                        Tablero Kanban
                     </Link>
 
                     <Link href="/customers" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
@@ -81,7 +93,7 @@ export default async function DashboardLayout({
                 <header className="bg-white border-b px-6 py-3 flex items-center justify-between sticky top-0 z-10">
                     <h2 className="font-semibold text-slate-800">Panel de Control</h2>
                     <div className="flex items-center gap-4">
-                        <NotificationsBell />
+                        <NotificationBell />
                         <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border border-indigo-200">
                             {user.email?.substring(0, 2).toUpperCase()}
                         </div>
@@ -91,6 +103,9 @@ export default async function DashboardLayout({
                     {children}
                 </div>
             </main>
+
+            {/* Realtime Notifications */}
+            <FloatingNotification tenantId={profile?.tenant_id} />
         </div>
     )
 }

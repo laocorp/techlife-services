@@ -20,10 +20,10 @@ export async function getSalesOrdersAction() {
     if (!profile?.tenant_id) return []
 
     const { data: orders, error } = await supabase
-        .from('sales_orders')
+        .from('ecommerce_orders')
         .select(`
             *,
-            items:sales_order_items(
+            items:ecommerce_order_items(
                 *,
                 product:products(name)
             )
@@ -44,7 +44,7 @@ export async function updateSalesOrderStatusAction(orderId: string, status: stri
     const supabase = createClient(cookieStore)
 
     const { error } = await supabase
-        .from('sales_orders')
+        .from('ecommerce_orders')
         .update({ status })
         .eq('id', orderId)
 

@@ -1,34 +1,49 @@
--- WEBHOOKS AUTOMATION SCHEMA
+-- Webhooks Schema
+-- Date: 2026-01-27
+-- Author: Antigravity
 
-create table public.webhooks (
-  id uuid primary key default uuid_generate_v4(),
-  tenant_id uuid not null references public.tenants(id) on delete cascade,
-  url text not null,
-  description text,
-  event_type text not null, -- e.g. 'order.status_change', 'order.created', '*'
-  secret text, -- For signature verification (optional for MVP)
-  is_active boolean default true,
-  created_by uuid references public.profiles(id),
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+-- 1. Webhooks Configuration Table
+create table if not exists public.webhooks (
+    id uuid not null default gen_random_uuid() primary key,
+    created_at timestamp with time zone default now(),
+    tenant_id uuid references public.tenants(id) on delete cascade not null,
+    
+    name text not null, -- e.g. "WhatsApp Notification"
+    url text not null, -- External API URL
+    event_type text not null, -- e.g. "order.completed", "payment.received", "all"
+    is_active boolean default true,
+    secret text, -- Optional signing secret
+    
+    constraint webhooks_url_check check (url ~* '^https?://.*')
 );
 
--- RLS
+-- RLS for Webhooks
 alter table public.webhooks enable row level security;
 
-create policy "Users can view webhooks in same tenant" on public.webhooks
-  for select using (tenant_id = get_current_tenant_id());
+create policy "Tenants can manage their own webhooks"
+on public.webhooks
+using (tenant_id in (select tenant_id from public.profiles where id = auth.uid()));
 
-create policy "Owners/Admins can manage webhooks" on public.webhooks
-  for all using (
-    tenant_id = get_current_tenant_id()
-    and exists (
-      select 1 from public.profiles
-      where id = auth.uid()
-      and role in ('owner', 'admin')
-    )
-  );
+-- 2. Webhook Delivery Logs (Optional but implementing for debugging)
+create table if not exists public.webhook_logs (
+    id uuid not null default gen_random_uuid() primary key,
+    created_at timestamp with time zone default now(),
+    webhook_id uuid references public.webhooks(id) on delete cascade not null,
+    
+    event_type text not null,
+    payload jsonb,
+    response_status integer,
+    response_body text,
+    success boolean default false
+);
 
--- Trigger for updatedAt
-create trigger update_webhooks_updated_at before update on public.webhooks
-for each row execute procedure update_updated_at_column();
+-- RLS for Logs
+alter table public.webhook_logs enable row level security;
+
+create policy "Tenants can view their own webhook logs"
+on public.webhook_logs
+using (webhook_id in (select id from public.webhooks));
+
+-- Indexes
+create index if not exists idx_webhooks_tenant on public.webhooks(tenant_id);
+create index if not exists idx_webhook_logs_webhook on public.webhook_logs(webhook_id);

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
+import type { Metadata, ResolvingMetadata } from 'next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -9,6 +10,63 @@ import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, CheckCircle, Clock, FileText, AlertCircle, Wrench, Camera, MessageSquare } from 'lucide-react'
 import { approveOrderAction } from '../../actions'
 import { PrintButton } from '@/components/common/PrintButton'
+
+export async function generateMetadata(
+    { params }: { params: Promise<{ id: string }> },
+    parent: ResolvingMetadata
+): Promise<Metadata> {
+    const { id } = await params
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    // Fetch basic order info for metadata
+    const { data: order } = await supabase
+        .from('service_orders')
+        .select(`
+            folio_id,
+            status,
+            customer_assets (identifier, details),
+            tenants (name)
+        `)
+        .eq('id', id)
+        .single()
+
+    if (!order) {
+        return {
+            title: 'Orden No Encontrada',
+        }
+    }
+
+    const asset = Array.isArray(order.customer_assets) ? order.customer_assets[0] : order.customer_assets
+    const tenant = Array.isArray(order.tenants) ? order.tenants[0] : order.tenants
+
+    const deviceName = `${asset?.details?.make || 'Dispositivo'} ${asset?.details?.model || ''}`.trim()
+    const tenantName = tenant?.name || 'TechLife Service'
+
+    // Status translation for the title
+    const getStatusText = (s: string) => {
+        const map: Record<string, string> = {
+            'reception': 'En Recepción',
+            'diagnosis': 'En Diagnóstico',
+            'approval': 'Esperando Aprobación',
+            'repair': 'En Reparación',
+            'ready': 'Listo para Retiro',
+            'delivered': 'Entregado'
+        }
+        return map[s] || 'En Proceso'
+    }
+
+    return {
+        title: `Orden #${order.folio_id} (${getStatusText(order.status)}) - ${tenantName}`,
+        description: `Hola, el estado de tu ${deviceName} es: ${getStatusText(order.status)}. Haz clic para ver el informe completo, fotos y presupuesto.`,
+        openGraph: {
+            title: `🛠️ Orden #${order.folio_id}: ${deviceName}`,
+            description: `Estado: ${getStatusText(order.status)} | Taller: ${tenantName}`,
+            // details about images would go here if we had dynamic OG generation
+        }
+    }
+}
+
 
 export default async function PortalOrderDetailPage({
     params

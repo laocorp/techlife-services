@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { MapPin, Car, Info, ArrowRight, Store } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import PurchaseHistorySection from '@/components/features/portal/PurchaseHistorySection'
+import PendingInvitations from '@/components/features/portal/PendingInvitations'
+import React from 'react'
 
 export default async function ConsumerHubPage() {
     const cookieStore = await cookies()
@@ -14,19 +17,34 @@ export default async function ConsumerHubPage() {
         return <div className="p-8 text-center text-slate-500">Debes iniciar sesión para ver tu Hub.</div>
     }
 
-    // 0. Get User Name (Try metadata, then profile, then first customer record)
+    // 0. Get User Name
     let userName = user.user_metadata?.full_name
     if (!userName) {
         const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
         userName = profile?.full_name
     }
     if (!userName) {
-        // Fallback to first customer record name if available
         const { data: firstCustomer } = await supabase.from('customers').select('full_name').eq('user_id', user.id).limit(1).single()
         userName = firstCustomer?.full_name?.split(' ')[0]
     }
 
-    // 1. Fetch Linked Workshops
+    // 1. Fetch Pending Invitations
+    const { data: pendingInvitations } = await supabase
+        .from('tenant_connections')
+        .select(`
+            id,
+            created_at,
+            tenant:tenants (
+                id,
+                name,
+                industry,
+                logo_url
+            )
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+
+    // 2. Fetch Linked Workshops
     const { data: linkedCustomers } = await supabase
         .from('customers')
         .select(`
@@ -41,14 +59,13 @@ export default async function ConsumerHubPage() {
         `)
         .eq('user_id', user.id)
 
-    // Helper for Logo URL
     const getLogoUrl = (path: string | null) => {
         if (!path) return null
         if (path.startsWith('http')) return path
         return supabase.storage.from('branding').getPublicUrl(path).data.publicUrl
     }
 
-    // 2. Fetch Personal Assets
+    // 3. Fetch Personal Assets
     const { data: personalAssets } = await supabase
         .from('user_assets')
         .select('*')
@@ -56,23 +73,43 @@ export default async function ConsumerHubPage() {
         .order('created_at', { ascending: false })
         .limit(3)
 
-    // 3. Fetch Workshop Assets (for preview)
-    const { data: workshopAssets } = await supabase
+    // 4. Fetch Workshop Assets
+    const { data: rawWorkshopAssets } = await supabase
         .from('customer_assets')
         .select(`
             id,
             identifier,
             details,
             created_at,
-            customer!inner (
+            customers (
                 user_id,
-                tenant:tenants (name)
+                tenant_id
             )
         `)
-        .eq('customer.user_id', user.id)
-        .limit(3)
+        .limit(10)
 
-    // Merge for Preview (Top 3 most recent)
+    let workshopAssets: any[] = []
+    if (rawWorkshopAssets) {
+        workshopAssets = await Promise.all(rawWorkshopAssets.map(async (asset: any) => {
+            const customerData = asset.customers
+            if (customerData?.tenant_id) {
+                const { data: tenantData } = await supabase.from('tenants').select('name').eq('id', customerData.tenant_id).single()
+                if (tenantData) {
+                    customerData.tenant = tenantData
+                }
+            }
+            return { ...asset, customer: customerData }
+        }))
+    }
+
+    // 5. Fetch Ecommerce Orders
+    const { data: purchaseOrders } = await supabase
+        .from('ecommerce_orders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5)
+
     const allAssets = [
         ...(personalAssets?.map(a => ({ ...a, source: 'Personal', tenantName: null })) || []),
         ...(workshopAssets?.map((a: any) => ({
@@ -101,6 +138,43 @@ export default async function ConsumerHubPage() {
                     </span>
                 </Link>
             </div>
+
+            {/* PENDING INVITATIONS */}
+            <PendingInvitations invitations={pendingInvitations as any[] || []} />
+
+            {/* MY GARAGE PREVIEW */}
+            <section>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-slate-800">Mi Garaje</h2>
+                    <Link href="/portal/garage" className="text-sm font-medium text-indigo-600 hover:underline">Ver todo</Link>
+                </div>
+                <div className="grid md:grid-cols-3 gap-4">
+                    {allAssets && allAssets.length > 0 ? (
+                        allAssets.map((asset) => (
+                            <Card key={asset.id} className="bg-slate-50 border-0 shadow-sm relative overflow-hidden">
+                                {asset.source === 'Taller' && (
+                                    <div className="absolute top-0 right-0 bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-bl-md font-medium">
+                                        {asset.tenantName}
+                                    </div>
+                                )}
+                                <CardContent className="p-4 flex items-start gap-3">
+                                    <div className={`p-2 rounded-md shadow-sm ${asset.source === 'Taller' ? 'bg-orange-50 text-orange-600' : 'bg-white text-indigo-600'}`}>
+                                        <Car className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-900">{asset.alias || asset.identifier}</h4>
+                                        <p className="text-xs text-slate-500">{asset.details?.make || '-'} {asset.details?.model} {asset.details?.year}</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))
+                    ) : (
+                        <div className="col-span-3 text-sm text-slate-400 italic">
+                            No tienes activos registrados. Agrega tu auto o equipo en "Mi Garaje".
+                        </div>
+                    )}
+                </div>
+            </section>
 
             {/* MY WORKSHOPS */}
             <section>
@@ -146,39 +220,10 @@ export default async function ConsumerHubPage() {
                 )}
             </section>
 
-            {/* MY GARAGE PREVIEW */}
-            <section>
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-slate-800">Mi Garaje</h2>
-                    <Link href="/portal/garage" className="text-sm font-medium text-indigo-600 hover:underline">Ver todo</Link>
-                </div>
-                <div className="grid md:grid-cols-3 gap-4">
-                    {allAssets && allAssets.length > 0 ? (
-                        allAssets.map((asset) => (
-                            <Card key={asset.id} className="bg-slate-50 border-0 shadow-sm relative overflow-hidden">
-                                {asset.source === 'Taller' && (
-                                    <div className="absolute top-0 right-0 bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-bl-md font-medium">
-                                        {asset.tenantName}
-                                    </div>
-                                )}
-                                <CardContent className="p-4 flex items-start gap-3">
-                                    <div className={`p-2 rounded-md shadow-sm ${asset.source === 'Taller' ? 'bg-orange-50 text-orange-600' : 'bg-white text-indigo-600'}`}>
-                                        <Car className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-slate-900">{asset.alias || asset.identifier}</h4>
-                                        <p className="text-xs text-slate-500">{asset.details?.make || '-'} {asset.details?.model} {asset.details?.year}</p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))
-                    ) : (
-                        <div className="col-span-3 text-sm text-slate-400 italic">
-                            No tienes activos registrados. Agrega tu auto o equipo en "Mi Garaje".
-                        </div>
-                    )}
-                </div>
-            </section>
+            {/* MY PURCHASES */}
+            <React.Suspense fallback={<div className="p-4 text-center">Cargando historial...</div>}>
+                <PurchaseHistorySection orders={purchaseOrders as any[] || []} />
+            </React.Suspense>
         </div>
     )
 }

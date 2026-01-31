@@ -1,11 +1,20 @@
 import Link from 'next/link'
-import { Wrench, LogOut, Package, Monitor, Store, Car, MapPin, ShoppingCart } from 'lucide-react'
+import { Wrench, LogOut, Package, Monitor, Store, Car, MapPin, ShoppingCart, User } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { Button } from '@/components/ui/button'
 import { portalLogoutAction } from '@/lib/actions/portal-auth'
 import { CartProvider } from '@/context/cart-context'
-import CartIndicator from '@/components/features/store/CartIndicator' // Helper for client-side count
+import CartIndicator from '@/components/features/store/CartIndicator'
+import { NotificationBell } from '@/components/common/NotificationBell'
+
+export const metadata = {
+    title: {
+        template: '%s | Portal Clientes',
+        default: 'Portal Clientes | TechLife Service',
+    },
+    description: 'Accede al estado de tus reparaciones, historial de servicios y más en el Portal de Clientes de TechLife.',
+}
 
 export default async function PortalLayout({
     children,
@@ -40,11 +49,16 @@ export default async function PortalLayout({
                                         <Car className="h-4 w-4" />
                                         <span className="hidden sm:inline">Mi Garaje</span>
                                     </Link>
+                                    <Link href="/portal/profile" className="text-sm font-medium text-slate-600 hover:text-indigo-600 flex items-center gap-1">
+                                        <User className="h-4 w-4" />
+                                        <span className="hidden sm:inline">Mi Perfil</span>
+                                    </Link>
                                     <Link href="/portal/marketplace" className="text-sm font-medium text-slate-600 hover:text-indigo-600 flex items-center gap-1">
                                         <MapPin className="h-4 w-4" />
                                         <span className="hidden sm:inline">Marketplace</span>
                                     </Link>
 
+                                    <NotificationBell />
                                     <CartIndicator />
 
                                     <div className="h-4 w-px bg-slate-200 mx-1 sm:mx-2" />
@@ -75,5 +89,3 @@ export default async function PortalLayout({
         </CartProvider>
     )
 }
-
-

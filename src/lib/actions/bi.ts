@@ -75,7 +75,7 @@ export async function getRevenueChartDataAction() {
         .gte('created_at', sevenDaysAgo.toISOString())
 
     const { data: sales } = await supabase
-        .from('sales_orders')
+        .from('ecommerce_orders')
         .select('total_amount, created_at')
         .eq('tenant_id', tenantId)
         .eq('payment_status', 'paid')
@@ -132,20 +132,20 @@ export async function getTopServicesAction() {
     const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user?.id).single()
 
     // Aggregate completed orders by product/service
-    // This requires sales_order_items (products) and potentially service analysis.
-    // For MVP, lets analyze 'sales_order_items' (Products sold)
+    // This requires ecommerce_order_items (products) and potentially service analysis.
+    // For MVP, lets analyze 'ecommerce_order_items' (Products sold)
 
     // We fetch all items from paid sales orders or completed service orders?
     // Let's focus on Products Sold via POS/Web first as it's cleaner.
 
     const { data: items } = await supabase
-        .from('sales_order_items')
+        .from('ecommerce_order_items')
         .select(`
             quantity,
             products (name)
         `)
         // Filter by tenant indirectly via order??
-        // sales_order_items has RLS but explicit check is better.
+        // ecommerce_order_items has RLS but explicit check is better.
         // We lack direct tenant_id on items, must join with orders.
         // Supabase join filter:
         .not('products', 'is', null)

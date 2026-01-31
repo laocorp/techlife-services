@@ -7,55 +7,18 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { MapPin, Phone, Mail, Clock, ShieldCheck, ArrowLeft, Star } from 'lucide-react'
-
-// This would be a server action in a real app
-import { redirect } from 'next/navigation'
+import { MapPin, Phone, Mail, Clock, ShieldCheck, ArrowLeft, Star, ImageIcon } from 'lucide-react'
 import { getTenantPublicProductsAction } from '@/lib/actions/store'
 import AddToCartButton from '@/components/features/store/AddToCartButton'
 import WorkshopProductControls from '@/components/features/store/WorkshopProductControls'
-import { ImageIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { CardFooter } from '@/components/ui/card'
 
-async function connectToWorkshop(formData: FormData) {
-    'use server'
-    const tenantId = formData.get('tenantId') as string
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-    const { data: { user } } = await supabase.auth.getUser()
+import { connectWithWorkshopAction } from '@/lib/actions/connections'
 
-    if (!user) return
+// ... imports remain the same
 
-    // Check if already connected
-    const { data: existing } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('tenant_id', tenantId)
-        .eq('user_id', user.id)
-        .single()
-
-    if (existing) {
-        // Already connected
-        return redirect('/portal/dashboard')
-    }
-
-    // Create Customer profile linked to this user
-    const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single() // Assuming profile exists or use auth meta
-
-    // Fallback name if no profile
-    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Nuevo Cliente'
-
-    await supabase.from('customers').insert({
-        tenant_id: tenantId,
-        user_id: user.id,
-        full_name: name,
-        email: user.email,
-        phone: user.user_metadata?.phone
-    })
-
-    redirect('/portal/dashboard')
-}
+// Remove the inline connectToWorkshop function (lines 21-58) since we use the imported one.
 
 export default async function WorkshopProfilePage({
     params,
@@ -78,7 +41,7 @@ export default async function WorkshopProfilePage({
         .eq('is_public', true)
         .single()
 
-    // Fetch Products
+    // ... (Products fetching remains same)
     const products = await getTenantPublicProductsAction(id, q, category)
 
     // Fetch unique categories (Optimization: In real app, use a distinct query)
@@ -92,8 +55,6 @@ export default async function WorkshopProfilePage({
     const categories = uniqueCategories.map(c => ({ name: c, id: c }))
 
     // Helper for Logo URL
-
-    // Helper for Logo URL
     const getLogoUrl = (path: string | null) => {
         if (!path) return null
         if (path.startsWith('http')) return path
@@ -105,16 +66,32 @@ export default async function WorkshopProfilePage({
         return notFound()
     }
 
-    // Check connection status
+    // Check connection status using NEW tenant_connections table
     let isConnected = false
+    let connectionStatus = null
+    let connError: any = null
+
     if (user) {
-        const { data: connection } = await supabase
-            .from('customers')
-            .select('id')
+        const { data: connection, error } = await supabase
+            .from('tenant_connections')
+            .select('status')
             .eq('tenant_id', id)
             .eq('user_id', user.id)
             .single()
-        if (connection) isConnected = true
+
+        connError = error
+
+        console.log('DEBUG WORKSHOP PROFILE:', {
+            workshopId: id,
+            userId: user.id,
+            connectionResult: connection,
+            error
+        })
+
+        if (connection && connection.status === 'accepted') {
+            isConnected = true
+        }
+        connectionStatus = connection?.status
     }
 
     return (
@@ -208,7 +185,7 @@ export default async function WorkshopProfilePage({
                             </div>
 
                             {!isConnected ? (
-                                <form action={connectToWorkshop}>
+                                <form action={connectWithWorkshopAction}>
                                     <input type="hidden" name="tenantId" value={tenant.id} />
                                     <Button className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 text-lg">
                                         Conectar Ahora

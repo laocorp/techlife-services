@@ -3,12 +3,24 @@ import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getCustomersAction } from '@/lib/actions/customers'
 import EnablePortalButton from '@/components/features/customers/EnablePortalButton'
-
-export default async function CustomersPage() {
+import DeleteCustomerButton from '@/components/features/customers/DeleteCustomerButton'
+export default async function CustomersPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }> // Next.js 15+ async searchParams
+}) {
     const customers = await getCustomersAction()
+    const params = await searchParams
+    const showInviteSuccess = params?.success === 'invited'
 
     return (
         <div className="p-8">
+            {showInviteSuccess && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center">
+                    <span className="font-semibold mr-2">¡Invitación enviada!</span>
+                    El usuario recibirá una notificación para conectar.
+                </div>
+            )}
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900">Clientes</h1>
@@ -57,6 +69,7 @@ export default async function CustomersPage() {
                                     {new Date(customer.created_at).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                                    <DeleteCustomerButton id={customer.id} name={customer.full_name} />
                                     <EnablePortalButton
                                         customerId={customer.id}
                                         email={customer.email}

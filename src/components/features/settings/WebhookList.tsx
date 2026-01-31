@@ -1,145 +1,178 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Trash2, Plus, Globe } from 'lucide-react'
-import { createWebhookAction, deleteWebhookAction } from '@/lib/actions/webhooks'
+import { Webhook, createWebhookAction, deleteWebhookAction, toggleWebhookAction } from '@/lib/actions/webhooks'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Trash2, Link as LinkIcon, Plus, Loader2 } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter
+} from "@/components/ui/dialog"
 
-interface Webhook {
-    id: string
-    url: string
-    event_type: string
-    description: string
-    is_active: boolean
-}
-
-interface WebhookListProps {
-    webhooks: Webhook[]
-}
-
-export default function WebhookList({ webhooks: initialWebhooks }: WebhookListProps) {
-    const [webhooks, setWebhooks] = useState(initialWebhooks)
-    const [isAdding, setIsAdding] = useState(false)
+export default function WebhookList({ webhooks }: { webhooks: Webhook[] }) {
+    const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [loading, setLoading] = useState(false)
+    const { toast } = useToast()
+
     const [formData, setFormData] = useState({
+        name: '',
         url: '',
-        eventType: 'order.status_change',
-        description: ''
+        event_type: 'order.completed',
+        secret: ''
     })
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleCreate = async () => {
+        if (!formData.name || !formData.url) {
+            toast({ title: 'Campos requeridos', description: 'Nombre y URL son obligatorios.', variant: 'destructive' })
+            return
+        }
+
         setLoading(true)
         try {
             await createWebhookAction(formData)
-            // Ideally we'd optimistic update or wait for revalidate, but for now simple reload or just waiting for parent prop update if we used router.refresh() 
-            // Since server action revalidates path, we might need to rely on router refresh or window reload for client side lists unless we lift state.
-            // For MVP, simply reloading page or assuming parent fetches fresh data on navigate.
-            window.location.reload() // Simple brute force refresh to get new list
+            setIsCreateOpen(false)
+            setFormData({ name: '', url: '', event_type: 'order.completed', secret: '' }) // Reset
+            toast({ title: 'Webhook creado' })
         } catch (error) {
-            alert('Error creating webhook')
+            toast({ title: 'Error', variant: 'destructive' })
         } finally {
             setLoading(false)
         }
     }
 
     const handleDelete = async (id: string) => {
-        if (!confirm('¿Eliminar este webhook?')) return
-        try {
-            await deleteWebhookAction(id)
-            window.location.reload()
-        } catch (error) {
-            alert('Error eliminating webhook')
-        }
+        if (!confirm('¿Seguro de eliminar este webhook?')) return
+        await deleteWebhookAction(id)
+        toast({ title: 'Webhook eliminado' })
+    }
+
+    const handleToggle = async (id: string, active: boolean) => {
+        await toggleWebhookAction(id, active)
+        toast({ title: active ? 'Desactivado' : 'Activado' })
     }
 
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                    <CardTitle>Webhooks & Automatización</CardTitle>
+                    <CardTitle>Automatizaciones (Webhooks)</CardTitle>
                     <CardDescription>
-                        Conecta TechLife con otras aplicaciones (Zapier, n8n, Slack).
+                        Envía notificaciones a sistemas externos cuando ocurren eventos.
                     </CardDescription>
                 </div>
-                <Button onClick={() => setIsAdding(!isAdding)} variant="outline" size="sm">
-                    {isAdding ? 'Cancelar' : <><Plus className="h-4 w-4 mr-2" /> Nuevo Webhook</>}
-                </Button>
-            </CardHeader>
-            <CardContent>
-                {isAdding && (
-                    <form onSubmit={handleSubmit} className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <div className="grid gap-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label>Evento</Label>
-                                    <Select
-                                        value={formData.eventType}
-                                        onValueChange={(val) => setFormData({ ...formData, eventType: val })}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Seleccionar evento" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="order.status_change">Cambio de Estado de Orden</SelectItem>
-                                            {/* Future: <SelectItem value="order.created">Nueva Orden</SelectItem> */}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div>
-                                    <Label>Descripción (Opcional)</Label>
-                                    <Input
-                                        placeholder="Ej. Notificar a Slack"
-                                        value={formData.description}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <Label>URL del Webhook (POST)</Label>
+                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                    <DialogTrigger asChild>
+                        <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Nuevo Webhook
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Configurar Nuevo Webhook</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label>Nombre</Label>
                                 <Input
-                                    placeholder="https://hooks.zapier.com/..."
-                                    value={formData.url}
-                                    onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                                    required
+                                    placeholder="Ej. Notificación WhatsApp"
+                                    value={formData.name}
+                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 />
                             </div>
-                            <div className="flex justify-end">
-                                <Button type="submit" disabled={loading}>
-                                    {loading ? 'Guardando...' : 'Guardar Webhook'}
-                                </Button>
+                            <div className="space-y-2">
+                                <Label>URL del Endpoint</Label>
+                                <Input
+                                    placeholder="https://api.tu-servicio.com/webhook"
+                                    value={formData.url}
+                                    onChange={e => setFormData({ ...formData, url: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Evento Trigger</Label>
+                                <Select
+                                    value={formData.event_type}
+                                    onValueChange={val => setFormData({ ...formData, event_type: val })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="order.completed">Orden Completada</SelectItem>
+                                        <SelectItem value="payment.received">Pago Recibido</SelectItem>
+                                        <SelectItem value="inventory.low">Stock Bajo (Próximamente)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Secreto (Opcional)</Label>
+                                <Input
+                                    type="password"
+                                    placeholder="Clave de firma"
+                                    value={formData.secret}
+                                    onChange={e => setFormData({ ...formData, secret: e.target.value })}
+                                />
                             </div>
                         </div>
-                    </form>
-                )}
-
+                        <DialogFooter>
+                            <Button onClick={handleCreate} disabled={loading}>
+                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Guardar
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </CardHeader>
+            <CardContent>
                 <div className="space-y-4">
                     {webhooks.length === 0 ? (
-                        <p className="text-center text-slate-500 py-4">No hay webhooks configurados.</p>
+                        <div className="text-center py-8 text-slate-500 border border-dashed rounded-lg">
+                            No hay webhooks configurados
+                        </div>
                     ) : (
-                        webhooks.map((webhook) => (
-                            <div key={webhook.id} className="flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm">
+                        webhooks.map(wh => (
+                            <div key={wh.id} className="flex items-center justify-between p-4 border rounded-lg bg-slate-50">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                                        <Globe className="h-5 w-5" />
+                                    <div className="p-2 bg-white border rounded">
+                                        <LinkIcon className="h-5 w-5 text-slate-400" />
                                     </div>
                                     <div>
-                                        <h4 className="font-medium text-slate-900">{webhook.description || 'Webhook sin nombre'}</h4>
-                                        <p className="text-sm text-slate-500 font-mono truncate max-w-md">{webhook.url}</p>
-                                        <div className="flex gap-2 mt-1">
-                                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">
-                                                {webhook.event_type}
+                                        <h4 className="font-medium text-slate-900">{wh.name}</h4>
+                                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                                            <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-mono">
+                                                {wh.event_type}
                                             </span>
+                                            <span className="truncate max-w-[200px]">{wh.url}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => handleDelete(webhook.id)}>
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <Label className="text-xs">Activo</Label>
+                                        <Switch
+                                            checked={wh.is_active}
+                                            onCheckedChange={() => handleToggle(wh.id, wh.is_active)}
+                                        />
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="text-slate-400 hover:text-red-500"
+                                        onClick={() => handleDelete(wh.id)}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </div>
                         ))
                     )}

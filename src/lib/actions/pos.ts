@@ -65,21 +65,20 @@ export async function createPosOrderAction(data: PosOrderData) {
         })
     }
 
-    // 2. Create Order in SALES_ORDERS
+    // 2. Create Order in ECOMMERCE_ORDERS (Unified Table)
     const { data: order, error: orderError } = await supabase
-        .from('sales_orders')
+        .from('ecommerce_orders')
         .insert({
             tenant_id: profile.tenant_id,
             // POS sales might not have a linked user customer account if walk-in
-            // We can leave customer_id null or link if we implement customer search later
-            customer_id: null,
+            // We can leave user_id null or link if we implement customer search later
+            user_id: null,
             status: 'delivered', // POS sales are immediate
             payment_status: 'paid', // POS sales are immediate
             total_amount: totalAmount,
             delivery_method: 'pickup',
-            shipping_address: 'Mostrador', // Simplified for POS
-            contact_phone: null
-            // channel: 'pos' // If we add channel column later
+            shipping_address: { fullname: 'Mostrador', address: 'Mostrador' }, // Simplified for POS JSONB
+            channel: 'pos' // Use channel for tracking
         })
         .select()
         .single()
@@ -98,7 +97,7 @@ export async function createPosOrderAction(data: PosOrderData) {
     }))
 
     const { error: itemsError } = await supabase
-        .from('sales_order_items')
+        .from('ecommerce_order_items')
         .insert(itemsToInsert)
 
     if (itemsError) {
@@ -115,11 +114,10 @@ export async function createPosOrderAction(data: PosOrderData) {
     }
 
     // 5. Register Payment in Finance
-    // Now supporting sales_order_id via our new migration schema
-    // @ts-ignore - Database types might not be regenerated yet
+    // Now supporting ecommerce_order_id via our new migration schema
     const { error: paymentError } = await supabase.from('payments').insert({
         tenant_id: profile.tenant_id,
-        sales_order_id: order.id, // Linking to the Sales Order
+        ecommerce_order_id: order.id, // Linking to the Sales Order
         service_order_id: null,   // Explicitly null for POS sales
         amount: totalAmount,
         method: data.paymentMethod,

@@ -75,6 +75,28 @@ interface CartItemInput {
     price: number // We should verify this on server ideally, but for MVP we trust/re-verify
 }
 
+export async function getBankDetailsByProductIdAction(productId: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    // Find tenant from product
+    const { data: product } = await supabase
+        .from('products')
+        .select('tenant_id')
+        .eq('id', productId)
+        .single()
+
+    if (!product?.tenant_id) return null
+
+    const { data: tenant } = await supabase
+        .from('tenants')
+        .select('settings')
+        .eq('id', product.tenant_id)
+        .single()
+
+    return tenant?.settings?.bank_account || null
+}
+
 interface CheckoutData {
     items: CartItemInput[]
     customer: {
@@ -85,7 +107,10 @@ interface CheckoutData {
         city: string
         state: string
         zip: string
+        cedula?: string // Changed
     }
+    paymentMethod?: string // Changed
+    paymentProofUrl?: string // Changed
 }
 
 export async function createStoreOrderAction(data: CheckoutData) {
@@ -149,6 +174,7 @@ export async function createStoreOrderAction(data: CheckoutData) {
             status: 'pending',
             payment_status: 'pending',
             total_amount: totalAmount,
+            payment_proof_url: data.paymentProofUrl || null, // NEW
             shipping_address: {
                 fullname: data.customer.fullname,
                 address: data.customer.address,
@@ -156,7 +182,9 @@ export async function createStoreOrderAction(data: CheckoutData) {
                 state: data.customer.state,
                 zip: data.customer.zip,
                 phone: data.customer.phone,
-                email: data.customer.email
+                email: data.customer.email,
+                cedula: data.customer.cedula, // NEW
+                payment_method: data.paymentMethod // NEW
             }
         })
         .select()
@@ -198,7 +226,7 @@ export async function createStoreOrderAction(data: CheckoutData) {
             .from('products')
             .update({ quantity: product.quantity - item.quantity }) 
             // logic needed...
-        */
+            */
     }
 
     return { success: true, orderId: order.id }

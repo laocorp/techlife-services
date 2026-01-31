@@ -32,7 +32,7 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
         return notFound()
     }
 
-    const assets = await getCustomerAssetsAction(id)
+    const assets = await getCustomerAssetsAction(id, tenantIndustry)
 
     const getIndustryIcon = () => {
         switch (tenantIndustry) {

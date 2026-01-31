@@ -5,6 +5,7 @@ import { orderSchema, OrderFormData } from '@/lib/validations/orders'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { triggerWebhook } from '@/lib/actions/webhookTrigger'
 
 export async function createOrderAction(data: OrderFormData) {
     const cookieStore = await cookies()
@@ -22,9 +23,17 @@ export async function createOrderAction(data: OrderFormData) {
 
     const { customerId, assetId, priority, description, notes } = validated.data
 
+    let finalCustomerId = customerId
+    try {
+        const { ensureLocalCustomer } = await import('@/lib/actions/customers')
+        finalCustomerId = await ensureLocalCustomer(customerId)
+    } catch (e) {
+        return { error: 'Error al procesar cliente virtual' }
+    }
+
     const { error } = await supabase.from('service_orders').insert({
         tenant_id: profile.tenant_id,
-        customer_id: customerId,
+        customer_id: finalCustomerId,
         asset_id: assetId,
         priority,
         description_problem: description,
@@ -99,64 +108,41 @@ export async function updateOrderStatusAction(orderId: string, newStatus: string
 
     if (error) return { error: 'Error al actualizar estado' }
 
-    // --- AUTOMATION / WEBHOOKS TRIGGER ---
-    try {
-        // 1. Get tenant_id from user
-        const { data: { user } } = await supabase.auth.getUser()
-        const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user?.id).single()
+    if (error) return { error: 'Error al actualizar estado' }
 
-        if (profile?.tenant_id) {
-            // 2. Fetch active webhooks for this tenant and event type
-            const { data: webhooks } = await supabase
-                .from('webhooks')
-                .select('url, secret')
-                .eq('tenant_id', profile.tenant_id)
-                .eq('is_active', true)
-                .in('event_type', ['order.status_change', '*']) // support wildcard
+    // --- NOTIFICATIONS (MANUAL LINK) ---
+    // If status is "approval" (Esperando Aprobación), notify the customer.
+    if (newStatus === 'approval') {
+        const { data: order } = await supabase.from('service_orders').select('customer_id, folio_id, id').eq('id', orderId).single()
 
-            if (webhooks && webhooks.length > 0) {
-                // 3. Prepare payload
-                const payload = {
-                    event: 'order.status_change',
-                    timestamp: new Date().toISOString(),
-                    data: {
-                        orderId,
-                        newStatus,
-                        updatedBy: user?.id
-                    }
-                }
+        if (order?.customer_id) {
+            // Check if customer is connected (has user_id)
+            const { data: customer } = await supabase.from('customers').select('user_id').eq('id', order.customer_id).single()
 
-                // 4. Fire and forget (simulated async)
-                // In a real edge function environment we would fetch here.
-                // Since this is a server action, fetch is valid.
-                // We use Promise.allSettled to not block main thread too long or fail the action
-
-                // Note: We use 'void' to detatch the promise so the response returns immediately to client
-                // BUT Vercel/NextJS functions might kill the process if response is sent.
-                // For safety in this MVP, we await with a short timeout or just await.
-                // Let's await to be safe ensuring delivery log.
-
-                const promises = webhooks.map(webhook =>
-                    fetch(webhook.url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-TechLife-Signature': webhook.secret || ''
-                        },
-                        body: JSON.stringify(payload)
-                    }).catch(err => console.error(`Webhook failed to ${webhook.url}`, err))
-                )
-
-                // Optional: await Promise.all(promises)
-                // For now, we just let it run. In production properly use Background Jobs (Inngest/Trigger.dev)
-                Promise.allSettled(promises).then(results => {
-                    console.log(`Webhooks processed for order ${orderId}`, results.length)
+            if (customer?.user_id) {
+                await supabase.from('notifications').insert({
+                    user_id: customer.user_id,
+                    title: 'Aprobación Requerida',
+                    message: `Tu orden #${order.folio_id || order.id.slice(0, 6)} requiere tu aprobación para continuar.`,
+                    type: 'warning',
+                    link: `/portal/orders/${order.id}`,
+                    read: false
                 })
             }
         }
-    } catch (err) {
-        console.error('Automation Trigger Error (Non-blocking):', err)
     }
+    // -----------------------------------
+
+    // --- AUTOMATION / WEBHOOKS TRIGGER ---
+
+    // We fire this asynchronously without awaiting to ensure fast UI response
+    // In Vercel serverless, we should ideally use waitUntil or similar, but for now:
+    triggerWebhook('order.status_change', {
+        orderId,
+        newStatus,
+        updatedBy: (await supabase.auth.getUser()).data.user?.id,
+        timestamp: new Date().toISOString()
+    }).catch((err: any) => console.error('Background webhook trigger failed', err))
     // -------------------------------------
 
     revalidatePath(`/orders/${orderId}`)
@@ -176,4 +162,43 @@ export async function assignTechnicianAction(orderId: string, technicianId: stri
 
     revalidatePath(`/orders/${orderId}`)
     return { success: true }
+}
+
+export async function createWarrantyOrderAction(originalOrderId: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    // 1. Fetch Original
+    const { data: original, error: fetchError } = await supabase
+        .from('service_orders')
+        .select('*')
+        .eq('id', originalOrderId)
+        .single()
+
+    if (fetchError || !original) return { error: 'Orden original no encontrada' }
+
+    // 2. Create Warranty Clone
+    const { data: newOrder, error: createError } = await supabase
+        .from('service_orders')
+        .insert({
+            tenant_id: original.tenant_id,
+            customer_id: original.customer_id,
+            asset_id: original.asset_id,
+            priority: 'urgent', // Warranties are urgent
+            status: 'reception',
+            description_problem: `[GARANTÍA] Reingreso por falla. Ref: #${original.folio_id || original.id.slice(0, 6)}. Problema original: ${original.description_problem}`,
+            is_warranty: true,
+            original_order_id: original.id,
+            assigned_to: original.assigned_to // Optional: assign to same tech?
+        })
+        .select()
+        .single()
+
+    if (createError) {
+        console.error('Warranty Creation Error:', createError)
+        return { error: 'Error al crear garantía' }
+    }
+
+    revalidatePath('/orders')
+    return { success: true, orderId: newOrder.id }
 }

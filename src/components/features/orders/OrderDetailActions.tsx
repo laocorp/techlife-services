@@ -124,6 +124,34 @@ export default function OrderDetailActions({ orderId, currentStatus, currentTech
                         Imprimir
                     </Button>
                 </div>
+
+                {/* Warranty Action */}
+                {currentStatus === 'delivered' && (
+                    <div className="mt-4 pt-4 border-t border-dashed">
+                        <Button
+                            variant="destructive"
+                            className="w-full bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                            onClick={async () => {
+                                if (!confirm('¿Estás seguro de reingresar este equipo por GARANTÍA? Se creará una nueva orden urgente.')) return;
+                                setLoading(true)
+                                // We need to import this dynamically or move logic to avoid circular deps if any?
+                                // Assuming we can import it:
+                                const { createWarrantyOrderAction } = await import('@/lib/actions/orders')
+                                const res = await createWarrantyOrderAction(orderId)
+                                if (res.success && res.orderId) {
+                                    router.push(`/orders/${res.orderId}`)
+                                } else {
+                                    alert('Error al crear garantía')
+                                    setLoading(false)
+                                }
+                            }}
+                            disabled={loading}
+                        >
+                            <AlertCircle className="mr-2 h-4 w-4" />
+                            Aplicar Garantía (Reingreso)
+                        </Button>
+                    </div>
+                )}
             </div>
 
             <div className="bg-card border rounded-lg p-4 shadow-sm">
@@ -179,6 +207,6 @@ export default function OrderDetailActions({ orderId, currentStatus, currentTech
                     {currentTechnicianId && <span className="text-xs text-muted-foreground">Asignado actualmente</span>}
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
