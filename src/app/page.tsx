@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Wrench, ArrowRight, ShieldCheck, BarChart3, Users, Smartphone, CheckCircle, Zap } from "lucide-react";
 
@@ -8,9 +9,13 @@ export default function Home() {
       {/* Navbar */}
       <header className="px-6 h-20 flex items-center justify-between border-b bg-white/95 backdrop-blur-md fixed w-full z-50 transition-all">
         <div className="flex items-center gap-3 font-bold text-2xl text-slate-900 tracking-tight">
-          <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
-            <Wrench className="h-5 w-5" />
-          </div>
+          <Image
+            src="/logo_icon.png"
+            alt="TechLife Service Logo"
+            width={40}
+            height={40}
+            className="object-contain" // Use contain to respect aspect ratio
+          />
           TechLife<span className="text-indigo-600">Service</span>
         </div>
         <div className="flex items-center gap-4">

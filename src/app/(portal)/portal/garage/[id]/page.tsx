@@ -12,63 +12,68 @@ export default async function GarageAssetPage({
 }: {
     params: Promise<{ id: string }>
 }) {
-    const { id } = await params
+    const { id: identifier } = await params
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) return redirect('/login')
 
-    // 1. Try fetching from Personal Assets
-    let { data: asset } = await supabase
+    // 1. Try fetching from Personal Assets by Identifier OR ID (to support both links)
+    // We prioritize Identifier lookup for the new flow
+    let { data: personalAsset } = await supabase
         .from('user_assets')
         .select('*')
-        .eq('id', id)
-        .single()
+        .or(`identifier.eq.${identifier},id.eq.${identifier}`)
+        .eq('user_id', user.id)
+        .maybeSingle() // Use maybeSingle to not throw if multiple (though identifier should be unique ideally per user)
 
-    let isPersonal = true
-    let tenantName = null
+    // 2. Fetch ALL Workshop Assets with this identifier for this user
+    // We need to find all instances of "abc-123" across different workshops
+    const { data: workshopAssets } = await supabase
+        .from('customer_assets')
+        .select(`
+            *,
+            customers!inner (
+                user_id,
+                tenants (name)
+            )
+        `)
+        .eq('identifier', identifier) // Match by identifier
+        .eq('customers.user_id', user.id) // Ensure it belongs to us
 
-    // 2. If not found, try fetching from Workshop Assets
-    if (!asset) {
-        const { data: workshopAsset } = await supabase
-            .from('customer_assets')
-            .select(`
-                *,
-                customers!inner (
-                    user_id,
-                    tenants (name)
-                )
-            `)
-            .eq('id', id)
-            .eq('customers.user_id', user.id)
-            .single()
+    let asset = personalAsset || (workshopAssets && workshopAssets[0]) ? {
+        id: personalAsset?.id || workshopAssets![0].id,
+        identifier: personalAsset?.identifier || workshopAssets![0].identifier,
+        details: personalAsset?.details || workshopAssets![0].details,
+        created_at: personalAsset?.created_at || workshopAssets![0].created_at,
+        alias: personalAsset?.alias || null
+    } : null
 
-        if (workshopAsset) {
-            asset = {
-                id: workshopAsset.id,
-                identifier: workshopAsset.identifier,
-                details: workshopAsset.details,
-                created_at: workshopAsset.created_at,
-            }
-            isPersonal = false
-            tenantName = workshopAsset.customers?.tenants?.name
-        } else {
-            return notFound()
-        }
-    }
+    if (!asset) return notFound()
+
+    const isPersonal = !!personalAsset
+    // Collect all Tenant Names linked to this asset
+    const tenantNames = workshopAssets?.map(wa => wa.customers?.tenants?.name).filter(Boolean) || []
 
     // 3. Fetch Service History
-    // A. Personal Logs
-    const { data: personalLogs } = await supabase
-        .from('personal_maintenance_logs')
-        .select('*')
-        .eq('user_asset_id', id)
-        .order('service_date', { ascending: false })
+    // A. Personal Logs (if personal asset exists)
+    let personalLogs: any[] = []
+    if (personalAsset) {
+        const { data: logs } = await supabase
+            .from('personal_maintenance_logs')
+            .select('*')
+            .eq('user_asset_id', personalAsset.id)
+            .order('service_date', { ascending: false })
+        personalLogs = logs || []
+    }
 
-    // B. Official Orders (for Workshop Assets)
+    // B. Official Orders (Aggregate orders from ALL matching workshop assets)
     let officialOrders: any[] = []
-    if (!isPersonal) {
+
+    const workshopAssetIds = workshopAssets?.map(wa => wa.id) || []
+
+    if (workshopAssetIds.length > 0) {
         const { data: orders } = await supabase
             .from('service_orders')
             .select(`
@@ -80,7 +85,7 @@ export default async function GarageAssetPage({
                 estimated_delivery_date,
                 tenants (name)
             `)
-            .eq('asset_id', id)
+            .in('asset_id', workshopAssetIds) // Query ALL matching assets
             .order('created_at', { ascending: false })
 
         officialOrders = orders || []
@@ -88,7 +93,7 @@ export default async function GarageAssetPage({
 
     // Merge and Sort
     const history = [
-        ...(personalLogs?.map(l => ({
+        ...personalLogs.map(l => ({
             id: l.id,
             type: 'manual',
             title: l.description,
@@ -96,8 +101,8 @@ export default async function GarageAssetPage({
             provider: l.provider_name,
             notes: l.notes,
             cost: l.cost
-        })) || []),
-        ...(officialOrders.map(o => ({
+        })),
+        ...officialOrders.map(o => ({
             id: o.id,
             type: 'official',
             title: `Orden #${o.folio_id}: ${o.description_problem}`,
@@ -105,7 +110,7 @@ export default async function GarageAssetPage({
             provider: o.tenants?.name || 'Taller',
             notes: `Estado: ${o.status.toUpperCase()}`,
             cost: null // Usually cost internal
-        })) || [])
+        }))
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
     return (
@@ -119,7 +124,9 @@ export default async function GarageAssetPage({
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-2">
                         {asset.alias || asset.identifier}
-                        {!isPersonal && <Badge variant="secondary" className="bg-orange-100 text-orange-700">{tenantName}</Badge>}
+                        {tenantNames.map(name => (
+                            <Badge key={name} variant="secondary" className="bg-orange-100 text-orange-700">{name}</Badge>
+                        ))}
                     </h1>
                     <p className="text-slate-500 text-sm">
                         {asset.details?.make || asset.details?.brand} {asset.details?.model} {asset.details?.year}

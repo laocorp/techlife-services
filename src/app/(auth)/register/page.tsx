@@ -1,4 +1,7 @@
 'use client'
+import Image from 'next/image'
+
+
 
 import { useState, Suspense } from 'react'
 import { useForm } from 'react-hook-form'
@@ -14,6 +17,8 @@ import { RegisterFormData, registerSchema } from '@/lib/validations/auth'
 import { signUpAction } from '@/lib/actions/auth'
 import { signUpClientAction, ClientRegisterFormData } from '@/lib/actions/auth_client'
 import { z } from 'zod'
+import { createClient } from '@/lib/supabase/client'
+import { useEffect } from 'react'
 
 // Client Schema (Inline for simplicity or import)
 const clientSchema = z.object({
@@ -26,15 +31,29 @@ function RegisterFormContent() {
     const searchParams = useSearchParams()
     const type = searchParams.get('type') || 'workshop' // 'workshop' | 'client'
     const router = useRouter()
+    const supabase = createClient()
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [userSession, setUserSession] = useState<any>(null)
 
     const isClient = type === 'client'
 
-    // We use different forms/schemas based on type, but for simplicity in this component
-    // we can use separate logic blocks or a unified conditional form.
-    // Let's use two separate form setups to avoid type clashes.
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) setUserSession(user)
+        }
+        checkSession()
+    }, [supabase])
+
+    // ... forms setup ...
+
+    async function handleLogout() {
+        await supabase.auth.signOut()
+        setUserSession(null)
+        router.refresh()
+    }
 
     // --- WORKSHOP FORM ---
     const workshopForm = useForm<RegisterFormData>({
@@ -70,7 +89,43 @@ function RegisterFormContent() {
 
     return (
         <div className="w-full max-w-md mx-auto">
-            <div className="mb-8 text-center space-y-2">
+            {userSession && (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900 flex flex-col gap-3">
+                    <div className="font-semibold">
+                        Ya tienes una sesión activa como <span className="font-mono bg-blue-100 px-1 rounded">{userSession.email}</span>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="default"
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                            onClick={() => router.push(isClient ? '/portal/dashboard' : '/dashboard')}
+                        >
+                            Ir al Panel
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 w-full"
+                            onClick={handleLogout}
+                        >
+                            Cerrar Sesión
+                        </Button>
+                    </div>
+                    <div className="text-xs text-blue-600/80 text-center">
+                        Para crear una cuenta nueva, primero cierra sesión.
+                    </div>
+                </div>
+            )}
+
+            <div className="mb-8 text-center space-y-2 flex flex-col items-center">
+                <Image
+                    src="/logo.png"
+                    alt="Logo"
+                    width={64}
+                    height={64}
+                    className="mb-4 object-contain"
+                />
                 <div className={`mx-auto h-12 w-12 rounded-xl flex items-center justify-center ${isClient ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-900 text-white'}`}>
                     {isClient ? <User className="h-6 w-6" /> : <Building2 className="h-6 w-6" />}
                 </div>

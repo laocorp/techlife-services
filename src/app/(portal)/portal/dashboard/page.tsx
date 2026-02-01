@@ -110,18 +110,47 @@ export default async function ConsumerHubPage() {
         .order('created_at', { ascending: false })
         .limit(5)
 
-    const allAssets = [
-        ...(personalAssets?.map(a => ({ ...a, source: 'Personal', tenantName: null })) || []),
-        ...(workshopAssets?.map((a: any) => ({
-            id: a.id,
-            identifier: a.identifier,
-            details: a.details,
-            created_at: a.created_at,
-            source: 'Taller',
-            tenantName: a.customer?.tenant?.name,
-            alias: null
-        })) || [])
-    ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    // Merge and Deduplicate Assets
+    const assetMap = new Map<string, any>()
+
+    // 1. Process Personal Assets (Priority)
+    personalAssets?.forEach(asset => {
+        assetMap.set(asset.identifier, {
+            ...asset,
+            source: 'Personal',
+            tenantNames: [],
+            isPersonal: true
+        })
+    })
+
+    // 2. Process Workshop Assets (Merge if identifier matches)
+    workshopAssets?.forEach((asset: any) => {
+        const existing = assetMap.get(asset.identifier)
+        const tenantName = asset.customer?.tenant?.name
+
+        if (existing) {
+            // Asset exists (Personal), just tag the workshop
+            if (tenantName && !existing.tenantNames.includes(tenantName)) {
+                existing.tenantNames.push(tenantName)
+            }
+            // If it was only a workshop asset before (unlikely in this order but possible if logic changes), mark source
+        } else {
+            // New Workshop Asset
+            assetMap.set(asset.identifier, {
+                id: asset.id, // ID of the workshop asset (customer_asset)
+                identifier: asset.identifier,
+                details: asset.details,
+                created_at: asset.created_at,
+                source: 'Taller',
+                tenantNames: tenantName ? [tenantName] : [],
+                alias: null, // Workshop assets usually don't have user aliases
+                isPersonal: false
+            })
+        }
+    })
+
+    const allAssets = Array.from(assetMap.values())
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 3)
 
     return (
@@ -151,22 +180,26 @@ export default async function ConsumerHubPage() {
                 <div className="grid md:grid-cols-3 gap-4">
                     {allAssets && allAssets.length > 0 ? (
                         allAssets.map((asset) => (
-                            <Card key={asset.id} className="bg-slate-50 border-0 shadow-sm relative overflow-hidden">
-                                {asset.source === 'Taller' && (
-                                    <div className="absolute top-0 right-0 bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-bl-md font-medium">
-                                        {asset.tenantName}
+                            <Link key={asset.id} href={`/portal/garage/${asset.identifier}`} className="block">
+                                <Card className="bg-slate-50 border-0 shadow-sm relative overflow-hidden transition-shadow hover:shadow-md">
+                                    <div className="absolute top-0 right-0 flex flex-col items-end">
+                                        {asset.tenantNames?.map((name: string) => (
+                                            <div key={name} className="bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-bl-md font-medium mb-[1px]">
+                                                {name}
+                                            </div>
+                                        ))}
                                     </div>
-                                )}
-                                <CardContent className="p-4 flex items-start gap-3">
-                                    <div className={`p-2 rounded-md shadow-sm ${asset.source === 'Taller' ? 'bg-orange-50 text-orange-600' : 'bg-white text-indigo-600'}`}>
-                                        <Car className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-slate-900">{asset.alias || asset.identifier}</h4>
-                                        <p className="text-xs text-slate-500">{asset.details?.make || '-'} {asset.details?.model} {asset.details?.year}</p>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    <CardContent className="p-4 flex items-start gap-3">
+                                        <div className={`p-2 rounded-md shadow-sm ${!asset.isPersonal ? 'bg-orange-50 text-orange-600' : 'bg-white text-indigo-600'}`}>
+                                            <Car className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-900">{asset.alias || asset.identifier}</h4>
+                                            <p className="text-xs text-slate-500">{asset.details?.make || '-'} {asset.details?.model} {asset.details?.year}</p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </Link>
                         ))
                     ) : (
                         <div className="col-span-3 text-sm text-slate-400 italic">

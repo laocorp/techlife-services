@@ -1,4 +1,7 @@
 'use client'
+import Image from 'next/image'
+
+
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -43,8 +46,23 @@ export default function LoginPage() {
             if (error) {
                 setError(error.message)
             } else {
-                router.push('/dashboard')
-                router.refresh()
+                // Check role to redirect correctly
+                const { data: { user } } = await supabase.auth.getUser()
+
+                if (user) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', user.id)
+                        .single()
+
+                    if (profile?.role === 'client') {
+                        router.push('/portal/dashboard')
+                    } else {
+                        router.push('/dashboard')
+                    }
+                    router.refresh()
+                }
             }
         } catch (err) {
             setError('Ocurrió un error inesperado al iniciar sesión.')
@@ -54,9 +72,19 @@ export default function LoginPage() {
         }
     }
 
+
+    // ...
+
     return (
         <div>
-            <div className="mb-6 text-center">
+            <div className="mb-6 text-center flex flex-col items-center">
+                <Image
+                    src="/logo.png"
+                    alt="Logo"
+                    width={64}
+                    height={64}
+                    className="mb-4 object-contain"
+                />
                 <h1 className="text-2xl font-bold text-slate-900">Iniciar Sesión</h1>
                 <p className="text-sm text-slate-500">Accede a TechLife Service</p>
             </div>

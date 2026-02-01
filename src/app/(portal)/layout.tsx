@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import Image from 'next/image'
+
 import { Wrench, LogOut, Package, Monitor, Store, Car, MapPin, ShoppingCart, User } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
@@ -32,8 +34,14 @@ export default async function PortalLayout({
                 <header className="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
                     <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
                         <Link href="/portal" className="flex items-center gap-2 font-bold text-xl text-slate-900">
-                            <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-                                <Wrench className="h-5 w-5" />
+                            <div className="bg-transparent">
+                                <Image
+                                    src="/logo_icon.png"
+                                    alt="TechLife Portal"
+                                    width={32}
+                                    height={32}
+                                    className="object-contain"
+                                />
                             </div>
                             TechLife<span className="text-indigo-600">Portal</span>
                         </Link>

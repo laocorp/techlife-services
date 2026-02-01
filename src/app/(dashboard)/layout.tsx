@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import Image from 'next/image'
+
 import { LayoutDashboard, Users, Wrench, Package, Settings, LogOut, DollarSign, BarChart2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
@@ -19,20 +21,35 @@ export default async function DashboardLayout({
 
     const { data: profile } = await supabase
         .from('profiles')
-        .select('tenant_id')
-        .eq('id', user.id)
+        .select('tenant_id, role')
         .eq('id', user.id)
         .single()
 
+    if (profile?.role === 'client') {
+        redirect('/portal/dashboard')
+    }
+
     if (!profile || !profile.tenant_id) {
-        redirect('/onboarding')
+        // If they are an owner but have no tenant (shouldn't happen), redirect to home or register
+        redirect('/')
     }
 
     return (
         <div className="flex h-screen bg-slate-50">
+
+
+            // ...
+
             {/* Sidebar */}
             <aside className="w-64 bg-slate-900 text-white hidden md:flex flex-col">
-                <div className="p-6">
+                <div className="p-6 flex items-center gap-2">
+                    <Image
+                        src="/logo.png"
+                        alt="Logo"
+                        width={32}
+                        height={32}
+                        className="bg-white rounded-lg p-0.5" // Add white bg for visibility on dark theme
+                    />
                     <h1 className="text-xl font-bold tracking-tight">TechLife<span className="text-indigo-400">Service</span></h1>
                 </div>
 

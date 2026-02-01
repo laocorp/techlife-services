@@ -36,8 +36,12 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
             getOrderPaymentsAction(orderId)
         ])
 
-        // Calculate Total Cost
-        const cost = (itemsData || []).reduce((sum: number, item: any) => sum + (item.total || 0), 0)
+        // Calculate Total Cost manually to ensure accuracy
+        const cost = (itemsData || []).reduce((sum: number, item: any) => {
+            const qty = Number(item.quantity) || 0
+            const price = Number(item.unit_price) || 0
+            return sum + (qty * price)
+        }, 0)
         setTotalCost(cost)
         setPayments(paymentsData || [])
         setLoading(false)
