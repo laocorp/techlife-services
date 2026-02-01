@@ -18,23 +18,49 @@ export async function createOrderAction(data: OrderFormData) {
     const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
     if (!profile?.tenant_id) return { error: 'Sin tenant' }
 
+    console.log('--- CREATE ORDER STARTED ---')
+    console.log('Input:', JSON.stringify(data))
+
     const validated = orderSchema.safeParse(data)
-    if (!validated.success) return { error: 'Datos inválidos' }
+    if (!validated.success) {
+        console.error('Validation Invalid:', validated.error)
+        return { error: 'Datos inválidos' }
+    }
 
     const { customerId, assetId, priority, description, notes } = validated.data
+    console.log('Validated Data: ', { customerId, assetId })
 
     let finalCustomerId = customerId
     try {
-        const { ensureLocalCustomer } = await import('@/lib/actions/customers')
-        finalCustomerId = await ensureLocalCustomer(customerId)
-    } catch (e) {
-        return { error: 'Error al procesar cliente virtual' }
+        if (customerId.startsWith('virtual-')) {
+            console.log('Detected Virtual Customer. Calling ensureLocalCustomer...')
+            // Dynamic import to avoid circular dep if any
+            const { ensureLocalCustomer } = await import('@/lib/actions/customers')
+            finalCustomerId = await ensureLocalCustomer(customerId)
+            console.log('ensureLocalCustomer Result:', finalCustomerId)
+        }
+    } catch (e: any) {
+        console.error('Virtual Customer Error:', e)
+        return { error: `Error virtual: ${e.message}` }
+    }
+
+    console.log('Final Customer ID for Insert:', finalCustomerId)
+
+    // NEW: Ensure Asset is Local (Handle Shared Assets)
+    let finalAssetId = assetId
+    try {
+        const { ensureLocalAsset } = await import('@/lib/actions/assets')
+        finalAssetId = await ensureLocalAsset(assetId, finalCustomerId, profile.tenant_id)
+        console.log('ensureLocalAsset Result:', finalAssetId)
+    } catch (e: any) {
+        console.error('Asset Import Error:', e)
+        return { error: `Error al procesar activo: ${e.message}` }
     }
 
     const { error } = await supabase.from('service_orders').insert({
         tenant_id: profile.tenant_id,
         customer_id: finalCustomerId,
-        asset_id: assetId,
+        asset_id: finalAssetId,
         priority,
         description_problem: description,
         assigned_to: user.id, // Assign to creator by default for now
@@ -42,10 +68,11 @@ export async function createOrderAction(data: OrderFormData) {
     })
 
     if (error) {
-        console.error('Create Order Error:', error)
-        return { error: 'Error al crear orden' }
+        console.error('Supabase Insert Error:', error)
+        return { error: `DB Error: ${error.message}` }
     }
 
+    console.log('Order Created Successfully')
     revalidatePath('/orders')
     return { success: true }
 }
@@ -58,7 +85,7 @@ export async function getOrdersAction(filters?: { assetId?: string }) {
         .from('service_orders')
         .select(`
             *,
-            customers (full_name),
+            customers (id, full_name, user_id),
             customer_assets (identifier, details)
         `)
         .order('created_at', { ascending: false })
@@ -67,12 +94,42 @@ export async function getOrdersAction(filters?: { assetId?: string }) {
         query = query.eq('asset_id', filters.assetId)
     }
 
-    const { data, error } = await query
+    const { data: orders, error } = await query
 
     if (error) throw new Error(error.message)
 
-    // Explicit casting or validation could go here
-    return data as any[]
+    // Patch names with Connections (Fix for "Cliente Importado")
+    try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+            const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+            if (profile?.tenant_id) {
+                const { data: connections } = await supabase.rpc('get_tenant_connected_customers', {
+                    p_tenant_id: profile.tenant_id
+                })
+
+                if (connections && orders) {
+                    for (const order of orders) {
+                        // @ts-ignore
+                        const cust = order.customers
+                        if (cust?.user_id) {
+                            // @ts-ignore
+                            const conn = connections.find(c => c.user_id === cust.user_id)
+                            if (conn && conn.full_name) {
+                                // Patch the display name
+                                cust.full_name = conn.full_name
+                            }
+                        }
+                    }
+                    console.log('Patched orders with connection names')
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Patch Error:', e)
+    }
+
+    return orders as any[]
 }
 
 export async function getOrderByIdAction(orderId: string) {
@@ -201,4 +258,58 @@ export async function createWarrantyOrderAction(originalOrderId: string) {
 
     revalidatePath('/orders')
     return { success: true, orderId: newOrder.id }
+}
+
+export async function deleteOrderAction(orderId: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autorizado' }
+
+    const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+    if (!profile?.tenant_id) return { error: 'Sin tenant' }
+
+    // 1. Delete Dependencies (Cascade)
+    // We must manually delete dependent rows because Foreign Keys are likely RESTRICT
+
+    // Items (service_order_items.service_order_id)
+    const { error: itemsError } = await supabase
+        .from('service_order_items')
+        .delete()
+        .eq('service_order_id', orderId)
+
+    if (itemsError) console.error('Error deleting items:', itemsError)
+
+    // Payments (payments.service_order_id)
+    const { error: paymentsError } = await supabase
+        .from('payments')
+        .delete()
+        .eq('service_order_id', orderId)
+
+    if (paymentsError) console.error('Error deleting payments:', paymentsError)
+
+    // Events (service_order_events.service_order_id)
+    const { error: eventsError } = await supabase
+        .from('service_order_events')
+        .delete()
+        .eq('service_order_id', orderId)
+
+    if (eventsError) console.error('Error deleting events:', eventsError)
+
+    // 2. Delete Order
+    const { error } = await supabase
+        .from('service_orders')
+        .delete()
+        .eq('id', orderId)
+        .eq('tenant_id', profile.tenant_id)
+
+    if (error) {
+        console.error('Delete Order Error:', error)
+        // Return detailed error for debugging
+        return { error: `No se pudo eliminar: ${error.message} (Código: ${error.code})` }
+    }
+
+    revalidatePath('/orders')
+    return { success: true }
 }

@@ -207,6 +207,24 @@ export async function getCustomersAction() {
 
     if (connections) {
         console.log('Connections Found (RPC):', connections.length)
+
+        // 3a. Patch Local Customers with fresh names from Connections
+        // This ensures the list shows the real name even if the DB record is stale ("Cliente Importado")
+        for (const localCust of combined) {
+            if (localCust.user_id) {
+                // @ts-ignore
+                const conn = connections.find(c => c.user_id === localCust.user_id)
+                if (conn && conn.full_name) {
+                    if (localCust.full_name === 'Cliente Importado' || !localCust.full_name) {
+                        localCust.full_name = conn.full_name
+                        localCust.phone = conn.phone || localCust.phone // Update phone too if available
+                        localCust.email = conn.email || localCust.email // Update email too if available
+                    }
+                }
+            }
+        }
+
+        // 3b. Add Virtual Customers (Not yet imported)
         for (const conn of connections) {
             // @ts-ignore
             if (!existingUserIds.has(conn.user_id)) {
@@ -291,9 +309,6 @@ export async function deleteCustomerAction(id: string) {
 }
 
 export async function ensureLocalCustomer(customerId: string) {
-    // If it's a real UUID (not virtual), assume it exists
-    if (!customerId.startsWith('virtual-')) return customerId
-
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
     const { data: { user } } = await supabase.auth.getUser()
@@ -303,30 +318,79 @@ export async function ensureLocalCustomer(customerId: string) {
     const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
     if (!profile?.tenant_id) throw new Error('No tenant')
 
-    const targetUserId = customerId.replace('virtual-', '')
+    let targetUserId = ''
+    let isVirtual = customerId.startsWith('virtual-')
+
+    if (isVirtual) {
+        targetUserId = customerId.replace('virtual-', '')
+    } else {
+        // If real ID, we need to find the LINKED user_id to see if we can update info from connection
+        const { data: existingCustomer } = await supabase.from('customers').select('user_id').eq('id', customerId).single()
+        if (existingCustomer?.user_id) {
+            targetUserId = existingCustomer.user_id
+        } else {
+            // It's a purely local customer with no link, can't update from profile.
+            return customerId
+        }
+    }
+
+    console.log('[ensureLocalCustomer] Target User ID:', targetUserId)
+
+    // FALLBACK: Use existing 'get_tenant_connected_customers' RPC which we KNOW works and returns names.
+    // This avoids needing a new SQL migration.
+    const { data: connectedUsers, error: rpcError } = await supabase.rpc('get_tenant_connected_customers', {
+        p_tenant_id: profile.tenant_id
+    })
+
+    if (rpcError) {
+        console.error('[ensureLocalCustomer] RPC Error:', rpcError)
+    }
+
+    // Find our specific user in the connected list
+    const targetUser = connectedUsers?.find((u: any) => u.user_id === targetUserId)
+    console.log('[ensureLocalCustomer] Found in connection list:', targetUser)
+
+    // usage of email or phone as fallback name
+    let realName = targetUser?.full_name
+
+    if (!realName || realName === 'Cliente Importado') {
+        const fallback = targetUser?.email || targetUser?.phone || `Usuario ${targetUserId.slice(0, 4)}`
+        realName = fallback ? `(Importado) ${fallback}` : 'Cliente Sin Nombre'
+    }
+
+    const realPhone = targetUser?.phone || ''
+    // The RPC might not return email for privacy, but let's check. 
+    // If not, we leave it null or generic.
+    const realEmail = targetUser?.email || null
+
+    console.log('[ensureLocalCustomer] Resolved Name Final:', realName)
 
     // Check if already exists (race condition check)
     const { data: existing } = await supabase.from('customers')
-        .select('id')
+        .select('id, full_name')
         .eq('tenant_id', profile.tenant_id)
         .eq('user_id', targetUserId)
         .maybeSingle()
 
-    if (existing) return existing.id
-
-    // Fetch User Profile Data for the new customer record
-    const { data: targetProfile } = await supabase.from('profiles')
-        .select('full_name, phone_number, email')
-        .eq('id', targetUserId)
-        .single()
+    if (existing) {
+        // PERMANENT FIX: If existing name is generic "Cliente Importado" but we have real data, UPDATE IT.
+        if (existing.full_name === 'Cliente Importado' && realName !== 'Cliente Importado') {
+            await supabase.from('customers').update({
+                full_name: realName,
+                phone: realPhone,
+                email: realEmail
+            }).eq('id', existing.id)
+        }
+        return existing.id
+    }
 
     // Insert new customer
     const { data: newCustomer, error } = await supabase.from('customers').insert({
         tenant_id: profile.tenant_id,
         user_id: targetUserId, // Link to the user
-        full_name: targetProfile?.full_name || 'Cliente Importado',
-        phone: targetProfile?.phone_number || '',
-        email: targetProfile?.email || null // If available
+        full_name: realName,
+        phone: realPhone,
+        email: realEmail
     }).select('id').single()
 
     if (error) {

@@ -72,7 +72,7 @@ export function FloatingNotification({ tenantId }: { tenantId: string }) {
                 {notifications.map((order) => (
                     <div
                         key={order.id}
-                        className="pointer-events-auto bg-white rounded-lg shadow-lg border border-indigo-100 p-4 w-72 animate-in slide-in-from-left duration-300 flex items-start gap-3 cursor-pointer hover:bg-indigo-50/50 transition-colors"
+                        className="pointer-events-auto bg-white rounded-lg shadow-lg border border-indigo-100 p-4 w-72 animate-in slide-in-from-left duration-300 flex items-start gap-3 cursor-pointer hover:bg-indigo-50 transition-colors"
                         onClick={() => {
                             setSelectedOrderId(order.id)
                             removeNotification(order.id)

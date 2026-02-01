@@ -53,6 +53,8 @@ export default async function MyGaragePage() {
         tenantName: null
     })) || []
 
+    const personalIdentifiers = new Set(normalizedPersonal.map(a => a.identifier))
+
     const normalizedWorkshop = workshopAssets?.map((a: any) => ({
         id: a.id,
         identifier: a.identifier,
@@ -60,8 +62,8 @@ export default async function MyGaragePage() {
         created_at: a.created_at,
         source: 'Taller',
         tenantName: a.customers?.tenants?.name,
-        alias: null // Workshop assets might not have alias in this schema, or use notes
-    })) || []
+        alias: null
+    })).filter((a: any) => !personalIdentifiers.has(a.identifier)) || []
 
     const allAssets = [...normalizedPersonal, ...normalizedWorkshop].sort((a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

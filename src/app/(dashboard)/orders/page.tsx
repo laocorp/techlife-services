@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getOrdersAction } from '@/lib/actions/orders'
+
 
 interface OrdersPageProps {
     searchParams: Promise<{ assetId?: string }>
@@ -27,7 +28,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
 
             <div className="border rounded-lg">
                 <table className="w-full text-sm">
-                    <thead className="bg-muted/50 border-b">
+                    <thead className="bg-muted border-b">
                         <tr className="text-left">
                             <th className="p-4 font-medium">Folio</th>
                             <th className="p-4 font-medium">Cliente</th>
@@ -46,7 +47,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                             </tr>
                         ) : (
                             orders.map((order: any) => (
-                                <tr key={order.id} className="border-b last:border-0 hover:bg-muted/50 group">
+                                <tr key={order.id} className="border-b last:border-0 hover:bg-muted group">
                                     <td className="p-4 font-medium">
                                         <Link href={`/orders/${order.id}`} className="hover:underline text-primary">
                                             #{order.folio_id}
@@ -54,9 +55,11 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                                     </td>
                                     <td className="p-4">{order.customers?.full_name || 'N/A'}</td>
                                     <td className="p-4">
-                                        {order.customer_assets?.identifier}
-                                        <div className="text-xs text-muted-foreground truncate max-w-[150px]">
-                                            {order.description_problem}
+                                        <div className="font-medium">
+                                            {order.customer_assets?.details?.make || order.customer_assets?.details?.brand} {order.customer_assets?.details?.model}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            {order.customer_assets?.identifier}
                                         </div>
                                     </td>
                                     <td className="p-4">
@@ -73,7 +76,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                                     <td className="p-4 text-muted-foreground">
                                         {new Date(order.created_at).toLocaleDateString()}
                                     </td>
-                                    <td className="p-4">
+                                    <td className="p-4 flex gap-2 justify-end">
                                         <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Link href={`/orders/${order.id}`}>Ver</Link>
                                         </Button>

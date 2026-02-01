@@ -213,6 +213,17 @@ export default async function WorkshopProfilePage({
                 </div>
             </div>
 
+            {/* NEW: SERVICE HISTORY SECTION (Only if Connected) */}
+            {isConnected && (
+                <div className="max-w-5xl mx-auto px-4 mt-8">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-6">Historial de Servicio</h2>
+
+                    {/* Fetch orders inside the component or pass as prop? 
+                        Let's fetch here since it's a Server Component */}
+                    <ServiceHistoryList tenantId={id} userId={user.id} />
+                </div>
+            )}
+
             {/* NEW: STORE SECTION */}
             <div className="max-w-5xl mx-auto px-4 mt-8">
                 <div className="flex items-center justify-between mb-6">
@@ -274,5 +285,103 @@ export default async function WorkshopProfilePage({
                 )}
             </div>
         </div >
+    )
+}
+
+async function ServiceHistoryList({ tenantId, userId }: { tenantId: string, userId: string }) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    // Fetch orders for this user in this tenant
+    // We need to join customers to filter by user_id
+    const { data: orders } = await supabase
+        .from('service_orders')
+        .select(`
+            id,
+            ticket_number,
+            status,
+            created_at,
+            total,
+            assets (
+                identifier,
+                details
+            )
+        `)
+        .eq('tenant_id', tenantId)
+    // This relies on RLS allowing "read if I am the customer linked to this order"
+    // OR we need to find the customer_id first. 
+    // Let's try the direct join filter first, if RLS key is correct.
+    // Actually simpler: Find the customer record first to be safe and use that ID.
+    // But we might have multiple customer records? No, unique per tenant/user ideally.
+
+    // Safer approach: Find my customer ID for this tenant
+    const { data: customer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('tenant_id', tenantId)
+        .eq('user_id', userId)
+        .single()
+
+    if (!customer) return <div className="text-slate-500 italic">No hay historial de servicios disponible.</div>
+
+    const { data: serviceOrders } = await supabase
+        .from('service_orders')
+        .select(`
+            *,
+            assets (
+                identifier,
+                details
+            )
+        `)
+        .eq('customer_id', customer.id)
+        .order('created_at', { ascending: false })
+
+    if (!serviceOrders || serviceOrders.length === 0) {
+        return (
+            <div className="bg-white rounded-xl border border-dashed border-slate-200 p-8 text-center text-slate-500">
+                Aún no tienes órdenes de servicio con este taller.
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-4">
+            {serviceOrders.map((order) => (
+                <Card key={order.id} className="border-slate-200 overflow-hidden">
+                    <CardContent className="p-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 bg-white">
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
+                                    #{order.ticket_number}
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h4 className="font-bold text-slate-900">
+                                            {order.assets?.identifier || 'Servicio General'}
+                                        </h4>
+                                        <Badge variant={
+                                            order.status === 'completed' ? 'default' :
+                                                order.status === 'in_progress' ? 'secondary' : 'outline'
+                                        }>
+                                            {order.status === 'completed' ? 'Completado' :
+                                                order.status === 'in_progress' ? 'En Taller' :
+                                                    order.status === 'pending' ? 'Recibido' : order.status}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-sm text-slate-500">
+                                        {new Date(order.created_at).toLocaleDateString()} • {order.assets?.details?.make} {order.assets?.details?.model}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <span className="block text-xs text-slate-400">Total</span>
+                                <span className="font-bold text-slate-900">${order.total?.toFixed(2) || '0.00'}</span>
+                            </div>
+                        </div>
+                        {/* Optional: Add "Ver Detalles" link to specific order page if exists */}
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
     )
 }

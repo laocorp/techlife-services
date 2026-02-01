@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { getCustomersAction } from '@/lib/actions/customers'
 import EnablePortalButton from '@/components/features/customers/EnablePortalButton'
 import DeleteCustomerButton from '@/components/features/customers/DeleteCustomerButton'
+import CustomerSearch from '@/components/features/customers/CustomerSearch'
 export default async function CustomersPage({
     searchParams,
 }: {
@@ -21,6 +22,9 @@ export default async function CustomersPage({
                     El usuario recibirá una notificación para conectar.
                 </div>
             )}
+
+            <CustomerSearch />
+
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900">Clientes</h1>

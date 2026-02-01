@@ -3,120 +3,157 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
-export async function connectWithWorkshopAction(formData: FormData) {
-    const tenantId = formData.get('tenantId') as string
+export async function sendConnectionRequestAction(userId: string) {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return redirect('/auth/login')
+    if (!user) throw new Error('Unauthorized')
 
-    // 1. Create or Update Connection (Status: Accepted because User initiated it)
-    const { error: connectionError } = await supabase
+    // Get tenant
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user.id)
+        .single()
+
+    if (!profile?.tenant_id) throw new Error('No tenant found')
+
+    // Check if connection exists
+    const { data: existing } = await supabase
         .from('tenant_connections')
-        .upsert({
-            tenant_id: tenantId,
-            user_id: user.id,
-            status: 'accepted',
-            initiated_by: 'user',
-            updated_at: new Date().toISOString()
-        }, { onConflict: 'tenant_id, user_id' })
+        .select('status')
+        .eq('tenant_id', profile.tenant_id)
+        .eq('user_id', userId)
+        .single()
 
-    if (connectionError) {
-        console.error('Connection Error:', connectionError)
-        throw new Error('No se pudo conectar con el taller.')
+    if (existing) {
+        if (existing.status === 'accepted') return { error: 'El usuario ya está conectado.' }
+        if (existing.status === 'pending') return { error: 'Ya existe una solicitud pendiente.' }
+        if (existing.status === 'blocked') return { error: 'No se puede conectar con este usuario.' }
+        // If rejected, maybe allow retry? For now, just error.
+        if (existing.status === 'rejected') return { error: 'El usuario rechazó la conexión previamente.' }
     }
 
-    // 2. Ensure Local Customer Record exists for the Workshop
-    // This allows the workshop to add notes, etc.
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-    const name = user.user_metadata?.full_name || profile?.full_name || user.email?.split('@')[0] || 'Cliente Nuevo'
+    // Create Connection Request
+    const { error } = await supabase
+        .from('tenant_connections')
+        .insert({
+            tenant_id: profile.tenant_id,
+            user_id: userId,
+            status: 'pending',
+            initiated_by: 'tenant'
+        })
 
-    // Check if customer record exists to avoid overwriting existing local data
-    const { data: existingCustomer } = await supabase
-        .from('customers')
-        .select('id')
+    if (error) {
+        console.error('Error creating connection:', error)
+        return { error: 'Error al enviar solicitud.' }
+    }
+
+    // TODO: Create Notification for User?
+    // Trigger notification manually since we don't have a DB trigger for this specific case yet?
+    // "El Taller X te ha enviado una solicitud de conexión"
+    // Let's rely on the Realtime Notifications (Fase 8) if possible, or add it here.
+    // For now, let's just insert the notification directly to be safe.
+
+    await supabase.from('notifications').insert({
+        user_id: userId,
+        title: 'Nueva Solicitud de Conexión',
+        message: 'Un taller quiere conectarse contigo para compartir historial de servici.',
+        type: 'info',
+        link: '/portal/profile', // Or wherever requests are managed
+        read: false
+    })
+
+    revalidatePath('/dashboard/customers')
+    return { success: true }
+}
+
+export async function lookupUserAction(email: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    // Use the Secure RPC
+    const { data, error } = await supabase.rpc('lookup_user_by_email', { search_email: email })
+
+    if (error) {
+        console.error('Lookup failed:', error)
+        return null
+    }
+
+    // RPC returns array (table function)
+    if (data && data.length > 0) {
+        return data[0] // { id, full_name, avatar_url }
+    }
+
+    return null
+}
+
+export async function respondToInvitationAction(connectionId: string, accept: boolean) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    const status = accept ? 'accepted' : 'rejected'
+
+    const { error } = await supabase
+        .from('tenant_connections')
+        .update({ status })
+        .eq('id', connectionId)
+        .eq('user_id', user.id) // Security: Ensure own connection
+
+    if (error) {
+        console.error('Error responding to invitation:', error)
+        return { error: 'Error al responder la invitación' }
+    }
+
+    revalidatePath('/portal/profile')
+    return { success: true }
+}
+
+export async function connectWithWorkshopAction(tenantId: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    // Check if connection exists
+    const { data: existing } = await supabase
+        .from('tenant_connections')
+        .select('status')
         .eq('tenant_id', tenantId)
         .eq('user_id', user.id)
         .single()
 
-    if (!existingCustomer) {
-        await supabase.from('customers').insert({
+    if (existing) {
+        if (existing.status === 'accepted') return { error: 'Ya estás conectado con este taller.' }
+        if (existing.status === 'pending') return { error: 'Ya enviaste una solicitud.' }
+        if (existing.status === 'blocked') return { error: 'No puedes conectar con este taller.' }
+    }
+
+    // Create Connection (User initiated -> Status: accepted)
+    // We assume if a user wants to connect to a public workshop, it's auto-accepted for now.
+    // Or it could be 'pending' if the workshop needs to approve.
+    // Based on "Insertar conexión con estado accepted (iniciada por usuario)" in task list:
+    const { error } = await supabase
+        .from('tenant_connections')
+        .insert({
             tenant_id: tenantId,
-            user_id: user.id, // Link to global user
-            full_name: name,
-            email: user.email,
-            phone: user.user_metadata?.phone || profile?.phone
+            user_id: user.id,
+            status: 'accepted',
+            initiated_by: 'user'
         })
+
+    if (error) {
+        console.error('Error connecting with workshop:', error)
+        return { error: 'Error al conectar con el taller.' }
     }
 
     revalidatePath(`/portal/workshops/${tenantId}`)
-    revalidatePath('/portal/dashboard')
-
-    return { success: true }
-}
-
-export async function respondToInvitationAction(connectionId: number, status: 'accepted' | 'rejected') {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { error: 'No autorizado' }
-
-    // 1. Verify Connection belongs to user and is pending
-    const { data: connection } = await supabase
-        .from('tenant_connections')
-        .select('*, tenant:tenants(*)')
-        .eq('id', connectionId)
-        .eq('user_id', user.id)
-        .eq('status', 'pending')
-        .single()
-
-    if (!connection) return { error: 'Invitación no encontrada o inválida.' }
-
-    // 2. Update Status
-    const { error: updateError } = await supabase
-        .from('tenant_connections')
-        .update({
-            status: status,
-            updated_at: new Date().toISOString()
-        })
-        .eq('id', connectionId)
-
-    if (updateError) {
-        console.error('Error updating connection:', updateError)
-        return { error: 'Error al procesar la invitación.' }
-    }
-
-    // 3. If Accepted, Ensure Local Customer Record Exists
-    if (status === 'accepted') {
-        const tenantId = connection.tenant_id
-
-        // Check if customer record exists
-        const { data: existingCustomer } = await supabase
-            .from('customers')
-            .select('id')
-            .eq('tenant_id', tenantId)
-            .eq('user_id', user.id)
-            .single()
-
-        if (!existingCustomer) {
-            // Get user profile for defaults
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-            const name = user.user_metadata?.full_name || profile?.full_name || user.email?.split('@')[0] || 'Cliente Conectado'
-
-            await supabase.from('customers').insert({
-                tenant_id: tenantId,
-                user_id: user.id,
-                full_name: name,
-                email: user.email,
-                phone: user.user_metadata?.phone || profile?.phone
-            })
-        }
-    }
-
-    revalidatePath('/portal/dashboard')
+    revalidatePath('/portal/profile')
     return { success: true }
 }

@@ -21,7 +21,12 @@ export default async function DashboardLayout({
         .from('profiles')
         .select('tenant_id')
         .eq('id', user.id)
+        .eq('id', user.id)
         .single()
+
+    if (!profile || !profile.tenant_id) {
+        redirect('/onboarding')
+    }
 
     return (
         <div className="flex h-screen bg-slate-50">

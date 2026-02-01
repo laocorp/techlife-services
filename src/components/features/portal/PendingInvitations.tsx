@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
 interface Invitation {
-    id: number
+    id: string
     created_at: string
     tenant: {
         id: string
@@ -26,7 +26,7 @@ export default function PendingInvitations({ invitations }: { invitations: Invit
 
     if (!invitations || invitations.length === 0) return null
 
-    const handleResponse = (id: number, status: 'accepted' | 'rejected') => {
+    const handleResponse = (id: string, status: 'accepted' | 'rejected') => {
         startTransition(async () => {
             const result = await respondToInvitationAction(id, status)
             if (result.success) {
@@ -46,7 +46,7 @@ export default function PendingInvitations({ invitations }: { invitations: Invit
             </h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {invitations.map((inv) => (
-                    <Card key={inv.id} className="border-indigo-100 bg-indigo-50/50">
+                    <Card key={inv.id} className="border-indigo-100 bg-indigo-50">
                         <CardContent className="p-4 flex flex-col gap-4">
                             <div className="flex items-start gap-4">
                                 <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">

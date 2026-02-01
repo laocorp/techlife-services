@@ -36,7 +36,7 @@ export default function ProductGrid({ products, onAdd }: ProductGridProps) {
     })
 
     return (
-        <div className="flex flex-col h-full bg-slate-50/50 rounded-xl border border-slate-200 overflow-hidden">
+        <div className="flex flex-col h-full bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
             {/* Header / Search */}
             <div className="p-4 bg-white border-b space-y-4">
                 <div className="relative">

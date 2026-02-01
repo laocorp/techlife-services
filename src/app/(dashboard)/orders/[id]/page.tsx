@@ -86,9 +86,16 @@ export default async function OrderDetailPage({ params }: PageProps) {
                             </h3>
                             <div className="space-y-1 text-sm">
                                 <p className="font-medium text-lg">{order.customer_assets?.identifier}</p>
-                                <p className="text-muted-foreground text-xs font-mono bg-slate-100 p-1 rounded inline-block">
-                                    {JSON.stringify(order.customer_assets?.details)}
-                                </p>
+                                {order.customer_assets?.details && (
+                                    <div className="text-muted-foreground flex flex-col gap-1">
+                                        <span>
+                                            {order.customer_assets.details.make || order.customer_assets.details.brand} {order.customer_assets.details.model}
+                                        </span>
+                                        {order.customer_assets.details.color && (
+                                            <span className="text-xs text-slate-400">Color: {order.customer_assets.details.color}</span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
