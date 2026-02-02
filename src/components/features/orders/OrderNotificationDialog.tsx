@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, CheckCircle, ExternalLink, MapPin, User, Phone, Mail, FileText, X } from 'lucide-react'
+import { Loader2, CheckCircle, ExternalLink, MapPin, User, Phone, Mail, FileText, X, PackageCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
@@ -97,7 +97,7 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                 title: 'Pago Confirmado',
                 message: `Hemos recibido tu pago para la Orden #${order.id.slice(0, 8)}. Tu pedido está en preparación.`,
                 type: 'success',
-                link: '/portal/dashboard'
+                link: `/portal/purchases/${order.id}`
             })
         }
 
@@ -176,6 +176,44 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
         router.refresh()
     }
 
+    const handleConfirmPickup = async () => {
+        if (!order) return
+        setConfirming(true)
+
+        // 1. Update Order Status to delivered
+        const { error } = await supabase
+            .from('ecommerce_orders')
+            .update({
+                status: 'delivered',
+                shipped_at: new Date().toISOString() // Reuse shipped_at for delivery time
+            })
+            .eq('id', order.id)
+
+        if (error) {
+            console.error('Update error:', error)
+            toast({ title: 'Error al actualizar', description: error.message, variant: 'destructive' })
+            setConfirming(false)
+            return
+        }
+
+        // 2. Notify Customer
+        if (order.user_id) {
+            await supabase.from('notifications').insert({
+                user_id: order.user_id,
+                title: 'Pedido Entregado',
+                message: `¡Gracias por tu compra! Tu pedido #${order.id.slice(0, 8)} ha sido entregado en tienda.`,
+                type: 'success',
+                link: `/portal/purchases/${order.id}`
+            })
+        }
+
+        toast({ title: 'Entrega Confirmada', description: 'El pedido ha sido marcado como entregado.' })
+        setConfirming(false)
+        fetchOrder(order.id)
+        router.refresh()
+    }
+
+
     if (!orderId) return null
 
     return (
@@ -195,21 +233,21 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                 ) : order ? (
                     <div className="space-y-6">
                         {/* Status Bar */}
-                        <div className="flex gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+                        <div className="flex gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
                             <div className="flex-1">
-                                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Estado</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Estado</p>
                                 <div className="flex gap-2">
                                     <Badge variant={order.payment_status === 'paid' ? 'default' : 'secondary'} className="mt-1">
                                         {order.payment_status === 'paid' ? 'Pagado' : 'Pendiente'}
                                     </Badge>
                                     {order.status === 'shipped' && (
-                                        <Badge variant="outline" className="mt-1 bg-blue-50 text-blue-700 border-blue-200">Enviado</Badge>
+                                        <Badge variant="outline" className="mt-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">Enviado</Badge>
                                     )}
                                 </div>
                             </div>
                             <div className="flex-1">
-                                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Total</p>
-                                <p className="text-lg font-bold text-slate-900">${order.total_amount?.toFixed(2)}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Total</p>
+                                <p className="text-lg font-bold text-slate-900 dark:text-slate-100">${order.total_amount?.toFixed(2)}</p>
                             </div>
                         </div>
 
@@ -218,36 +256,36 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                             <>
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-3">
-                                        <h4 className="font-semibold text-slate-900 flex items-center gap-2 border-b pb-2">
+                                        <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                                             <User className="h-4 w-4" /> Cliente
                                         </h4>
-                                        <div className="text-sm space-y-2">
+                                        <div className="text-sm space-y-2 text-slate-700 dark:text-slate-300">
                                             <p><span className="font-medium">Nombre:</span> {order.shipping_address?.fullname}</p>
                                             <p className="flex items-center gap-2"><Mail className="h-3 w-3 text-slate-400" /> {order.shipping_address?.email}</p>
                                             <p className="flex items-center gap-2"><Phone className="h-3 w-3 text-slate-400" /> {order.shipping_address?.phone}</p>
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <h4 className="font-semibold text-slate-900 flex items-center gap-2 border-b pb-2">
+                                        <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                                             <MapPin className="h-4 w-4" /> Envío
                                         </h4>
-                                        <div className="text-sm space-y-1">
+                                        <div className="text-sm space-y-1 text-slate-700 dark:text-slate-300">
                                             <p>{order.shipping_address?.address}</p>
                                             <p>{order.shipping_address?.city}, {order.shipping_address?.state}</p>
                                             {order.status === 'shipped' && (
                                                 <div className="mt-2 text-xs space-y-2">
-                                                    <div className="p-2 bg-blue-50 rounded border border-blue-100 text-blue-800">
+                                                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded border border-blue-100 dark:border-blue-800 text-blue-800 dark:text-blue-300">
                                                         <p className="font-bold">Datos de Rastreo:</p>
                                                         <p>Empresa: {order.shipping_carrier}</p>
                                                         <p>Guía: {order.shipping_tracking}</p>
                                                     </div>
 
                                                     {shippingProofUrl && (
-                                                        <div className="bg-slate-50 p-2 rounded border border-slate-200">
-                                                            <p className="font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                                                        <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">
+                                                            <p className="font-semibold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1">
                                                                 <FileText className="h-3 w-3" /> Comprobante de Envío
                                                             </p>
-                                                            <div className="relative aspect-video bg-white rounded border overflow-hidden group">
+                                                            <div className="relative aspect-video bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700 overflow-hidden group">
                                                                 <img
                                                                     src={shippingProofUrl}
                                                                     alt="Comprobante Envío"
@@ -271,19 +309,19 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                                 </div>
 
                                 <div>
-                                    <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                                    <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
                                         <FileText className="h-4 w-4" /> Productos ({order.items?.length})
                                     </h4>
-                                    <div className="rounded-md border border-slate-200 overflow-hidden">
+                                    <div className="rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden">
                                         <table className="w-full text-sm text-left">
-                                            <thead className="bg-slate-50 text-slate-500 font-medium">
+                                            <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium">
                                                 <tr>
                                                     <th className="p-3">Producto</th>
                                                     <th className="p-3 text-center">Cant</th>
                                                     <th className="p-3 text-right">Total</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-slate-100">
+                                            <tbody className="divide-y divide-slate-100 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
                                                 {order.items?.map((item: any, i: number) => (
                                                     <tr key={i}>
                                                         <td className="p-3">{item.products?.name}</td>
@@ -297,11 +335,11 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                                 </div>
 
                                 {order.payment_proof_url && (
-                                    <div className="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100">
-                                        <h4 className="font-semibold text-indigo-900 mb-2 flex items-center gap-2">
+                                    <div className="bg-indigo-50/50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                                        <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2 flex items-center gap-2">
                                             <FileText className="h-4 w-4" /> Comprobante de Pago
                                         </h4>
-                                        <div className="aspect-video relative bg-white rounded border border-indigo-200 overflow-hidden group">
+                                        <div className="aspect-video relative bg-white dark:bg-slate-900 rounded border border-indigo-200 dark:border-indigo-800 overflow-hidden group">
                                             {paymentProofUrl ? (
                                                 <>
                                                     <img src={paymentProofUrl} alt="Comprobante" className="object-contain w-full h-full" />
@@ -318,14 +356,14 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                             </>
                         ) : (
                             // Shipping Form
-                            <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 space-y-4">
-                                <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800">
-                                    <TruckIcon className="h-5 w-5 text-indigo-600" />
+                            <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg border border-slate-200 dark:border-slate-700 space-y-4">
+                                <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                                    <TruckIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                     Registrar Envío
                                 </h3>
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-sm font-medium text-slate-700">Empresa de Transporte</label>
+                                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Empresa de Transporte</label>
                                         <input
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                             placeholder="Ej: Servientrega, Uber Flash..."
@@ -334,7 +372,7 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-slate-700">Número de Guía / Tracking Link</label>
+                                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Número de Guía / Tracking Link</label>
                                         <input
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                             placeholder="Ej: 1234567890"
@@ -343,7 +381,7 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-slate-700">Comprobante / Foto Guía (Opcional)</label>
+                                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Comprobante / Foto Guía (Opcional)</label>
                                         <input
                                             type="file"
                                             className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -363,7 +401,7 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                         )}
 
                         {!isShipping && (
-                            <DialogFooter className="gap-2 sm:justify-between items-center border-t pt-4">
+                            <DialogFooter className="gap-2 sm:justify-between items-center border-t border-slate-200 dark:border-slate-700 pt-4">
                                 <Button variant="ghost" onClick={onClose}>Cerrar</Button>
                                 <div className="flex gap-2">
                                     {/* Action Buttons */}
@@ -373,17 +411,28 @@ export function OrderNotificationDialog({ orderId, onClose }: OrderNotificationD
                                             <CheckCircle className="mr-2 h-4 w-4" /> Confirmar Pago
                                         </Button>
                                     )}
-                                    {order.payment_status === 'paid' && order.status !== 'shipped' && (
-                                        <Button onClick={() => setIsShipping(true)} variant="secondary" className="border border-slate-300">
-                                            <TruckIcon className="mr-2 h-4 w-4" /> Registrar Envío
-                                        </Button>
+
+                                    {/* Shipping Button (Only if PAID and NOT delivered/shipped) */}
+                                    {order.payment_status === 'paid' && order.status !== 'shipped' && order.status !== 'delivered' && (
+                                        <>
+                                            {order.shipping_address?.address === 'Retiro en Tienda' ? (
+                                                <Button onClick={handleConfirmPickup} disabled={confirming} className="bg-blue-600 hover:bg-blue-700 text-white">
+                                                    {confirming ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PackageCheck className="mr-2 h-4 w-4" />}
+                                                    Confirmar Entrega
+                                                </Button>
+                                            ) : (
+                                                <Button onClick={() => setIsShipping(true)} variant="secondary" className="border border-slate-300">
+                                                    <TruckIcon className="mr-2 h-4 w-4" /> Registrar Envío
+                                                </Button>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </DialogFooter>
                         )}
                     </div>
                 ) : (
-                    <div className="text-center py-12 text-slate-500">No se encontraron datos de la orden.</div>
+                    <div className="text-center py-12 text-slate-500 dark:text-slate-400">No se encontraron datos de la orden.</div>
                 )}
             </DialogContent>
         </Dialog>

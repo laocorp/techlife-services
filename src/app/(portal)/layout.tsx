@@ -29,39 +29,39 @@ export default async function PortalLayout({
 
     return (
         <CartProvider>
-            <div className="min-h-screen flex flex-col bg-slate-50">
+            <div className="min-h-screen flex flex-col bg-background">
                 {/* Public Header */}
-                <header className="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
+                <header className="bg-slate-50 dark:bg-slate-950 border-b border-border sticky top-0 z-50 no-print shadow-sm">
                     <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-                        <Link href="/portal" className="flex items-center gap-2 font-bold text-xl text-slate-900">
+                        <Link href="/portal" className="flex items-center gap-2 font-bold text-xl text-foreground">
                             <div className="bg-transparent">
                                 <Image
-                                    src="/logo_icon.png"
+                                    src="/logo_transparent.png"
                                     alt="TechLife Portal"
                                     width={32}
                                     height={32}
                                     className="object-contain"
                                 />
                             </div>
-                            TechLife<span className="text-indigo-600">Portal</span>
+                            TechLife<span className="text-indigo-600 dark:text-indigo-400">Portal</span>
                         </Link>
 
                         <nav className="flex items-center gap-4">
                             {user ? (
                                 <>
-                                    <Link href="/portal/dashboard" className="text-sm font-medium text-slate-600 hover:text-indigo-600 flex items-center gap-1">
+                                    <Link href="/portal/dashboard" className="text-sm font-medium text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
                                         <Store className="h-4 w-4" />
                                         <span className="hidden sm:inline">Hub</span>
                                     </Link>
-                                    <Link href="/portal/garage" className="text-sm font-medium text-slate-600 hover:text-indigo-600 flex items-center gap-1">
+                                    <Link href="/portal/garage" className="text-sm font-medium text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
                                         <Car className="h-4 w-4" />
                                         <span className="hidden sm:inline">Mi Garaje</span>
                                     </Link>
-                                    <Link href="/portal/profile" className="text-sm font-medium text-slate-600 hover:text-indigo-600 flex items-center gap-1">
+                                    <Link href="/portal/profile" className="text-sm font-medium text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
                                         <User className="h-4 w-4" />
                                         <span className="hidden sm:inline">Mi Perfil</span>
                                     </Link>
-                                    <Link href="/portal/marketplace" className="text-sm font-medium text-slate-600 hover:text-indigo-600 flex items-center gap-1">
+                                    <Link href="/portal/marketplace" className="text-sm font-medium text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
                                         <MapPin className="h-4 w-4" />
                                         <span className="hidden sm:inline">Marketplace</span>
                                     </Link>
@@ -90,7 +90,7 @@ export default async function PortalLayout({
                     {children}
                 </main>
 
-                <footer className="bg-slate-900 text-slate-400 py-8 text-center text-sm no-print">
+                <footer className="bg-card border-t border-border py-8 text-center text-sm text-muted-foreground no-print">
                     <p>&copy; {new Date().getFullYear()} TechLife Service. Portal de Clientes.</p>
                 </footer>
             </div>

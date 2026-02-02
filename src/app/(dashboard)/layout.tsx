@@ -35,20 +35,20 @@ export default async function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-slate-50">
+        <div className="flex h-screen bg-background">
 
 
-            // ...
+
 
             {/* Sidebar */}
             <aside className="w-64 bg-slate-900 text-white hidden md:flex flex-col">
                 <div className="p-6 flex items-center gap-2">
                     <Image
-                        src="/logo.png"
+                        src="/logo_transparent.png"
                         alt="Logo"
                         width={32}
                         height={32}
-                        className="bg-white rounded-lg p-0.5" // Add white bg for visibility on dark theme
+                        className="rounded-lg"
                     />
                     <h1 className="text-xl font-bold tracking-tight">TechLife<span className="text-indigo-400">Service</span></h1>
                 </div>
@@ -112,8 +112,8 @@ export default async function DashboardLayout({
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto flex flex-col">
-                <header className="bg-white border-b px-6 py-3 flex items-center justify-between sticky top-0 z-10">
-                    <h2 className="font-semibold text-slate-800">Panel de Control</h2>
+                <header className="bg-background border-b border-border px-6 py-3 flex items-center justify-between sticky top-0 z-10">
+                    <h2 className="font-semibold text-foreground">Panel de Control</h2>
                     <div className="flex items-center gap-4">
                         <NotificationBell />
                         <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border border-indigo-200">

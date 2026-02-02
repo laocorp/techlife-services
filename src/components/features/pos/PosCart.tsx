@@ -17,10 +17,10 @@ export default function PosCart({ items, onUpdateQuantity, onRemove, onCheckout,
     const total = items.reduce((acc, item) => acc + (item.price * item.quantity), 0)
 
     return (
-        <div className="flex flex-col h-full bg-white border-l shadow-xl border-slate-200">
-            <div className="p-4 border-b bg-slate-50">
-                <h2 className="font-bold text-lg text-slate-800">Orden Actual</h2>
-                <div className="text-sm text-slate-500">
+        <div className="flex flex-col h-full bg-white dark:bg-slate-800 border-l shadow-xl border-slate-200 dark:border-slate-700">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                <h2 className="font-bold text-lg text-slate-800 dark:text-slate-100">Orden Actual</h2>
+                <div className="text-sm text-slate-500 dark:text-slate-400">
                     {items.length} items agregados
                 </div>
             </div>
@@ -29,50 +29,50 @@ export default function PosCart({ items, onUpdateQuantity, onRemove, onCheckout,
                 <div className="space-y-4">
                     {items.length === 0 ? (
                         <div className="text-center py-10 text-slate-400">
-                            <div className="bg-slate-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                                <Banknote className="h-8 w-8 text-slate-300" />
+                            <div className="bg-slate-100 dark:bg-slate-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                                <Banknote className="h-8 w-8 text-slate-300 dark:text-slate-500" />
                             </div>
                             <p>Carrito vacío</p>
                             <p className="text-xs">Escanea o selecciona productos</p>
                         </div>
                     ) : (
                         items.map(item => (
-                            <div key={item.id} className="flex gap-3 bg-white border p-3 rounded-lg shadow-sm">
+                            <div key={item.id} className="flex gap-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 p-3 rounded-lg shadow-sm">
                                 {(item.image_url) && (
-                                    <div className="h-12 w-12 rounded bg-slate-100 overflow-hidden shrink-0">
+                                    <div className="h-12 w-12 rounded bg-slate-100 dark:bg-slate-600 overflow-hidden shrink-0">
                                         <img src={item.image_url} className="h-full w-full object-cover" />
                                     </div>
                                 )}
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start">
-                                        <h4 className="text-sm font-medium text-slate-900 truncate pr-2">
+                                        <h4 className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate pr-2">
                                             {item.name}
                                         </h4>
                                         <button
                                             onClick={() => onRemove(item.id)}
-                                            className="text-slate-400 hover:text-red-500"
+                                            className="text-slate-400 hover:text-red-500 dark:hover:text-red-400"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </button>
                                     </div>
                                     <div className="flex justify-between items-end mt-2">
-                                        <div className="flex items-center gap-2 bg-slate-100 rounded-md p-0.5">
+                                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-600 rounded-md p-0.5">
                                             <button
-                                                className="p-1 hover:bg-white rounded shadow-sm disabled:opacity-50"
+                                                className="p-1 hover:bg-white dark:hover:bg-slate-500 rounded shadow-sm disabled:opacity-50 text-slate-700 dark:text-slate-200"
                                                 onClick={() => onUpdateQuantity(item.id, -1)}
                                                 disabled={item.quantity <= 1}
                                             >
                                                 <Minus className="h-3 w-3" />
                                             </button>
-                                            <span className="text-xs font-bold w-6 text-center">{item.quantity}</span>
+                                            <span className="text-xs font-bold w-6 text-center text-slate-900 dark:text-slate-100">{item.quantity}</span>
                                             <button
-                                                className="p-1 hover:bg-white rounded shadow-sm"
+                                                className="p-1 hover:bg-white dark:hover:bg-slate-500 rounded shadow-sm text-slate-700 dark:text-slate-200"
                                                 onClick={() => onUpdateQuantity(item.id, 1)}
                                             >
                                                 <Plus className="h-3 w-3" />
                                             </button>
                                         </div>
-                                        <div className="font-bold text-slate-900">
+                                        <div className="font-bold text-slate-900 dark:text-slate-100">
                                             ${(item.price * item.quantity).toFixed(2)}
                                         </div>
                                     </div>
@@ -83,8 +83,8 @@ export default function PosCart({ items, onUpdateQuantity, onRemove, onCheckout,
                 </div>
             </ScrollArea>
 
-            <div className="p-4 bg-slate-50 border-t space-y-4">
-                <div className="flex justify-between items-center text-lg font-bold text-slate-900">
+            <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-4">
+                <div className="flex justify-between items-center text-lg font-bold text-slate-900 dark:text-slate-100">
                     <span>Total</span>
                     <span>${total.toFixed(2)}</span>
                 </div>
@@ -155,8 +155,8 @@ function PaymentDialog({ total, onConfirm, disabled }: { total: number, onConfir
 
                     <div className="py-6">
                         <div className="text-center mb-6">
-                            <span className="text-sm text-slate-500">Monto a Cobrar</span>
-                            <div className="text-4xl font-bold text-slate-900">${total.toFixed(2)}</div>
+                            <span className="text-sm text-slate-500 dark:text-slate-400">Monto a Cobrar</span>
+                            <div className="text-4xl font-bold text-slate-900 dark:text-slate-100">${total.toFixed(2)}</div>
                         </div>
 
                         <TabsContent value="cash" className="space-y-4">
@@ -172,9 +172,9 @@ function PaymentDialog({ total, onConfirm, disabled }: { total: number, onConfir
                                 />
                             </div>
 
-                            <div className="p-4 bg-slate-100 rounded-lg flex justify-between items-center">
-                                <span className="font-medium text-slate-600">Cambio / Vuelto:</span>
-                                <span className={`text-xl font-bold ${change >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                            <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg flex justify-between items-center">
+                                <span className="font-medium text-slate-600 dark:text-slate-300">Cambio / Vuelto:</span>
+                                <span className={`text-xl font-bold ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
                                     ${change >= 0 ? change.toFixed(2) : '---'}
                                 </span>
                             </div>

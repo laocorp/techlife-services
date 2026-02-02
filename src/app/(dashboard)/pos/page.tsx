@@ -130,25 +130,25 @@ export default function PosPage() {
     }
 
     if (loading) {
-        return <div className="flex items-center justify-center h-screen bg-slate-100 italic text-slate-500 animate-pulse">Cargando sistema POS...</div>
+        return <div className="flex items-center justify-center h-screen bg-slate-100 dark:bg-slate-900 italic text-slate-500 dark:text-slate-400 animate-pulse">Cargando sistema POS...</div>
     }
 
     return (
-        <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+        <div className="flex h-[calc(100vh-4rem)] overflow-hidden bg-slate-100 dark:bg-slate-900">
             {/* Logic for Barcode Reader */}
             {/* @ts-ignore */}
             <BarcodeReader onError={handleError} onScan={handleScan} />
 
             {/* Main Area: Product Grid */}
-            <div className="flex-1 p-4 h-full bg-slate-100">
+            <div className="flex-1 p-4 h-full bg-slate-100 dark:bg-slate-900">
                 <ProductGrid products={products} onAdd={addToCart} />
             </div>
 
             {/* Sidebar: Cart */}
             <div className="w-[400px] h-full flex flex-col">
-                <div className="bg-white border-b border-l p-2 flex justify-end">
+                <div className="bg-white dark:bg-slate-800 border-b border-l border-slate-200 dark:border-slate-700 p-2 flex justify-end">
                     <Link href="/pos/history">
-                        <Button variant="ghost" size="sm" className="text-slate-500">
+                        <Button variant="ghost" size="sm" className="text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700">
                             <History className="h-4 w-4 mr-2" />
                             Historial
                         </Button>

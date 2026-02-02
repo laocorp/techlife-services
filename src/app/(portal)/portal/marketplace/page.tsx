@@ -39,16 +39,16 @@ export default async function MarketplacePage({
     return (
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
             <div className="text-center space-y-4 py-8">
-                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Encuentra Tu Taller Ideal</h1>
-                <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+                <h1 className="text-4xl font-extrabold text-foreground tracking-tight">Encuentra Tu Taller Ideal</h1>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                     Explora nuestra red verificada de expertos en automotriz, electrónica y maquinaria.
                 </p>
             </div>
 
             {/* FILTERS */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center bg-card p-4 rounded-xl shadow-sm border border-border">
                 <div className="relative w-full max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input placeholder="Buscar por nombre..." className="pl-10" />
                 </div>
                 <div className="flex gap-2">
@@ -68,18 +68,18 @@ export default async function MarketplacePage({
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {tenants && tenants.length > 0 ? (
                     tenants.map((tenant) => (
-                        <Card key={tenant.id} className="group hover:shadow-lg transition-all duration-300 border-slate-200 overflow-hidden">
-                            <div className="h-32 bg-slate-100 relative">
+                        <Card key={tenant.id} className="group hover:shadow-lg transition-all duration-300 border-border overflow-hidden bg-card">
+                            <div className="h-32 bg-muted relative">
                                 {tenant.logo_url ? (
                                     /* eslint-disable-next-line @next/next/no-img-element */
                                     <img src={getLogoUrl(tenant.logo_url)!} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-slate-100">
-                                        <Wrench className="h-10 w-10 text-indigo-200" />
+                                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-muted">
+                                        <Wrench className="h-10 w-10 text-primary/30" />
                                     </div>
                                 )}
                                 <div className="absolute top-4 right-4">
-                                    <Badge className="bg-white/90 text-slate-700 hover:bg-white backdrop-blur shadow-sm">
+                                    <Badge className="bg-background/90 text-foreground hover:bg-background backdrop-blur shadow-sm">
                                         {tenant.industry}
                                     </Badge>
                                 </div>
@@ -94,7 +94,7 @@ export default async function MarketplacePage({
                                 )}
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm text-slate-500 line-clamp-2">
+                                <p className="text-sm text-muted-foreground line-clamp-2">
                                     {tenant.description || "Taller especializado con técnicos certificados."}
                                 </p>
                             </CardContent>
@@ -107,7 +107,7 @@ export default async function MarketplacePage({
                     ))
                 ) : (
                     <div className="col-span-full py-20 text-center">
-                        <p className="text-slate-500">No hay talleres públicos en esta categoría aún.</p>
+                        <p className="text-muted-foreground">No hay talleres públicos en esta categoría aún.</p>
                     </div>
                 )}
             </div>

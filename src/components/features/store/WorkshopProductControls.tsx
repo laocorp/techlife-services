@@ -33,10 +33,10 @@ export default function WorkshopProductControls({ categories = [] }: { categorie
     return (
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="relative flex-1">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                     placeholder="Buscar producto..."
-                    className="pl-9 bg-white"
+                    className="pl-9 bg-background"
                     onChange={(e) => handleSearch(e.target.value)}
                     defaultValue={searchParams.get('q')?.toString()}
                 />
@@ -46,7 +46,7 @@ export default function WorkshopProductControls({ categories = [] }: { categorie
                     defaultValue={searchParams.get('category') || 'Todos'}
                     onValueChange={handleCategory}
                 >
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Categoría" />
                     </SelectTrigger>
                     <SelectContent>

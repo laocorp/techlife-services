@@ -57,11 +57,12 @@ export default function LoginPage() {
                         .single()
 
                     if (profile?.role === 'client') {
-                        router.push('/portal/dashboard')
+                        // Force full reload to ensure middleware and cookies are processed correctly
+                        window.location.href = '/portal/dashboard'
                     } else {
-                        router.push('/dashboard')
+                        window.location.href = '/dashboard'
                     }
-                    router.refresh()
+                    // router.refresh() is not needed with window.location.href as the page unloads
                 }
             }
         } catch (err) {
@@ -79,14 +80,14 @@ export default function LoginPage() {
         <div>
             <div className="mb-6 text-center flex flex-col items-center">
                 <Image
-                    src="/logo.png"
+                    src="/logo_transparent.png"
                     alt="Logo"
                     width={64}
                     height={64}
                     className="mb-4 object-contain"
                 />
-                <h1 className="text-2xl font-bold text-slate-900">Iniciar Sesión</h1>
-                <p className="text-sm text-slate-500">Accede a TechLife Service</p>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Iniciar Sesión</h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Accede a TechLife Service</p>
             </div>
 
             <Form {...form}>
@@ -96,9 +97,13 @@ export default function LoginPage() {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="admin@taller.com" {...field} />
+                                    <Input
+                                        placeholder="admin@taller.com"
+                                        {...field}
+                                        className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -110,9 +115,14 @@ export default function LoginPage() {
                         name="password"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Contraseña</FormLabel>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Contraseña</FormLabel>
                                 <FormControl>
-                                    <Input type="password" placeholder="******" {...field} />
+                                    <Input
+                                        type="password"
+                                        placeholder="******"
+                                        {...field}
+                                        className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -120,18 +130,18 @@ export default function LoginPage() {
                     />
 
                     {error && (
-                        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+                        <div className="rounded-md bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-600 dark:text-red-400">
                             {error}
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full" disabled={loading}>
+                    <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Entrar
                     </Button>
 
-                    <div className="text-center text-sm text-slate-500 mt-4">
-                        ¿No tienes cuenta? <Link href="/register" className="text-indigo-600 hover:underline">Registra tu taller</Link>
+                    <div className="text-center text-sm text-slate-500 dark:text-slate-400 mt-4">
+                        ¿No tienes cuenta? <Link href="/register" className="text-indigo-600 dark:text-indigo-400 hover:underline">Registra tu taller</Link>
                     </div>
                 </form>
             </Form>

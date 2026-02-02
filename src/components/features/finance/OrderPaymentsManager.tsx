@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { createClient } from '@/lib/supabase/client'
+import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -149,18 +151,30 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
 
             {/* Resume Cards */}
             <div className="grid grid-cols-3 gap-4">
-                <div className="bg-slate-50 p-3 rounded-lg border">
-                    <div className="text-xs text-slate-500 uppercase font-bold">Total Orden</div>
-                    <div className="text-xl font-bold text-slate-900">${totalCost.toFixed(2)}</div>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-100">
-                    <div className="text-xs text-green-600 uppercase font-bold">Abonado</div>
-                    <div className="text-xl font-bold text-green-700">${totalPaid.toFixed(2)}</div>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg border border-red-100">
-                    <div className="text-xs text-red-600 uppercase font-bold">Pendiente</div>
-                    <div className="text-xl font-bold text-red-700">${balance > 0 ? balance.toFixed(2) : '0.00'}</div>
-                </div>
+                <Card className="bg-card border-border">
+                    <CardContent className="p-6">
+                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Total Orden</p>
+                        <p className="text-3xl font-bold text-foreground">
+                            ${totalCost.toFixed(2)}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card className="bg-green-50/10 border-green-200/20 dark:bg-green-900/10 dark:border-green-900/30">
+                    <CardContent className="p-6">
+                        <p className="text-sm font-bold text-green-600 dark:text-green-500 uppercase tracking-wider mb-1">Abonado</p>
+                        <p className="text-3xl font-bold text-green-700 dark:text-green-400">
+                            ${totalPaid.toFixed(2)}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card className="bg-red-50/10 border-red-200/20 dark:bg-red-900/10 dark:border-red-900/30">
+                    <CardContent className="p-6">
+                        <p className="text-sm font-bold text-red-600 dark:text-red-500 uppercase tracking-wider mb-1">Pendiente</p>
+                        <p className="text-3xl font-bold text-red-700 dark:text-red-400">
+                            ${balance.toFixed(2)}
+                        </p>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Payments List */}

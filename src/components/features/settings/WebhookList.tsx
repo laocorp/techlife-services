@@ -136,20 +136,20 @@ export default function WebhookList({ webhooks }: { webhooks: Webhook[] }) {
             <CardContent>
                 <div className="space-y-4">
                     {webhooks.length === 0 ? (
-                        <div className="text-center py-8 text-slate-500 border border-dashed rounded-lg">
+                        <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg">
                             No hay webhooks configurados
                         </div>
                     ) : (
                         webhooks.map(wh => (
-                            <div key={wh.id} className="flex items-center justify-between p-4 border rounded-lg bg-slate-50">
+                            <div key={wh.id} className="flex items-center justify-between p-4 border border-border rounded-lg bg-card">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-2 bg-white border rounded">
-                                        <LinkIcon className="h-5 w-5 text-slate-400" />
+                                    <div className="p-2 bg-muted border border-border rounded">
+                                        <LinkIcon className="h-5 w-5 text-muted-foreground" />
                                     </div>
                                     <div>
-                                        <h4 className="font-medium text-slate-900">{wh.name}</h4>
-                                        <div className="flex items-center gap-2 text-xs text-slate-500">
-                                            <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-mono">
+                                        <h4 className="font-medium text-foreground">{wh.name}</h4>
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                            <span className="bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded font-mono border border-blue-500/20">
                                                 {wh.event_type}
                                             </span>
                                             <span className="truncate max-w-[200px]">{wh.url}</span>
@@ -167,7 +167,7 @@ export default function WebhookList({ webhooks }: { webhooks: Webhook[] }) {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="text-slate-400 hover:text-red-500"
+                                        className="text-muted-foreground hover:text-destructive"
                                         onClick={() => handleDelete(wh.id)}
                                     >
                                         <Trash2 className="h-4 w-4" />

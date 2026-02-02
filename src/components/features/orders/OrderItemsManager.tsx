@@ -141,7 +141,7 @@ export default function OrderItemsManager({ orderId }: OrderItemsManagerProps) {
 
                         <div className="py-4 space-y-4">
                             <div className="relative">
-                                <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Buscar por nombre..."
                                     className="pl-9"
@@ -149,9 +149,9 @@ export default function OrderItemsManager({ orderId }: OrderItemsManagerProps) {
                                 />
                             </div>
 
-                            <div className="max-h-[300px] overflow-y-auto border rounded-md">
+                            <div className="max-h-[300px] overflow-y-auto border border-border rounded-md">
                                 {products.length === 0 ? (
-                                    <div className="p-4 text-center text-slate-500 text-sm">
+                                    <div className="p-4 text-center text-muted-foreground text-sm">
                                         No se encontraron productos.
                                     </div>
                                 ) : (
@@ -160,8 +160,8 @@ export default function OrderItemsManager({ orderId }: OrderItemsManagerProps) {
                                             <div key={prod.id} className="p-3">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div>
-                                                        <div className="font-medium text-sm">{prod.name}</div>
-                                                        <div className="text-xs text-slate-500 flex items-center gap-2">
+                                                        <div className="font-medium text-sm text-foreground">{prod.name}</div>
+                                                        <div className="text-xs text-muted-foreground flex items-center gap-2">
                                                             {prod.type === 'product' ? (
                                                                 <Badge variant="outline" className="text-[10px] px-1 h-5">Stock: {prod.quantity}</Badge>
                                                             ) : (
@@ -185,7 +185,7 @@ export default function OrderItemsManager({ orderId }: OrderItemsManagerProps) {
                                                 </div>
 
                                                 {selectedProduct?.id === prod.id && (
-                                                    <div className="bg-slate-50 p-3 rounded-md grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-1">
+                                                    <div className="bg-muted p-3 rounded-md grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-1">
                                                         <div>
                                                             <Label className="text-xs">Cantidad</Label>
                                                             <Input
@@ -235,57 +235,54 @@ export default function OrderItemsManager({ orderId }: OrderItemsManagerProps) {
                     </DialogContent>
                 </Dialog>
             </div>
-
-            <div className="bg-white rounded-lg border overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead className="bg-slate-50 text-slate-600 text-left">
-                        <tr>
-                            <th className="px-4 py-3">Ítem</th>
-                            <th className="px-4 py-3 text-center">Cant.</th>
-                            <th className="px-4 py-3 text-right">Precio Unit.</th>
-                            <th className="px-4 py-3 text-right">Total</th>
-                            <th className="px-4 py-3 w-[50px]"></th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                        {loading ? (
-                            <tr><td colSpan={5} className="p-4 text-center">Cargando ítems...</td></tr>
-                        ) : items.length === 0 ? (
-                            <tr><td colSpan={5} className="p-8 text-center text-slate-500">No hay ítems agregados a esta orden.</td></tr>
-                        ) : (
-                            items.map((item) => (
-                                <tr key={item.id}>
-                                    <td className="px-4 py-3">
-                                        <div className="font-medium">{item.products?.name || 'Ítem desconocido'}</div>
-                                        <div className="text-xs text-slate-500">
-                                            {item.products?.type === 'service' ? 'Servicio' : 'Repuesto'}
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3 text-center">{item.quantity}</td>
-                                    <td className="px-4 py-3 text-right">${item.unit_price}</td>
-                                    <td className="px-4 py-3 text-right font-medium">${item.total}</td>
-                                    <td className="px-4 py-3 text-right">
-                                        <Button
-                                            size="icon"
-                                            variant="ghost"
-                                            className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                            onClick={() => setItemToDelete(item.id)}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                    <tfoot className="bg-slate-50 font-bold text-slate-900 border-t">
-                        <tr>
-                            <td colSpan={3} className="px-4 py-3 text-right">Total Estimado:</td>
-                            <td className="px-4 py-3 text-right">${totalOrder.toFixed(2)}</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
+            {/* Items Table / List */}
+            <div className="bg-card border border-border rounded-lg shadow-sm overflow-hidden">
+                <div className="grid grid-cols-12 gap-4 p-4 border-b border-border bg-muted/40 font-medium text-sm text-muted-foreground">
+                    <div className="col-span-12 md:col-span-5">Ítem</div>
+                    <div className="col-span-3 md:col-span-2 text-center">Cant.</div>
+                    <div className="col-span-3 md:col-span-2 text-right">Precio</div>
+                    <div className="col-span-3 md:col-span-2 text-right">Total</div>
+                    <div className="col-span-1 md:col-span-1"></div>
+                </div>
+                <div className="divide-y">
+                    {loading ? (
+                        <div className="p-4 text-center text-muted-foreground">Cargando ítems...</div>
+                    ) : items.length === 0 ? (
+                        <div className="p-8 text-center text-muted-foreground">No hay ítems agregados a esta orden.</div>
+                    ) : (
+                        items.map((item) => (
+                            <div key={item.id} className="grid grid-cols-12 gap-4 p-4 items-center">
+                                <div className="col-span-12 md:col-span-5">
+                                    <div className="font-medium text-foreground">{item.products?.name || 'Ítem desconocido'}</div>
+                                    <div className="text-xs text-muted-foreground capitalize">{item.products?.type === 'service' ? 'Servicio' : 'Repuesto'}</div>
+                                </div>
+                                <div className="col-span-3 md:col-span-2 text-center text-foreground">
+                                    {item.quantity}
+                                </div>
+                                <div className="col-span-3 md:col-span-2 text-right text-muted-foreground">
+                                    ${item.unit_price}
+                                </div>
+                                <div className="col-span-3 md:col-span-2 text-right font-medium text-foreground">
+                                    ${item.total}
+                                </div>
+                                <div className="col-span-1 md:col-span-1 text-right">
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                        onClick={() => setItemToDelete(item.id)}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+                <div className="p-4 flex justify-between items-center bg-muted/20 border-t border-border">
+                    <span className="font-semibold text-foreground">Total Estimado:</span>
+                    <span className="text-xl font-bold text-foreground">${totalOrder.toFixed(2)}</span>
+                </div>
             </div>
         </div>
     )

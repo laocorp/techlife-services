@@ -50,7 +50,7 @@ export default function OrderTimeline({ events }: { events: Event[] }) {
                             </span>
                         </div>
 
-                        <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-md border border-slate-100">
+                        <div className="bg-card border border-border p-3 rounded-lg rounded-tl-none shadow-sm text-sm text-foreground">
                             {event.content}
 
                             {event.type === 'evidence' && event.metadata?.filePath && (

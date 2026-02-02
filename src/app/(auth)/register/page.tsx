@@ -90,9 +90,9 @@ function RegisterFormContent() {
     return (
         <div className="w-full max-w-md mx-auto">
             {userSession && (
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900 flex flex-col gap-3">
+                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-900 dark:text-blue-200 flex flex-col gap-3">
                     <div className="font-semibold">
-                        Ya tienes una sesión activa como <span className="font-mono bg-blue-100 px-1 rounded">{userSession.email}</span>
+                        Ya tienes una sesión activa como <span className="font-mono bg-blue-100 dark:bg-blue-800 px-1 rounded">{userSession.email}</span>
                     </div>
                     <div className="flex gap-2">
                         <Button
@@ -106,33 +106,33 @@ function RegisterFormContent() {
                         <Button
                             variant="outline"
                             size="sm"
-                            className="bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 w-full"
+                            className="bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800 w-full"
                             onClick={handleLogout}
                         >
                             Cerrar Sesión
                         </Button>
                     </div>
-                    <div className="text-xs text-blue-600/80 text-center">
+                    <div className="text-xs text-blue-600/80 dark:text-blue-400 text-center">
                         Para crear una cuenta nueva, primero cierra sesión.
                     </div>
                 </div>
             )}
 
-            <div className="mb-8 text-center space-y-2 flex flex-col items-center">
+            <div className="mb-8 text-center space-y-3 flex flex-col items-center">
                 <Image
-                    src="/logo.png"
+                    src="/logo_transparent.png"
                     alt="Logo"
                     width={64}
                     height={64}
-                    className="mb-4 object-contain"
+                    className="mb-2 object-contain"
                 />
-                <div className={`mx-auto h-12 w-12 rounded-xl flex items-center justify-center ${isClient ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-900 text-white'}`}>
+                <div className={`mx-auto h-12 w-12 rounded-xl flex items-center justify-center ${isClient ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400' : 'bg-slate-900 dark:bg-indigo-600 text-white'}`}>
                     {isClient ? <User className="h-6 w-6" /> : <Building2 className="h-6 w-6" />}
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-2">
                     {isClient ? 'Cuenta Personal' : 'Registrar Taller'}
                 </h1>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                     {isClient
                         ? 'Gestiona tus reparaciones y compras.'
                         : 'Administra tu negocio de servicio técnico.'}
@@ -144,16 +144,34 @@ function RegisterFormContent() {
                 <Form {...clientForm}>
                     <form onSubmit={clientForm.handleSubmit(onClientSubmit)} className="space-y-4">
                         <FormField control={clientForm.control} name="fullName" render={({ field }) => (
-                            <FormItem><FormLabel>Nombre Completo</FormLabel><FormControl><Input placeholder="Tu nombre" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Nombre Completo</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Tu nombre" {...field} className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                         <FormField control={clientForm.control} name="email" render={({ field }) => (
-                            <FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="tu@email.com" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Email</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="tu@email.com" {...field} className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                         <FormField control={clientForm.control} name="password" render={({ field }) => (
-                            <FormItem><FormLabel>Contraseña</FormLabel><FormControl><Input type="password" placeholder="******" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Contraseña</FormLabel>
+                                <FormControl>
+                                    <Input type="password" placeholder="******" {...field} className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
 
-                        {error && <div className="text-red-500 text-sm bg-red-50 p-2 rounded">{error}</div>}
+                        {error && <div className="text-red-500 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/30 p-2 rounded">{error}</div>}
                         <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Registrarse
                         </Button>
@@ -164,23 +182,62 @@ function RegisterFormContent() {
                 <Form {...workshopForm}>
                     <form onSubmit={workshopForm.handleSubmit(onWorkshopSubmit)} className="space-y-4">
                         <FormField control={workshopForm.control} name="fullName" render={({ field }) => (
-                            <FormItem><FormLabel>Nombre del Admin</FormLabel><FormControl><Input placeholder="Juan Pérez" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Nombre del Admin</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Juan Pérez" {...field} className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                         <FormField control={workshopForm.control} name="companyName" render={({ field }) => (
-                            <FormItem><FormLabel>Nombre del Taller</FormLabel><FormControl><Input placeholder="ElectroFix" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Nombre del Taller</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="ElectroFix" {...field} className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                         <FormField control={workshopForm.control} name="industry" render={({ field }) => (
-                            <FormItem><FormLabel>Industria</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecciona..." /></SelectTrigger></FormControl><SelectContent><SelectItem value="automotive">Automotriz</SelectItem><SelectItem value="electronics">Electrónica</SelectItem><SelectItem value="machinery">Maquinaria</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Industria</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100">
+                                            <SelectValue placeholder="Selecciona..." />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                                        <SelectItem value="automotive">Automotriz</SelectItem>
+                                        <SelectItem value="electronics">Electrónica</SelectItem>
+                                        <SelectItem value="machinery">Maquinaria</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                         <FormField control={workshopForm.control} name="email" render={({ field }) => (
-                            <FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="admin@taller.com" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Email</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="admin@taller.com" {...field} className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                         <FormField control={workshopForm.control} name="password" render={({ field }) => (
-                            <FormItem><FormLabel>Contraseña</FormLabel><FormControl><Input type="password" placeholder="******" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-slate-700 dark:text-slate-300">Contraseña</FormLabel>
+                                <FormControl>
+                                    <Input type="password" placeholder="******" {...field} className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
 
-                        {error && <div className="text-red-500 text-sm bg-red-50 p-2 rounded">{error}</div>}
-                        <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800" disabled={loading}>
+                        {error && <div className="text-red-500 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/30 p-2 rounded">{error}</div>}
+                        <Button type="submit" className="w-full bg-slate-900 dark:bg-indigo-600 hover:bg-slate-800 dark:hover:bg-indigo-700" disabled={loading}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Crear Cuenta Taller
                         </Button>
                     </form>
@@ -192,7 +249,7 @@ function RegisterFormContent() {
 
 export default function RegisterPage() {
     return (
-        <Suspense fallback={<div>Cargando...</div>}>
+        <Suspense fallback={<div className="text-slate-500 dark:text-slate-400">Cargando...</div>}>
             <RegisterFormContent />
         </Suspense>
     )

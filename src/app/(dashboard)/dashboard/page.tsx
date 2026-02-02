@@ -3,6 +3,8 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getDashboardStatsAction, getRevenueChartDataAction, getStatusDistributionAction } from '@/lib/actions/dashboard'
 import { Activity, CheckCircle, Users, Smartphone, Clock, ArrowRight } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import RevenueChart from '@/components/features/bi/RevenueChart'
 import StatusDistributionChart from '@/components/features/bi/StatusDistributionChart'
@@ -34,66 +36,78 @@ export default async function DashboardPage() {
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-                    <p className="text-slate-500 mt-1">
-                        Bienvenido de nuevo, <span className="font-semibold text-indigo-600">{profile?.full_name}</span>
+                    <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+                    <p className="text-muted-foreground mt-1">
+                        Bienvenido de nuevo, <span className="font-semibold text-indigo-600 dark:text-indigo-400">{profile?.full_name}</span>
                     </p>
                 </div>
-                <div className="bg-white px-4 py-2 rounded-lg border shadow-sm text-sm text-slate-600">
+                <div className="bg-card px-4 py-2 rounded-lg border shadow-sm text-sm text-muted-foreground">
                     {profile?.tenants?.name}
                 </div>
             </div>
 
-            {/* Stats Grid */}
+            {/* Dashboard Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {/* Active Orders */}
-                <div className="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-indigo-50 rounded-lg">
-                            <Activity className="h-6 w-6 text-indigo-600" />
+                <Card className="border-border shadow-sm">
+                    <CardContent className="p-6">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg w-fit mb-4">
+                                    <Activity className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <h3 className="text-3xl font-bold text-foreground">{stats.activeOrders}</h3>
+                                <p className="text-muted-foreground mt-1">Órdenes Activas</p>
+                            </div>
+                            <Badge variant="secondary" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                                En Proceso
+                            </Badge>
                         </div>
-                        <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">
-                            En Proceso
-                        </span>
-                    </div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">{stats?.activeOrders ?? '-'}</div>
-                    <p className="text-sm text-slate-500">Órdenes Activas</p>
-                </div>
+                    </CardContent>
+                </Card>
 
-                {/* Delivered Orders */}
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-green-50 rounded-lg">
-                            <CheckCircle className="h-6 w-6 text-green-600" />
+                <Card className="border-border shadow-sm">
+                    <CardContent className="p-6">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg w-fit mb-4">
+                                    <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                </div>
+                                <h3 className="text-3xl font-bold text-foreground">{stats.completedOrders}</h3>
+                                <p className="text-muted-foreground mt-1">Entregados</p>
+                            </div>
+                            {/* <Badge variant="secondary" className="bg-green-50 text-green-700">+12%</Badge> */}
                         </div>
-                    </div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">{stats?.completedOrders ?? '-'}</div>
-                    <p className="text-sm text-slate-500">Entregados</p>
-                </div>
+                    </CardContent>
+                </Card>
 
-                {/* Customers */}
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-blue-50 rounded-lg">
-                            <Users className="h-6 w-6 text-blue-600" />
+                <Card className="border-border shadow-sm">
+                    <CardContent className="p-6">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg w-fit mb-4">
+                                    <Users className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                </div>
+                                <h3 className="text-3xl font-bold text-foreground">{stats.totalCustomers}</h3>
+                                <p className="text-muted-foreground mt-1">Clientes Registrados</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">{stats?.totalCustomers ?? '-'}</div>
-                    <p className="text-sm text-slate-500">Clientes Registrados</p>
-                </div>
+                    </CardContent>
+                </Card>
 
-                {/* Assets */}
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-purple-50 rounded-lg">
-                            <Smartphone className="h-6 w-6 text-purple-600" />
+                <Card className="border-border shadow-sm">
+                    <CardContent className="p-6">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg w-fit mb-4">
+                                    <Smartphone className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                                </div>
+                                <h3 className="text-3xl font-bold text-foreground">{stats.totalAssets}</h3>
+                                <p className="text-muted-foreground mt-1">Equipos en Historial</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">{stats?.totalAssets ?? '-'}</div>
-                    <p className="text-sm text-slate-500">Equipos en Historial</p>
-                </div>
+                    </CardContent>
+                </Card>
             </div>
-
             {/* CHARTS SECTION */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <RevenueChart data={revenueData} />
@@ -101,27 +115,27 @@ export default async function DashboardPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Accesos Rápidos</h3>
+            <div className="bg-card rounded-xl border border-border shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Accesos Rápidos</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Link href="/orders/new" className="group flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-all">
+                    <Link href="/orders/new" className="group flex items-center justify-between p-4 rounded-lg border border-border hover:border-indigo-300 hover:bg-muted/50 transition-all">
                         <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                            <div className="h-10 w-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                                 <Clock className="h-5 w-5" />
                             </div>
-                            <span className="font-medium text-slate-700">Nueva Orden de Servicio</span>
+                            <span className="font-medium text-foreground">Nueva Orden de Servicio</span>
                         </div>
-                        <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-indigo-600 transition-colors" />
                     </Link>
 
-                    <Link href="/customers" className="group flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-all">
+                    <Link href="/customers" className="group flex items-center justify-between p-4 rounded-lg border border-border hover:border-indigo-300 hover:bg-muted/50 transition-all">
                         <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <div className="h-10 w-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                 <Users className="h-5 w-5" />
                             </div>
-                            <span className="font-medium text-slate-700">Ver Clientes</span>
+                            <span className="font-medium text-foreground">Ver Clientes</span>
                         </div>
-                        <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-indigo-600 transition-colors" />
                     </Link>
                 </div>
             </div>

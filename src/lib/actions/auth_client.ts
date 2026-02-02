@@ -49,8 +49,9 @@ export async function signUpClientAction(data: ClientRegisterFormData) {
 
     if (profileError) {
         console.error("Client Profile Error:", profileError)
-        // Cleanup auth user?
-        return { error: "Error configurando perfil de cliente" }
+        // Cleanup: Delete the auth user to prevent zombie state
+        await adminSupabase.auth.admin.deleteUser(authData.user.id)
+        return { error: "Error configurando perfil de cliente. Inténtalo de nuevo." }
     }
 
     return { success: true }

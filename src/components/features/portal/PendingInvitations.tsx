@@ -40,7 +40,7 @@ export default function PendingInvitations({ invitations }: { invitations: Invit
 
     return (
         <section className="mb-8">
-            <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
                 <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">{invitations.length}</span>
                 Solicitudes de Taller
             </h2>
@@ -53,9 +53,9 @@ export default function PendingInvitations({ invitations }: { invitations: Invit
                                     <Store className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-900">{inv.tenant.name}</h4>
-                                    <p className="text-xs text-slate-500">Te ha invitado a conectar.</p>
-                                    <p className="text-xs text-slate-400 mt-1">{new Date(inv.created_at).toLocaleDateString()}</p>
+                                    <h4 className="font-bold text-foreground">{inv.tenant.name}</h4>
+                                    <p className="text-xs text-muted-foreground">Te ha invitado a conectar.</p>
+                                    <p className="text-xs text-muted-foreground/80 mt-1">{new Date(inv.created_at).toLocaleDateString()}</p>
                                 </div>
                             </div>
                             <div className="flex gap-2 mt-auto">
@@ -71,7 +71,7 @@ export default function PendingInvitations({ invitations }: { invitations: Invit
                                 <Button
                                     size="sm"
                                     variant="outline"
-                                    className="flex-1 border-slate-200 hover:bg-white text-slate-600"
+                                    className="flex-1 border-border hover:bg-muted text-muted-foreground"
                                     disabled={isPending}
                                     onClick={() => handleResponse(inv.id, 'rejected')}
                                 >

@@ -27,8 +27,8 @@ export default async function CustomersPage({
 
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Clientes</h1>
-                    <p className="text-slate-500">Gestión de cartera de clientes</p>
+                    <h1 className="text-3xl font-bold text-foreground">Clientes</h1>
+                    <p className="text-muted-foreground">Gestión de cartera de clientes</p>
                 </div>
                 <Link href="/customers/new">
                     <Button>
@@ -38,9 +38,9 @@ export default async function CustomersPage({
                 </Link>
             </div>
 
-            <div className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden">
+            <div className="bg-card rounded-lg shadow border border-border overflow-hidden">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                    <thead className="bg-muted/50 text-muted-foreground border-b border-border">
                         <tr>
                             <th className="px-6 py-4 font-medium">Nombre</th>
                             <th className="px-6 py-4 font-medium">Tax ID / DNI</th>
@@ -53,23 +53,23 @@ export default async function CustomersPage({
                     <tbody className="divide-y divide-slate-100">
                         {customers?.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="px-6 py-10 text-center text-slate-500">
+                                <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
                                     No hay clientes registrados aún.
                                 </td>
                             </tr>
                         )}
                         {customers?.map((customer) => (
-                            <tr key={customer.id} className="hover:bg-slate-50 transition-colors">
-                                <td className="px-6 py-4 font-medium text-slate-900">{customer.full_name}</td>
-                                <td className="px-6 py-4 text-slate-500">{customer.tax_id || '-'}</td>
-                                <td className="px-6 py-4 text-slate-500">
+                            <tr key={customer.id} className="hover:bg-muted/50 transition-colors">
+                                <td className="px-6 py-4 font-medium text-foreground">{customer.full_name}</td>
+                                <td className="px-6 py-4 text-muted-foreground">{customer.tax_id || '-'}</td>
+                                <td className="px-6 py-4 text-muted-foreground">
                                     <div className="flex flex-col">
                                         <span>{customer.email}</span>
                                         <span className="text-xs">{customer.phone}</span>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 text-slate-500">{customer.address || '-'}</td>
-                                <td className="px-6 py-4 text-slate-500">
+                                <td className="px-6 py-4 text-muted-foreground">{customer.address || '-'}</td>
+                                <td className="px-6 py-4 text-muted-foreground">
                                     {new Date(customer.created_at).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 text-right flex items-center justify-end gap-2">

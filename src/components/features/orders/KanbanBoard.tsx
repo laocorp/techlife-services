@@ -25,10 +25,10 @@ const COLUMNS = [
 function DroppableColumn({ id, title, children }: { id: string, title: string, children: React.ReactNode }) {
     const { setNodeRef } = useDroppable({ id })
     return (
-        <div ref={setNodeRef} className="flex-1 min-w-[280px] bg-slate-50 rounded-xl border border-slate-200 flex flex-col max-h-full">
-            <div className={`p-3 border-b font-semibold text-sm text-slate-700 flex justify-between sticky top-0 bg-white rounded-t-xl z-10`}>
+        <div ref={setNodeRef} className="flex-1 min-w-[280px] bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-full">
+            <div className={`p-3 border-b dark:border-slate-800 font-semibold text-sm text-slate-700 dark:text-slate-200 flex justify-between sticky top-0 bg-white dark:bg-slate-900 rounded-t-xl z-10`}>
                 {title}
-                <span className="text-slate-400 font-normal">
+                <span className="text-slate-400 dark:text-slate-500 font-normal">
                     {React.Children.count(children)}
                 </span>
             </div>

@@ -89,13 +89,11 @@ export default async function MyGaragePage() {
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Mi Garaje</h1>
-                    <p className="text-slate-500">Gestiona tus vehículos y equipos personales.</p>
+                    <h1 className="text-3xl font-bold text-foreground">Mi Garaje</h1>
+                    <p className="text-muted-foreground">Gestiona tus vehículos y equipos personales.</p>
                 </div>
 
                 <div className="flex items-center gap-4 w-full md:w-auto">
-                    <CustomerProfileCard user={user} avatarUrl={customer?.avatar_url} />
-
                     <Link href="/portal/garage/new">
                         <Button className="bg-indigo-600 hover:bg-indigo-700 h-24 w-24 rounded-xl flex-col gap-2 shadow-sm hover:shadow-md transition-all">
                             <Plus className="h-6 w-6" />
@@ -108,7 +106,7 @@ export default async function MyGaragePage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {allAssets.length > 0 ? (
                     allAssets.map((asset) => (
-                        <Card key={asset.id} className="group relative hover:shadow-md transition bg-white overflow-hidden">
+                        <Card key={asset.id} className="group relative hover:shadow-md transition bg-card border-border overflow-hidden">
                             {asset.source === 'Taller' && (
                                 <div className="absolute top-0 right-0 bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded-bl-lg font-medium">
                                     {asset.tenantName}
@@ -125,7 +123,7 @@ export default async function MyGaragePage() {
                                     </CardDescription>
                                 </div>
                             </CardHeader>
-                            <CardContent className="text-sm text-slate-600 space-y-1">
+                            <CardContent className="text-sm text-muted-foreground space-y-1">
                                 <div className="flex justify-between">
                                     <span>Marca:</span>
                                     <span className="font-medium">{asset.details?.make || asset.details?.brand || '-'}</span>
@@ -139,12 +137,9 @@ export default async function MyGaragePage() {
                                     <span className="font-medium">{asset.details?.year || '-'}</span>
                                 </div>
                             </CardContent>
-                            <CardFooter className="pt-2 flex gap-2 border-t bg-slate-50/50">
-                                <Link href={`/portal/garage/${asset.id}`} className="flex-1">
-                                    <Button variant="outline" size="sm" className="w-full">
-                                        <Wrench className="h-3 w-3 mr-2" />
-                                        Bitácora
-                                    </Button>
+                            <CardFooter className="pt-2 flex gap-2 border-t bg-muted/30">
+                                <Link href={`/portal/garage/${asset.identifier}`} className="w-full">
+                                    <Button variant="ghost" className="w-full text-sm text-primary">Ver Detalles</Button>
                                 </Link>
 
                                 {asset.source === 'Personal' && (
@@ -160,8 +155,8 @@ export default async function MyGaragePage() {
                         </Card>
                     ))
                 ) : (
-                    <div className="col-span-full py-16 text-center border-2 border-dashed rounded-xl bg-slate-50">
-                        <div className="bg-white p-4 rounded-full inline-block shadow-sm mb-4">
+                    <div className="col-span-full py-16 text-center border-2 border-dashed border-border rounded-xl bg-muted/20">
+                        <div className="bg-card p-4 rounded-full inline-block shadow-sm mb-4">
                             <Car className="h-8 w-8 text-slate-300" />
                         </div>
                         <h3 className="text-lg font-medium text-slate-900">Tu garaje está vacío</h3>

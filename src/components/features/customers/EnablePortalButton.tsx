@@ -58,7 +58,7 @@ export default function EnablePortalButton({ customerId, email, hasUser }: Enabl
     // This prevents the Dialog from disappearing when the server revalidates and sends new props
     if (hasUser && !successData) {
         return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-600 border border-green-500/20">
                 Portal Activo
             </span>
         )
@@ -70,7 +70,8 @@ export default function EnablePortalButton({ customerId, email, hasUser }: Enabl
                 <Button
                     variant="outline"
                     size="sm"
-                    className="h-7 text-xs bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700 font-semibold"
+                    size="sm"
+                    className="h-7 text-xs bg-indigo-500/10 hover:bg-indigo-500/20 border-indigo-500/20 text-indigo-600 font-semibold"
                     disabled={!email}
                     title={!email ? 'Sin email registrado' : 'Generar acceso'}
                 >
@@ -95,7 +96,7 @@ export default function EnablePortalButton({ customerId, email, hasUser }: Enabl
                     </div>
                 ) : (
                     <div className="space-y-4 pt-2">
-                        <div className="bg-green-50 border border-green-200 rounded-md p-3 text-sm text-green-800">
+                        <div className="bg-green-500/10 border border-green-500/20 rounded-md p-3 text-sm text-green-600">
                             ¡Usuario creado correctamente!
                         </div>
 
@@ -105,13 +106,13 @@ export default function EnablePortalButton({ customerId, email, hasUser }: Enabl
                                 <Input
                                     readOnly
                                     value={successData.tempPassword}
-                                    className="font-mono text-lg bg-slate-50"
+                                    className="font-mono text-lg bg-muted"
                                 />
                                 <Button size="icon" variant="outline" onClick={copyToClipboard}>
                                     {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
                                 </Button>
                             </div>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-muted-foreground">
                                 Comparte esta contraseña con el cliente. Podrá cambiarla después.
                             </p>
                         </div>

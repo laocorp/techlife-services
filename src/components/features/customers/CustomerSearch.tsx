@@ -58,16 +58,16 @@ export default function CustomerSearch() {
     }
 
     return (
-        <Card className="mb-8 border-dashed bg-slate-50">
+        <Card className="mb-8 border-dashed bg-muted/30">
             <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row gap-6 items-start">
                     <div className="flex-1 space-y-4 w-full">
                         <div>
-                            <h3 className="font-medium text-slate-900 flex items-center gap-2">
+                            <h3 className="font-medium text-foreground flex items-center gap-2">
                                 <Search className="h-4 w-4 text-indigo-500" />
                                 Buscar Usuario Global
                             </h3>
-                            <p className="text-sm text-slate-500 mt-1">
+                            <p className="text-sm text-muted-foreground mt-1">
                                 Busca por email para conectar con usuarios que ya usan TechLife.
                             </p>
                         </div>
@@ -77,7 +77,7 @@ export default function CustomerSearch() {
                                 placeholder="ejemplo@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="bg-white"
+                                className="bg-background"
                             />
                             <Button type="submit" disabled={loading || !email}>
                                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Buscar'}
@@ -87,15 +87,15 @@ export default function CustomerSearch() {
 
                     {/* Result Card */}
                     {searchResult && (
-                        <div className="w-full md:w-auto min-w-[300px] border rounded-lg bg-white p-4 shadow-sm animate-in fade-in zoom-in-95 duration-200">
+                        <div className="w-full md:w-auto min-w-[300px] border border-border rounded-lg bg-card p-4 shadow-sm animate-in fade-in zoom-in-95 duration-200">
                             <div className="flex items-center gap-4">
                                 <Avatar className="h-12 w-12 border">
                                     <AvatarImage src={searchResult.avatar_url} />
                                     <AvatarFallback>{searchResult.full_name?.slice(0, 2).toUpperCase()}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
-                                    <div className="font-semibold text-slate-900">{searchResult.full_name}</div>
-                                    <div className="text-xs text-slate-500 break-all">Usuario Registrado</div>
+                                    <div className="font-semibold text-foreground">{searchResult.full_name}</div>
+                                    <div className="text-xs text-muted-foreground break-all">Usuario Registrado</div>
                                 </div>
 
                                 {requestStatus === 'idle' && (

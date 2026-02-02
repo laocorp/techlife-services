@@ -15,21 +15,21 @@ export default async function StorePage() {
     return (
         <div className="max-w-7xl mx-auto px-4 py-12">
             <div className="text-center mb-12">
-                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Nuestros Productos</h1>
-                <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+                <h1 className="text-4xl font-extrabold text-foreground tracking-tight">Nuestros Productos</h1>
+                <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
                     Repuestos originales, accesorios y servicios de la mejor calidad.
                 </p>
             </div>
 
             {products.length === 0 ? (
-                <div className="text-center py-20 bg-slate-50 rounded-2xl border border-dashed">
-                    <p className="text-slate-500 text-lg">No hay productos disponibles en este momento.</p>
+                <div className="text-center py-20 bg-muted/30 rounded-2xl border border-dashed border-border">
+                    <p className="text-muted-foreground text-lg">No hay productos disponibles en este momento.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {products.map((product) => (
-                        <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-slate-200">
-                            <div className="aspect-square bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                        <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-border bg-card">
+                            <div className="aspect-square bg-muted relative overflow-hidden flex items-center justify-center">
                                 {(product.images && product.images.length > 0) || product.image_url ? (
                                     <img
                                         src={product.images?.[0] || product.image_url}
@@ -37,22 +37,22 @@ export default async function StorePage() {
                                         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                                     />
                                 ) : (
-                                    <ImageIcon className="h-12 w-12 text-slate-300" />
+                                    <ImageIcon className="h-12 w-12 text-muted-foreground/50" />
                                 )}
                                 {product.quantity <= 0 && (
-                                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-sm">
+                                    <div className="absolute inset-0 bg-background/60 flex items-center justify-center backdrop-blur-sm">
                                         <Badge variant="destructive" className="text-sm px-3 py-1">Agotado</Badge>
                                     </div>
                                 )}
                             </div>
 
                             <CardContent className="p-4">
-                                <div className="text-sm text-slate-500 mb-1 capitalize">{product.category || 'General'}</div>
-                                <h3 className="font-bold text-lg text-slate-900 mb-2 line-clamp-2 min-h-[3.5rem]">
+                                <div className="text-sm text-muted-foreground mb-1 capitalize">{product.category || 'General'}</div>
+                                <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2 min-h-[3.5rem]">
                                     {product.name}
                                 </h3>
                                 <div className="flex items-end justify-between">
-                                    <span className="text-xl font-bold text-indigo-600">
+                                    <span className="text-xl font-bold text-primary">
                                         ${product.public_price || product.sale_price}
                                     </span>
                                 </div>

@@ -42,16 +42,16 @@ export function SortableItem({ order }: SortableItemProps) {
     // Priority Colors
     const getPriorityColor = (p: string) => {
         switch (p) {
-            case 'urgent': return 'bg-red-100 text-red-700'
-            case 'high': return 'bg-orange-100 text-orange-700'
-            case 'normal': return 'bg-blue-100 text-blue-700'
-            default: return 'bg-gray-100 text-gray-600'
+            case 'urgent': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+            case 'high': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+            case 'normal': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+            default: return 'bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-slate-400'
         }
     }
 
     return (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="mb-3 group">
-            <Card className="hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing border-l-4" style={{
+            <Card className="hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing border-l-4 dark:bg-slate-900 dark:border-slate-800" style={{
                 borderLeftColor: order.priority === 'urgent' ? '#ef4444' : order.priority === 'high' ? '#f97316' : '#3b82f6'
             }}>
                 <CardContent className="p-3 space-y-2">
@@ -63,11 +63,11 @@ export function SortableItem({ order }: SortableItemProps) {
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-sm text-slate-800 line-clamp-1">{order.service_description || 'Sin descripción'}</h4>
-                        <p className="text-xs text-slate-500 font-medium mt-0.5">{order.asset_identifier}</p>
+                        <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100 line-clamp-1">{order.service_description || 'Sin descripción'}</h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">{order.asset_identifier}</p>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-slate-400 pt-1 border-t border-slate-100 mt-2">
+                    <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800 mt-2">
                         <User className="h-3 w-3" />
                         <span className="truncate max-w-[100px]">{order.customer_name}</span>
                     </div>
@@ -77,7 +77,7 @@ export function SortableItem({ order }: SortableItemProps) {
                             <Calendar className="h-3 w-3" />
                             {new Date(order.created_at).toLocaleDateString()}
                         </div>
-                        <Link href={`/orders/${order.id}`} className="hover:underline text-indigo-600 z-10" onClick={(e) => e.stopPropagation()}>
+                        <Link href={`/orders/${order.id}`} className="hover:underline text-indigo-600 dark:text-indigo-400 z-10" onClick={(e) => e.stopPropagation()}>
                             Ver
                         </Link>
                     </div>

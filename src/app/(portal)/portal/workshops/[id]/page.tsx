@@ -61,6 +61,7 @@ export default async function WorkshopProfilePage({
         return supabase.storage.from('branding').getPublicUrl(path).data.publicUrl
     }
     const tenantLogo = tenant ? getLogoUrl(tenant.logo_url) : null
+    const tenantCoverImage = tenant ? getLogoUrl(tenant.cover_url) : null
 
     if (!tenant) {
         return notFound()
@@ -95,12 +96,23 @@ export default async function WorkshopProfilePage({
     }
 
     return (
-        <div className="bg-slate-50 min-h-screen pb-12">
+        <div className="bg-background min-h-screen pb-12">
             {/* HERO COVER */}
-            <div className="h-64 bg-slate-900 relative">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+            <div className="h-64 relative">
+                {tenantCoverImage ? (
+                    <Image
+                        src={tenantCoverImage}
+                        alt="Cover Image"
+                        fill
+                        sizes="100vw"
+                        className="w-full h-full object-cover opacity-50"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gradient-to-r from-muted to-muted/50" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 w-full max-w-5xl mx-auto px-4 pb-8 flex items-end gap-6">
-                    <div className="h-32 w-32 bg-white rounded-xl shadow-lg p-1 flex items-center justify-center text-4xl font-bold text-slate-300">
+                    <div className="h-32 w-32 bg-card rounded-xl shadow-lg p-1 flex items-center justify-center text-4xl font-bold text-muted-foreground/50 border border-border">
                         {tenantLogo ? (
                             <div className="relative w-full h-full">
                                 <Image
@@ -117,7 +129,7 @@ export default async function WorkshopProfilePage({
                     </div>
                     <div className="text-white pb-2">
                         <h1 className="text-4xl font-bold">{tenant.name}</h1>
-                        <p className="text-slate-300 flex items-center gap-2 mt-1">
+                        <p className="text-muted-foreground flex items-center gap-2 mt-1">
                             <ShieldCheck className="h-4 w-4 text-green-400" />
                             Taller Verificado • {tenant.industry.toUpperCase()}
                         </p>
@@ -130,25 +142,25 @@ export default async function WorkshopProfilePage({
                 <div className="md:col-span-2 space-y-6">
                     <Card>
                         <CardContent className="p-6 space-y-4">
-                            <h2 className="text-xl font-bold text-slate-900">Sobre Nosotros</h2>
-                            <p className="text-slate-600 leading-relaxed">
+                            <h2 className="text-xl font-bold text-foreground">Sobre Nosotros</h2>
+                            <p className="text-muted-foreground leading-relaxed">
                                 {tenant.description || "Este taller no ha agregado una descripción pública todavía, pero están listos para atenderte."}
                             </p>
 
                             <div className="grid sm:grid-cols-2 gap-4 py-4">
-                                <div className="flex items-center gap-3 text-slate-600">
+                                <div className="flex items-center gap-3 text-muted-foreground">
                                     <MapPin className="h-5 w-5 text-indigo-500" />
                                     <span>{tenant.public_address || "Dirección no disponible"}</span>
                                 </div>
-                                <div className="flex items-center gap-3 text-slate-600">
+                                <div className="flex items-center gap-3 text-muted-foreground">
                                     <Phone className="h-5 w-5 text-indigo-500" />
                                     <span>{tenant.contact_phone || "Teléfono no disponible"}</span>
                                 </div>
-                                <div className="flex items-center gap-3 text-slate-600">
+                                <div className="flex items-center gap-3 text-muted-foreground">
                                     <Mail className="h-5 w-5 text-indigo-500" />
                                     <span>{tenant.contact_email || "Email no disponible"}</span>
                                 </div>
-                                <div className="flex items-center gap-3 text-slate-600">
+                                <div className="flex items-center gap-3 text-muted-foreground">
                                     <Clock className="h-5 w-5 text-indigo-500" />
                                     <span>Lun - Vie: 9:00 - 18:00</span>
                                 </div>
@@ -156,13 +168,13 @@ export default async function WorkshopProfilePage({
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="bg-card border-border">
                         <CardContent className="p-6">
-                            <h2 className="text-xl font-bold text-slate-900 mb-4">Servicios Destacados</h2>
+                            <h2 className="text-xl font-bold text-foreground mb-4">Servicios Destacados</h2>
                             <div className="flex flex-wrap gap-2">
-                                <div className="px-3 py-1 bg-slate-100 rounded-full text-sm font-medium text-slate-700">Diagnóstico General</div>
-                                <div className="px-3 py-1 bg-slate-100 rounded-full text-sm font-medium text-slate-700">Mantenimiento Preventivo</div>
-                                <div className="px-3 py-1 bg-slate-100 rounded-full text-sm font-medium text-slate-700">Reparación</div>
+                                <div className="px-3 py-1 bg-muted rounded-full text-sm font-medium text-muted-foreground">Diagnóstico General</div>
+                                <div className="px-3 py-1 bg-muted rounded-full text-sm font-medium text-muted-foreground">Mantenimiento Preventivo</div>
+                                <div className="px-3 py-1 bg-muted rounded-full text-sm font-medium text-muted-foreground">Reparación</div>
                             </div>
                         </CardContent>
                     </Card>
@@ -170,17 +182,17 @@ export default async function WorkshopProfilePage({
 
                 {/* RIGHT COL: ACTIONS */}
                 <div className="space-y-4">
-                    <Card className="border-indigo-100 shadow-md">
+                    <Card className="border-border shadow-md bg-card dark:bg-card">
                         <CardContent className="p-6 space-y-4">
-                            <div className="text-center pb-2 border-b border-slate-100">
-                                <p className="text-sm text-slate-500">Estado de Conexión</p>
+                            <div className="text-center pb-2 border-b border-border">
+                                <p className="text-sm text-muted-foreground">Estado de Conexión</p>
                                 {isConnected ? (
                                     <span className="text-green-600 font-bold flex items-center justify-center gap-2 mt-1">
                                         <ShieldCheck className="h-5 w-5" />
                                         Cliente Vinculado
                                     </span>
                                 ) : (
-                                    <span className="text-slate-400 font-medium">No Vinculado</span>
+                                    <span className="text-muted-foreground font-medium">No Vinculado</span>
                                 )}
                             </div>
 
@@ -190,7 +202,7 @@ export default async function WorkshopProfilePage({
                                     <Button className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 text-lg">
                                         Conectar Ahora
                                     </Button>
-                                    <p className="text-xs text-center text-slate-400 mt-2">
+                                    <p className="text-xs text-center text-muted-foreground mt-2">
                                         Al conectar, compartes tu perfil básico con este taller para agilizar servicios.
                                     </p>
                                 </form>
@@ -205,7 +217,7 @@ export default async function WorkshopProfilePage({
                     </Card>
 
                     <Link href="/portal/marketplace">
-                        <Button variant="ghost" className="w-full text-slate-500">
+                        <Button variant="ghost" className="w-full text-muted-foreground">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Volver al Directorio
                         </Button>
@@ -216,7 +228,7 @@ export default async function WorkshopProfilePage({
             {/* NEW: SERVICE HISTORY SECTION (Only if Connected) */}
             {isConnected && (
                 <div className="max-w-5xl mx-auto px-4 mt-8">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-6">Historial de Servicio</h2>
+                    <h2 className="text-2xl font-bold text-foreground mb-6">Historial de Servicio</h2>
 
                     {/* Fetch orders inside the component or pass as prop? 
                         Let's fetch here since it's a Server Component */}
@@ -228,22 +240,22 @@ export default async function WorkshopProfilePage({
             <div className="max-w-5xl mx-auto px-4 mt-8">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-900">Tienda del Taller</h2>
-                        <p className="text-slate-500">Repuestos y productos disponibles para compra directa.</p>
+                        <h2 className="text-2xl font-bold text-foreground">Tienda del Taller</h2>
+                        <p className="text-muted-foreground">Repuestos y productos disponibles para compra directa.</p>
                     </div>
                 </div>
 
                 <WorkshopProductControls categories={categories} />
 
                 {products.length === 0 ? (
-                    <div className="text-center py-12 bg-white rounded-xl border border-dashed text-slate-400">
+                    <div className="text-center py-12 bg-card rounded-xl border border-dashed border-border text-muted-foreground">
                         Este taller no tiene productos publicados en este momento.
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {products.map((product) => (
-                            <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-slate-200 flex flex-col">
-                                <div className="aspect-square bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                            <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-border flex flex-col bg-card">
+                                <div className="aspect-square bg-muted relative overflow-hidden flex items-center justify-center">
                                     {(product.images && product.images.length > 0) || product.image_url ? (
                                         <div className="relative w-full h-full">
                                             <Image
@@ -255,22 +267,22 @@ export default async function WorkshopProfilePage({
                                             />
                                         </div>
                                     ) : (
-                                        <ImageIcon className="h-10 w-10 text-slate-300" />
+                                        <ImageIcon className="h-10 w-10 text-muted-foreground/50" />
                                     )}
                                     {product.quantity <= 0 && (
-                                        <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-sm">
+                                        <div className="absolute inset-0 bg-background/60 flex items-center justify-center backdrop-blur-sm">
                                             <Badge variant="destructive" className="text-xs px-2 py-0.5">Agotado</Badge>
                                         </div>
                                     )}
                                 </div>
 
                                 <CardContent className="p-3 flex-1 flex flex-col">
-                                    <div className="text-xs text-slate-500 mb-1 capitalize">{product.category || 'General'}</div>
-                                    <h3 className="font-bold text-sm text-slate-900 mb-2 line-clamp-2 flex-1">
+                                    <div className="text-xs text-muted-foreground mb-1 capitalize">{product.category || 'General'}</div>
+                                    <h3 className="font-bold text-sm text-foreground mb-2 line-clamp-2 flex-1">
                                         {product.name}
                                     </h3>
                                     <div className="flex items-end justify-between mt-auto">
-                                        <span className="text-lg font-bold text-indigo-600">
+                                        <span className="text-lg font-bold text-primary">
                                             ${product.public_price || product.sale_price}
                                         </span>
                                     </div>
@@ -338,7 +350,7 @@ async function ServiceHistoryList({ tenantId, userId }: { tenantId: string, user
 
     if (!serviceOrders || serviceOrders.length === 0) {
         return (
-            <div className="bg-white rounded-xl border border-dashed border-slate-200 p-8 text-center text-slate-500">
+            <div className="bg-card rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
                 Aún no tienes órdenes de servicio con este taller.
             </div>
         )
@@ -347,16 +359,16 @@ async function ServiceHistoryList({ tenantId, userId }: { tenantId: string, user
     return (
         <div className="space-y-4">
             {serviceOrders.map((order) => (
-                <Card key={order.id} className="border-slate-200 overflow-hidden">
+                <Card key={order.id} className="border-border overflow-hidden bg-card">
                     <CardContent className="p-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 bg-white">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 bg-muted/30">
                             <div className="flex items-center gap-4">
-                                <div className="h-10 w-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
+                                <div className="h-10 w-10 bg-indigo-500/10 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
                                     #{order.ticket_number}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h4 className="font-bold text-slate-900">
+                                        <h4 className="font-bold text-foreground">
                                             {order.assets?.identifier || 'Servicio General'}
                                         </h4>
                                         <Badge variant={
@@ -368,14 +380,14 @@ async function ServiceHistoryList({ tenantId, userId }: { tenantId: string, user
                                                     order.status === 'pending' ? 'Recibido' : order.status}
                                         </Badge>
                                     </div>
-                                    <p className="text-sm text-slate-500">
+                                    <p className="text-sm text-muted-foreground">
                                         {new Date(order.created_at).toLocaleDateString()} • {order.assets?.details?.make} {order.assets?.details?.model}
                                     </p>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <span className="block text-xs text-slate-400">Total</span>
-                                <span className="font-bold text-slate-900">${order.total?.toFixed(2) || '0.00'}</span>
+                                <span className="block text-xs text-muted-foreground">Total</span>
+                                <span className="font-bold text-foreground">${order.total?.toFixed(2) || '0.00'}</span>
                             </div>
                         </div>
                         {/* Optional: Add "Ver Detalles" link to specific order page if exists */}

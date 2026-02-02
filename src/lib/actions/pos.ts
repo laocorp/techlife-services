@@ -76,9 +76,12 @@ export async function createPosOrderAction(data: PosOrderData) {
             status: 'delivered', // POS sales are immediate
             payment_status: 'paid', // POS sales are immediate
             total_amount: totalAmount,
-            delivery_method: 'pickup',
-            shipping_address: { fullname: 'Mostrador', address: 'Mostrador' }, // Simplified for POS JSONB
-            channel: 'pos' // Use channel for tracking
+            shipping_address: {
+                fullname: 'Mostrador',
+                address: 'Mostrador',
+                channel: 'pos',
+                delivery_method: 'pickup'
+            } // Simplified for POS JSONB
         })
         .select()
         .single()

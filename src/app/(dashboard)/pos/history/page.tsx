@@ -30,7 +30,7 @@ export default async function PosHistoryPage() {
         .eq('id', user?.id)
         .single()
 
-    if (!profile?.tenant_id) return <div>No autorizado</div>
+    if (!profile?.tenant_id) return <div className="p-8 text-slate-500 dark:text-slate-400">No autorizado</div>
 
     const { data: orders, error } = await supabase
         .from('ecommerce_orders')
@@ -48,9 +48,9 @@ export default async function PosHistoryPage() {
     if (error) {
         console.error('POS History Error:', error)
         return (
-            <div className="p-8 text-red-500">
+            <div className="p-8 text-red-500 dark:text-red-400">
                 <h3 className="font-bold">Error cargando historial</h3>
-                <pre className="mt-2 p-2 bg-red-50 rounded text-xs overflow-auto">
+                <pre className="mt-2 p-2 bg-red-50 dark:bg-red-900/30 rounded text-xs overflow-auto text-red-600 dark:text-red-300">
                     {JSON.stringify(error, null, 2)}
                 </pre>
             </div>
@@ -62,10 +62,10 @@ export default async function PosHistoryPage() {
     // For MVP, we show just list of orders. 
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className="p-6 max-w-7xl mx-auto space-y-6 bg-slate-100 dark:bg-slate-900 min-h-[calc(100vh-4rem)]">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold tracking-tight">Historial de Ventas POS</h1>
-                <Badge variant="outline">Últimas 50 transacciones</Badge>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Historial de Ventas POS</h1>
+                <Badge variant="outline" className="border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300">Últimas 50 transacciones</Badge>
             </div>
 
             <StoreOrderList orders={orders} />

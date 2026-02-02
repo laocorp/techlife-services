@@ -45,8 +45,19 @@ export async function middleware(request: NextRequest) {
     }
 
     // Auth routes (redirect if already logged in)
-    if (request.nextUrl.pathname.startsWith('/login')) {
+    if (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register')) {
         if (user) {
+            // Check user role to determine redirect destination
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single()
+
+            if (profile?.role === 'client') {
+                return NextResponse.redirect(new URL('/portal/dashboard', request.url))
+            }
+
             return NextResponse.redirect(new URL('/dashboard', request.url))
         }
     }

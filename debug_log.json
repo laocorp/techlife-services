@@ -1,0 +1,71 @@
+[
+  {
+    "msg": "--- Deep Debug Storage ---"
+  },
+  {
+    "msg": "Found 5 bucket(s):"
+  },
+  {
+    "msg": "BUCKET: order-evidence",
+    "data": {
+      "id": "order-evidence",
+      "public": false,
+      "allowed_mime_types": null,
+      "file_size_limit": null
+    }
+  },
+  {
+    "msg": "BUCKET: product-images",
+    "data": {
+      "id": "product-images",
+      "public": true,
+      "allowed_mime_types": null,
+      "file_size_limit": null
+    }
+  },
+  {
+    "msg": "BUCKET: payment-proofs",
+    "data": {
+      "id": "payment-proofs",
+      "public": false,
+      "allowed_mime_types": null,
+      "file_size_limit": null
+    }
+  },
+  {
+    "msg": "BUCKET: shipping-proofs",
+    "data": {
+      "id": "shipping-proofs",
+      "public": true,
+      "allowed_mime_types": null,
+      "file_size_limit": null
+    }
+  },
+  {
+    "msg": "BUCKET: branding",
+    "data": {
+      "id": "branding",
+      "public": true,
+      "allowed_mime_types": null,
+      "file_size_limit": null
+    }
+  },
+  {
+    "msg": "Attempting Test Upload to 'branding' via Service Role..."
+  },
+  {
+    "msg": "Upload SUCCEEDED:",
+    "data": {
+      "path": "debug_test_1769988077891.txt",
+      "id": "4bcfc9df-7c6a-44c7-9508-1c21c1787053",
+      "fullPath": "branding/debug_test_1769988077891.txt"
+    }
+  },
+  {
+    "msg": "Generated Public URL:",
+    "data": "https://adwjsxbbbqpjhpwsjdvc.supabase.co/storage/v1/object/public/branding/debug_test_1769988077891.txt"
+  },
+  {
+    "msg": "Cleanup: Test file removed."
+  }
+]

@@ -93,17 +93,17 @@ export default function NewCustomerPage() {
 
     return (
         <div className="p-8 max-w-2xl mx-auto">
-            <Link href="/customers" className="flex items-center text-slate-500 hover:text-slate-900 mb-6 transition-colors">
+            <Link href="/customers" className="flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver a Clientes
             </Link>
 
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">Nuevo Cliente</h1>
-            <p className="text-slate-500 mb-8">
+            <h1 className="text-2xl font-bold text-foreground mb-2">Nuevo Cliente</h1>
+            <p className="text-muted-foreground mb-8">
                 Ingresa el email para conectar con un usuario existente, o registra uno nuevo manualmente.
             </p>
 
-            <div className="bg-white p-6 rounded-lg shadow border border-slate-200">
+            <div className="bg-card p-6 rounded-lg shadow border border-border">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
@@ -114,7 +114,7 @@ export default function NewCustomerPage() {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="font-semibold text-slate-900">1. Buscar por Email</FormLabel>
+                                        <FormLabel className="font-semibold text-foreground">1. Buscar por Email</FormLabel>
                                         <div className="flex gap-2">
                                             <FormControl>
                                                 <Input
@@ -144,7 +144,7 @@ export default function NewCustomerPage() {
 
                             {/* USER FOUND STATE */}
                             {foundUser && (
-                                <Card className="bg-indigo-50 border-indigo-100 animate-in fade-in slide-in-from-top-2">
+                                <Card className="bg-indigo-500/10 border-indigo-500/20 animate-in fade-in slide-in-from-top-2">
                                     <CardContent className="p-4 flex items-center gap-4">
                                         <Avatar className="h-12 w-12 border-2 border-indigo-200">
                                             <AvatarImage src={foundUser.avatar_url} />
@@ -153,17 +153,17 @@ export default function NewCustomerPage() {
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                                            <h4 className="font-bold text-foreground flex items-center gap-2">
                                                 {foundUser.full_name}
                                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
                                                     <UserCheck className="w-3 h-3 mr-1" />
                                                     Usuario Existente
                                                 </span>
                                             </h4>
-                                            <p className="text-sm text-slate-600">Este usuario ya usa TechLife.</p>
+                                            <p className="text-sm text-muted-foreground">Este usuario ya usa TechLife.</p>
                                         </div>
                                     </CardContent>
-                                    <div className="bg-indigo-100/50 p-3 px-4 flex justify-end gap-2">
+                                    <div className="bg-indigo-500/10 p-3 px-4 flex justify-end gap-2">
                                         <Button
                                             type="button"
                                             variant="ghost"
@@ -187,11 +187,11 @@ export default function NewCustomerPage() {
 
                         {/* STEP 2: MANUAL ENTRY (Conditional) */}
                         {(!foundUser) && (
-                            <div className={`space-y-6 pt-6 border-t border-slate-100 transition-all duration-500 ${manualMode ? 'opacity-100' : 'opacity-50 grayscale pointer-events-none'}`}>
+                            <div className={`space-y-6 pt-6 border-t border-border transition-all duration-500 ${manualMode ? 'opacity-100' : 'opacity-50 grayscale pointer-events-none'}`}>
                                 <div className="flex items-center justify-between">
-                                    <h3 className="font-semibold text-slate-900">2. Datos del Cliente</h3>
+                                    <h3 className="font-semibold text-foreground">2. Datos del Cliente</h3>
                                     {!manualMode && (
-                                        <Button type="button" variant="link" size="sm" onClick={enableManualEntry} className="text-slate-500">
+                                        <Button type="button" variant="link" size="sm" onClick={enableManualEntry} className="text-muted-foreground">
                                             Saltar búsqueda / Cliente sin email
                                         </Button>
                                     )}

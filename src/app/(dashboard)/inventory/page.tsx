@@ -39,8 +39,8 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
             {/* Same header content... */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Inventario</h1>
-                    <p className="text-slate-500">Gestiona productos, repuestos y servicios.</p>
+                    <h1 className="text-3xl font-bold text-foreground">Inventario</h1>
+                    <p className="text-muted-foreground">Gestiona productos, repuestos y servicios.</p>
                 </div>
                 <div className="flex gap-2">
                     <Link href="/inventory/categories">
@@ -64,10 +64,10 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
             </div>
 
             {/* Filters ... */}
-            <div className="bg-white p-4 rounded-lg border shadow-sm mb-6">
+            <div className="bg-card p-4 rounded-lg border border-border shadow-sm mb-6">
                 <form className="flex gap-4">
                     <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             name="q"
                             placeholder="Buscar por nombre o SKU..."
@@ -79,9 +79,9 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
             </div>
 
             {/* Product List ... */}
-            <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+            <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 border-b text-slate-600 font-medium">
+                    <thead className="bg-muted/50 border-b border-border text-muted-foreground font-medium">
                         <tr>
                             <th className="px-6 py-3">Nombre</th>
                             <th className="px-6 py-3">Categoría</th>
@@ -94,10 +94,10 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
                     <tbody className="divide-y">
                         {products && products.length > 0 ? (
                             products.map((item) => (
-                                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                                <tr key={item.id} className="hover:bg-muted/50 transition-colors border-b border-border last:border-0">
                                     <td className="px-6 py-4">
-                                        <div className="font-medium text-slate-900">{item.name}</div>
-                                        {item.sku && <div className="text-xs text-slate-500 font-mono">SKU: {item.sku}</div>}
+                                        <div className="font-medium text-foreground">{item.name}</div>
+                                        {item.sku && <div className="text-xs text-muted-foreground font-mono">SKU: {item.sku}</div>}
                                     </td>
                                     <td className="px-6 py-4">
                                         <Badge variant="outline" className="font-normal">
@@ -106,11 +106,11 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
                                     </td>
                                     <td className="px-6 py-4">
                                         {item.type === 'service' ? (
-                                            <span className="inline-flex items-center text-slate-600">
+                                            <span className="inline-flex items-center text-muted-foreground">
                                                 <Wrench className="mr-1 h-3 w-3" /> Servicio
                                             </span>
                                         ) : (
-                                            <span className="inline-flex items-center text-slate-600">
+                                            <span className="inline-flex items-center text-muted-foreground">
                                                 <Package className="mr-1 h-3 w-3" /> Producto
                                             </span>
                                         )}
@@ -120,10 +120,10 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         {item.type === 'service' ? (
-                                            <span className="text-slate-400">-</span>
+                                            <span className="text-muted-foreground">-</span>
                                         ) : (
                                             <div className="flex flex-col items-center">
-                                                <span className={`font-bold ${item.quantity <= (item.min_stock || 0) ? 'text-red-600' : 'text-slate-700'}`}>
+                                                <span className={`font-bold ${item.quantity <= (item.min_stock || 0) ? 'text-destructive' : 'text-foreground'}`}>
                                                     {item.quantity}
                                                 </span>
                                                 {item.quantity <= (item.min_stock || 0) && (
@@ -148,7 +148,7 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
                                                     productToEdit={item}
                                                     categories={categories}
                                                     trigger={
-                                                        <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium ml-2">
+                                                        <button className="text-primary hover:text-primary/80 text-sm font-medium ml-2">
                                                             Editar
                                                         </button>
                                                     }
@@ -163,7 +163,7 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                                <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                                     No hay ítems registrados. Comienza creando uno nuevo.
                                 </td>
                             </tr>

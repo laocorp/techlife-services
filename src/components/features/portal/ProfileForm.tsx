@@ -30,9 +30,9 @@ export default function ProfileForm({ profile }: { profile: any }) {
                     id="email"
                     value={profile?.email || ''}
                     disabled
-                    className="bg-slate-50 text-slate-500"
+                    className="bg-muted text-muted-foreground"
                 />
-                <p className="text-xs text-slate-400">El correo no se puede cambiar.</p>
+                <p className="text-xs text-muted-foreground">El correo no se puede cambiar.</p>
             </div>
 
             <div className="space-y-2">
@@ -43,6 +43,7 @@ export default function ProfileForm({ profile }: { profile: any }) {
                     defaultValue={profile?.full_name || ''}
                     placeholder="Ej: Juan Pérez"
                     required
+                    className="bg-background text-foreground"
                 />
             </div>
 
@@ -53,10 +54,11 @@ export default function ProfileForm({ profile }: { profile: any }) {
                     name="phone"
                     defaultValue={profile?.phone || ''}
                     placeholder="+58 412 1234567"
+                    className="bg-background text-foreground"
                 />
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                 {loading ? 'Guardando...' : 'Guardar Cambios'}
             </Button>
         </form>

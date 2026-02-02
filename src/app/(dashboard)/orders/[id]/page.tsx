@@ -49,20 +49,20 @@ export default async function OrderDetailPage({ params }: PageProps) {
                 {/* Left Column: Order Info */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Problem Description */}
-                    <div className="bg-card border rounded-lg p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold mb-4 text-slate-800">Problema Reportado</h2>
-                        <div className="bg-slate-50 p-4 rounded-md text-slate-700 min-h-[100px] whitespace-pre-wrap">
+                    <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+                        <h2 className="text-lg font-semibold mb-4 text-foreground">Problema Reportado</h2>
+                        <div className="bg-muted p-4 rounded-md text-foreground min-h-[100px] whitespace-pre-wrap border border-border">
                             {order.description_problem}
                         </div>
 
                         <div className="mt-4 grid grid-cols-2 gap-4">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <AlertTriangle className="h-4 w-4 text-orange-500" />
-                                Prioridad: <span className="font-medium text-slate-900 capitalize">{order.priority}</span>
+                                Prioridad: <span className="font-medium text-foreground capitalize">{order.priority}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Calendar className="h-4 w-4" />
-                                Entrega Est.: <span className="font-medium text-slate-900">{order.estimated_delivery_date ? new Date(order.estimated_delivery_date).toLocaleDateString() : 'Pendiente'}</span>
+                                Entrega Est.: <span className="font-medium text-foreground">{order.estimated_delivery_date ? new Date(order.estimated_delivery_date).toLocaleDateString() : 'Pendiente'}</span>
                             </div>
                         </div>
                     </div>

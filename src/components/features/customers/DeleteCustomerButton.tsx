@@ -30,7 +30,7 @@ export default function DeleteCustomerButton({ id, name }: { id: string, name: s
         <Button
             variant="ghost"
             size="sm"
-            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={handleDelete}
             disabled={loading}
         >

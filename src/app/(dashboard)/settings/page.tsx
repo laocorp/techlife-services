@@ -29,8 +29,8 @@ export default async function SettingsPage() {
                     <SettingsIcon className="h-6 w-6" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Configuración</h1>
-                    <p className="text-slate-500">Administra las preferencias de tu cuenta.</p>
+                    <h1 className="text-3xl font-bold text-foreground">Configuración</h1>
+                    <p className="text-muted-foreground">Administra las preferencias de tu cuenta.</p>
                 </div>
             </div>
 

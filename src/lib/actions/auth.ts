@@ -81,7 +81,10 @@ export async function signUpAction(data: RegisterFormData) {
 
     if (profileError) {
         console.error('Profile creation error:', profileError)
-        return { error: 'Error al crear perfil de usuario.' }
+        // Cleanup: Delete user to prevent zombie state. 
+        // Note: Tenant might remain orphaned but it's better than a broken user.
+        await adminSupabase.auth.admin.deleteUser(authData.user.id)
+        return { error: 'Error al crear perfil de usuario. Intenta de nuevo.' }
     }
 
     return { success: true }

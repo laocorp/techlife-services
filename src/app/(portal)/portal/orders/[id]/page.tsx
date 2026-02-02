@@ -138,10 +138,12 @@ export default async function PortalOrderDetailPage({
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'approval': return 'bg-yellow-100 text-yellow-700'
-            case 'repair': return 'bg-blue-100 text-blue-700'
-            case 'ready': return 'bg-green-100 text-green-700'
-            case 'delivered': return 'bg-slate-100 text-slate-700'
-            default: return 'bg-gray-100 text-gray-700'
+            case 'pending': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+            case 'in_progress': return 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+            case 'completed': return 'bg-green-500/10 text-green-500 border-green-500/20'
+            case 'delivered': return 'bg-muted text-muted-foreground border-border'
+            case 'cancelled': return 'bg-destructive/10 text-destructive border-destructive/20'
+            default: return 'bg-muted text-muted-foreground'
         }
     }
 
@@ -163,7 +165,7 @@ export default async function PortalOrderDetailPage({
             {/* Header - Web Only */}
             <div className="space-y-4 print:hidden">
                 <Link href="/portal/garage">
-                    <Button variant="ghost" size="sm" className="-ml-4 text-slate-500">
+                    <Button variant="ghost" size="sm" className="-ml-4 text-muted-foreground">
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Volver a Mi Garaje
                     </Button>
@@ -171,18 +173,18 @@ export default async function PortalOrderDetailPage({
 
                 <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                        <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
                             Informe Técnico
                             <Badge variant="secondary" className={getStatusColor(order.status)}>
                                 {getStatusLabel(order.status)}
                             </Badge>
                         </h1>
-                        <p className="text-slate-500 mt-1">Orden #{order.folio_id} • {order.tenants?.name}</p>
+                        <p className="text-muted-foreground mt-1">Orden #{order.folio_id} • {order.tenants?.name}</p>
                     </div>
                     <div className="text-right flex flex-col items-end gap-2">
                         <PrintButton />
                         <div>
-                            <div className="text-sm text-slate-500">Fecha de Ingreso</div>
+                            <div className="text-sm text-muted-foreground">Fecha de Ingreso</div>
                             <div className="font-medium">{new Date(order.created_at).toLocaleDateString()}</div>
                         </div>
                     </div>
@@ -197,13 +199,13 @@ export default async function PortalOrderDetailPage({
                             /* eslint-disable-next-line @next/next/no-img-element */
                             <img src={tenantLogo} alt="Logo" className="w-16 h-16 object-contain" />
                         ) : (
-                            <div className="bg-slate-900 text-white p-3 rounded-lg">
+                            <div className="bg-foreground text-background p-3 rounded-lg">
                                 <Wrench className="h-8 w-8" />
                             </div>
                         )}
                         <div>
-                            <h2 className="text-2xl font-bold text-slate-900">{order.tenants?.name}</h2>
-                            <div className="text-sm text-slate-500 space-y-0.5">
+                            <h2 className="text-2xl font-bold text-foreground">{order.tenants?.name}</h2>
+                            <div className="text-sm text-muted-foreground space-y-0.5">
                                 {order.tenants?.address && <p>{order.tenants.address} {order.tenants?.city ? `, ${order.tenants.city}` : ''}</p>}
                                 {order.tenants?.contact_email && <p>{order.tenants.contact_email}</p>}
                                 {order.tenants?.contact_phone && <p>{order.tenants.contact_phone}</p>}
@@ -211,22 +213,22 @@ export default async function PortalOrderDetailPage({
                         </div>
                     </div>
                     <div className="text-right">
-                        <h1 className="text-xl font-bold text-slate-900">Informe Técnico</h1>
-                        <p className="text-slate-500">Orden #{order.folio_id}</p>
-                        <p className="text-xs text-slate-400 mt-1">{new Date().toLocaleDateString()}</p>
+                        <h1 className="text-xl font-bold text-foreground">Informe Técnico</h1>
+                        <p className="text-muted-foreground">Orden #{order.folio_id}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{new Date().toLocaleDateString()}</p>
                     </div>
                 </div>
             </div>
 
             {/* Asset Info */}
-            <Card className="bg-slate-50 border-dashed">
+            <Card className="bg-card border-dashed">
                 <CardContent className="flex items-center gap-4 p-4">
-                    <div className="bg-white p-2 rounded border shadow-sm">
-                        <Wrench className="h-5 w-5 text-slate-600" />
+                    <div className="bg-background p-2 rounded border shadow-sm">
+                        <Wrench className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                        <div className="font-semibold">{order.customer_assets?.details?.make} {order.customer_assets?.details?.model}</div>
-                        <div className="text-sm text-slate-500 font-mono">{order.customer_assets?.identifier}</div>
+                        <div className="font-semibold text-foreground">{order.customer_assets?.details?.make} {order.customer_assets?.details?.model}</div>
+                        <div className="text-sm text-muted-foreground font-mono">{order.customer_assets?.identifier}</div>
                     </div>
                 </CardContent>
             </Card>
@@ -235,20 +237,20 @@ export default async function PortalOrderDetailPage({
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <AlertCircle className="h-5 w-5 text-indigo-600" />
+                        <AlertCircle className="h-5 w-5 text-primary" />
                         Diagnóstico y Problema
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div>
-                        <h3 className="text-sm font-medium text-slate-500 mb-1">Problema Reportado</h3>
-                        <p className="text-slate-900 bg-slate-50 p-3 rounded-lg">{order.description_problem}</p>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Problema Reportado</h3>
+                        <p className="text-foreground bg-muted p-3 rounded-lg">{order.description_problem}</p>
                     </div>
 
                     {order.diagnosis_report && (
                         <div>
-                            <h3 className="text-sm font-medium text-slate-500 mb-1">Informe del Técnico</h3>
-                            <p className="text-slate-900 bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                            <h3 className="text-sm font-medium text-muted-foreground mb-1">Informe del Técnico</h3>
+                            <p className="text-foreground bg-muted p-3 rounded-lg border border-border">
                                 {order.diagnosis_report}
                             </p>
                         </div>
@@ -262,14 +264,14 @@ export default async function PortalOrderDetailPage({
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-base">
-                                <Camera className="h-5 w-5 text-indigo-600" />
+                                <Camera className="h-5 w-5 text-primary" />
                                 Evidencia Fotográfica
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {validEvidence.map((ev: any) => (
-                                    <div key={ev.id} className="relative aspect-square rounded-lg overflow-hidden border bg-slate-100 group">
+                                    <div key={ev.id} className="relative aspect-square rounded-lg overflow-hidden border bg-muted group">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={ev.url}
@@ -289,8 +291,8 @@ export default async function PortalOrderDetailPage({
                 timelineList.length > 0 && (
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-base">
-                                <MessageSquare className="h-5 w-5 text-slate-500" />
+                            <CardTitle className="flex items-center gap-2 text-muted-foreground text-base">
+                                <MessageSquare className="h-5 w-5" />
                                 Bitácora del Servicio
                             </CardTitle>
                         </CardHeader>
@@ -299,11 +301,11 @@ export default async function PortalOrderDetailPage({
                                 {timelineList.map((event) => (
                                     <div key={event.id} className="flex gap-3 text-sm">
                                         <div className="mt-0.5">
-                                            <div className="h-2 w-2 rounded-full bg-slate-300 ring-2 ring-white"></div>
+                                            <div className="h-2 w-2 rounded-full bg-border ring-2 ring-background"></div>
                                         </div>
-                                        <div className="flex-1 bg-slate-50 p-3 rounded-lg">
-                                            <p className="text-slate-700">{event.content}</p>
-                                            <p className="text-xs text-slate-400 mt-1">
+                                        <div className="flex-1 bg-muted p-3 rounded-lg">
+                                            <p className="text-foreground">{event.content}</p>
+                                            <p className="text-xs text-muted-foreground mt-1">
                                                 {new Date(event.created_at).toLocaleString()}
                                             </p>
                                         </div>

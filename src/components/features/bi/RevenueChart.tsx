@@ -5,14 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 
 export default function RevenueChart({ data }: { data: any[] }) {
     return (
-        <Card className="col-span-1">
-            <CardHeader>
-                <CardTitle>Ingresos (Últimos 7 días)</CardTitle>
-                <CardDescription>
-                    Total recaudado en caja por día.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="pl-2">
+        <div className="col-span-1">
+            {/* Header removed as it is handled by parent */}
+            <div className="pl-2 pt-4">
                 <ResponsiveContainer width="100%" height={350}>
                     <BarChart data={data}>
                         <XAxis
@@ -30,17 +25,19 @@ export default function RevenueChart({ data }: { data: any[] }) {
                             tickFormatter={(value) => `$${value}`}
                         />
                         <Tooltip
+                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }}
+                            itemStyle={{ color: 'hsl(var(--foreground))' }}
                             formatter={(value: any) => [`$${value}`, 'Ingresos']}
-                            cursor={{ fill: 'transparent' }}
+                            cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
                         />
                         <Bar
                             dataKey="revenue"
-                            fill="#4f46e5"
+                            fill="hsl(var(--primary))"
                             radius={[4, 4, 0, 0]}
                         />
                     </BarChart>
                 </ResponsiveContainer>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     )
 }

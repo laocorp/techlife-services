@@ -15,9 +15,9 @@ export default async function FinancePage() {
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Finanzas y Caja</h1>
-            <p className="text-slate-500 mb-8">
-                Resumen de movimientos del día: <span className="font-semibold text-slate-900">{format(today, 'PPPP', { locale: es })}</span>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Finanzas y Caja</h1>
+            <p className="text-muted-foreground mb-8">
+                Resumen de movimientos del día: <span className="font-semibold text-foreground">{format(today, 'PPPP', { locale: es })}</span>
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -43,7 +43,7 @@ export default async function FinancePage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">${(breakdown.cash || 0).toFixed(2)}</div>
-                        <div className="text-xs text-slate-500 mt-1">Disponible físico</div>
+                        <div className="text-xs text-muted-foreground mt-1">Disponible físico</div>
                     </CardContent>
                 </Card>
 
@@ -69,14 +69,14 @@ export default async function FinancePage() {
                         <div className="text-2xl font-bold">
                             ${((breakdown.card || 0) + (breakdown.transfer || 0) + (breakdown.pos_web || 0)).toFixed(2)}
                         </div>
-                        <div className="text-xs text-slate-500 mt-1">Tarjeta + Transferencia + Web/POS</div>
+                        <div className="text-xs text-muted-foreground mt-1">Tarjeta + Transferencia + Web/POS</div>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Revenue Chart */}
-            <div className="bg-white border rounded-lg p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-slate-900 mb-4">Tendencia de Ingresos</h2>
+            <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+                <h2 className="text-lg font-bold text-foreground mb-4">Tendencia de Ingresos</h2>
                 <RevenueChart data={chartData} />
             </div>
         </div>

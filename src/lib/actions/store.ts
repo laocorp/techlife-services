@@ -220,13 +220,36 @@ export async function createStoreOrderAction(data: CheckoutData) {
             p_id: item.product_id,
             qty: item.quantity
         })
-        // If RPC doesn't exist, we do direct update (less safe for concurrency)
-        /*
-        await supabase
-            .from('products')
-            .update({ quantity: product.quantity - item.quantity }) 
-            // logic needed...
-            */
+    }
+
+    // 6. Send Notification to Tenant Owner (using Admin Client)
+    try {
+        const { createAdminClient } = await import('@/lib/supabase/server')
+        const adminClient = createAdminClient()
+
+        // Get tenant owner
+        const { data: tenant } = await adminClient
+            .from('tenants')
+            .select('owner_id, name')
+            .eq('id', tenantId)
+            .single()
+
+        if (tenant?.owner_id) {
+            const isPickup = data.customer.address === 'Retiro en Tienda'
+            const title = isPickup ? '🏪 Nuevo Pedido (Retiro)' : '📦 Nuevo Pedido'
+            const message = `${data.customer.fullname} ha realizado un pedido de $${totalAmount.toFixed(2)}.${isPickup ? ' Retira en tienda.' : ''}`
+
+            await adminClient.from('notifications').insert({
+                user_id: tenant.owner_id,
+                title: title,
+                message: message,
+                link: `/pos/history?order=${order.id}`,
+                read: false,
+                type: 'info'
+            })
+        }
+    } catch (notifStartError) {
+        console.error('Error sending notification:', notifStartError)
     }
 
     return { success: true, orderId: order.id }

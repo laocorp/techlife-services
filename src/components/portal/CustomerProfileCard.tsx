@@ -32,23 +32,35 @@ export default function CustomerProfileCard({ user, avatarUrl }: { user: any, av
 
             if (uploadError) throw uploadError
 
-            // Update all customer records for this user
-            const { error: dbError } = await supabase
+            // 1. Update Global Profile (Primary)
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({
+                    avatar_url: filePath,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', user.id)
+
+            if (profileError) throw profileError
+
+            // 2. Update Customer Records (Best Effort)
+            // This might fail or update 0 rows if not linked to any workshop, which is fine.
+            await supabase
                 .from('customers')
                 .update({ avatar_url: filePath })
                 .eq('user_id', user.id)
 
-            if (dbError) throw dbError
 
             toast({
                 title: "Foto actualizada",
                 description: "Tu foto de perfil se ha guardado.",
             })
             router.refresh()
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
             toast({
                 title: "Error al subir",
+                description: error.message || "Error desconocido", // SHow the actual error
                 variant: "destructive",
             })
         } finally {
@@ -70,12 +82,12 @@ export default function CustomerProfileCard({ user, avatarUrl }: { user: any, av
             </CardHeader>
             <CardContent>
                 <div className="flex items-center gap-6">
-                    <div className="h-20 w-20 rounded-full border bg-slate-100 flex items-center justify-center overflow-hidden relative shrink-0">
+                    <div className="h-20 w-20 rounded-full border bg-muted flex items-center justify-center overflow-hidden relative shrink-0">
                         {displayUrl ? (
                             /* eslint-disable-next-line @next/next/no-img-element */
                             <img src={displayUrl} alt="Perfil" className="w-full h-full object-cover" />
                         ) : (
-                            <User className="h-8 w-8 text-slate-400" />
+                            <User className="h-8 w-8 text-muted-foreground" />
                         )}
                         {uploading && (
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -84,7 +96,6 @@ export default function CustomerProfileCard({ user, avatarUrl }: { user: any, av
                         )}
                     </div>
                     <div className="flex-1 space-y-1">
-                        <div className="font-medium text-slate-900">{user.email}</div>
                         <Label htmlFor="avatar" className="cursor-pointer inline-block">
                             <div className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium mt-1">
                                 <Upload className="h-3 w-3" />

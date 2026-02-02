@@ -196,7 +196,7 @@ export default function ProductForm({ productToEdit, categories = [], trigger, o
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
-                    {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded">{error}</div>}
+                    {error && <div className="p-3 bg-red-500/10 text-red-600 text-sm rounded">{error}</div>}
 
                     {/* ... Selects ... */}
                     <div className="grid grid-cols-2 gap-4">
@@ -261,7 +261,7 @@ export default function ProductForm({ productToEdit, categories = [], trigger, o
                         <Label>Imágenes del Producto</Label>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
                             {(formData.images || []).map((url, idx) => (
-                                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border bg-slate-100">
+                                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-muted">
                                     <img src={url} alt={`Imagen ${idx + 1}`} className="object-cover w-full h-full" />
                                     <button
                                         type="button"
@@ -277,15 +277,15 @@ export default function ProductForm({ productToEdit, categories = [], trigger, o
                                 </div>
                             ))}
 
-                            <label className="border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors aspect-square">
+                            <label className="border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-500/5 transition-colors aspect-square">
                                 {uploading ? (
                                     <Loader2 className="h-6 w-6 text-indigo-600 animate-spin" />
                                 ) : (
                                     <>
-                                        <div className="bg-indigo-100 p-2 rounded-full mb-1">
-                                            <UploadCloud className="h-5 w-5 text-indigo-600" />
+                                        <div className="bg-indigo-500/10 p-2 rounded-full mb-1">
+                                            <UploadCloud className="h-5 w-5 text-indigo-500" />
                                         </div>
-                                        <span className="text-xs text-slate-600 font-medium">Subir Foto</span>
+                                        <span className="text-xs text-muted-foreground font-medium">Subir Foto</span>
                                     </>
                                 )}
                                 <input
@@ -335,8 +335,8 @@ export default function ProductForm({ productToEdit, categories = [], trigger, o
 
                     {/* Stock Section - Only for Products */}
                     {formData.type === 'product' && (
-                        <div className="p-4 bg-slate-50 rounded-lg border space-y-4">
-                            <h4 className="text-sm font-medium text-slate-700">Inventario</h4>
+                        <div className="p-4 bg-muted/30 rounded-lg border border-border space-y-4">
+                            <h4 className="text-sm font-medium text-foreground">Inventario</h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Stock Mínimo (Alerta)</Label>
@@ -364,11 +364,11 @@ export default function ProductForm({ productToEdit, categories = [], trigger, o
                         </div>
                     )}
 
-                    <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100 space-y-4">
+                    <div className="p-4 bg-indigo-500/5 rounded-lg border border-indigo-500/20 space-y-4">
                         <div className="flex items-center justify-between">
                             <div className="space-y-0.5">
-                                <Label className="text-indigo-900">Tienda Online</Label>
-                                <p className="text-xs text-indigo-600">Hacer visible este producto en el catálogo público.</p>
+                                <Label className="text-indigo-600 dark:text-indigo-400">Tienda Online</Label>
+                                <p className="text-xs text-indigo-500/80">Hacer visible este producto en el catálogo público.</p>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <input
@@ -384,7 +384,7 @@ export default function ProductForm({ productToEdit, categories = [], trigger, o
 
                         {formData.is_public && (
                             <div className="space-y-2 animate-in slide-in-from-top-2">
-                                <Label className="text-indigo-900">Precio Público (Opcional)</Label>
+                                <Label className="text-indigo-600 dark:text-indigo-400">Precio Público (Opcional)</Label>
                                 <Input
                                     type="text"
                                     inputMode="decimal"
