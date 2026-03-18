@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Wrench, LogOut, Package, Monitor, Store, Car, MapPin, ShoppingCart, User } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { portalLogoutAction } from '@/lib/actions/portal-auth'
 import { CartProvider } from '@/context/cart-context'
@@ -26,6 +27,19 @@ export default async function PortalLayout({
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
     const { data: { user } } = await supabase.auth.getUser()
+
+    if (user) {
+        // Verify profile exists (avoid zombie sessions after DB reset)
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', user.id)
+            .single()
+
+        if (!profile) {
+            redirect('/auth/signout')
+        }
+    }
 
     return (
         <CartProvider>

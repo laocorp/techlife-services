@@ -41,15 +41,15 @@ export default function PendingInvitations({ invitations }: { invitations: Invit
     return (
         <section className="mb-8">
             <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">{invitations.length}</span>
+                <span className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs px-2 py-1 rounded-full">{invitations.length}</span>
                 Solicitudes de Taller
             </h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {invitations.map((inv) => (
-                    <Card key={inv.id} className="border-indigo-100 bg-indigo-50">
+                    <Card key={inv.id} className="border-indigo-100 bg-indigo-50 dark:bg-slate-900 dark:border-indigo-900/50">
                         <CardContent className="p-4 flex flex-col gap-4">
                             <div className="flex items-start gap-4">
-                                <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                                <div className="h-10 w-10 bg-indigo-100 dark:bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                                     <Store className="h-5 w-5" />
                                 </div>
                                 <div>

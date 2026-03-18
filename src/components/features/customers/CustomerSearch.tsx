@@ -1,125 +1,118 @@
 'use client'
 
-import { useState } from 'react'
-import { Search, UserPlus, Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { lookupUserByEmailAction, sendConnectionRequestAction, cancelConnectionRequestAction } from '@/lib/actions/connections'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { lookupUserAction, sendConnectionRequestAction } from '@/lib/actions/connections'
-import { toast } from 'sonner'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Loader2, UserPlus, UserX, CheckCircle, Clock } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'
 
-export default function CustomerSearch() {
+export function CustomerSearch() {
     const [email, setEmail] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [searchResult, setSearchResult] = useState<any>(null)
-    const [requestStatus, setRequestStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+    const [isPending, startTransition] = useTransition()
+    const [result, setResult] = useState<any>(null)
+    const { toast } = useToast()
 
-    const handleSearch = async (e: React.FormEvent) => {
+    const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
         if (!email.trim()) return
 
-        setLoading(true)
-        setSearchResult(null)
-        setRequestStatus('idle')
-
-        try {
-            const user = await lookupUserAction(email)
-            if (user) {
-                setSearchResult(user)
+        startTransition(async () => {
+            setResult(null)
+            const response = await lookupUserByEmailAction(email)
+            if (response.error) {
+                toast({ title: 'Error', description: response.error, variant: 'destructive' })
+            } else if (response.user) {
+                setResult(response.user)
             } else {
-                toast.info('Usuario no encontrado en la plataforma global.')
+                toast({ title: 'Sin resultados', description: 'No se encontró ningún usuario con ese email.' })
             }
-        } catch (err) {
-            toast.error('Error al buscar usuario')
-        } finally {
-            setLoading(false)
-        }
+        })
     }
 
-    const handleInvite = async () => {
-        if (!searchResult) return
-
-        setRequestStatus('sending')
-        try {
-            const res = await sendConnectionRequestAction(searchResult.id)
-            if (res?.error) {
-                toast.error(res.error)
-                setRequestStatus('error')
+    const handleConnect = async () => {
+        if (!result) return
+        startTransition(async () => {
+            const response = await sendConnectionRequestAction(result.id)
+            if (response.error) {
+                toast({ title: 'Error', description: response.error, variant: 'destructive' })
             } else {
-                toast.success('Solicitud enviada correctamente')
-                setRequestStatus('sent')
-                setEmail('')
+                toast({ title: 'Solicitud enviada', description: `Se ha enviado una solicitud a ${result.full_name}` })
+                setResult((prev: any) => ({ ...prev, connectionStatus: 'pending' }))
             }
-        } catch (error) {
-            toast.error('Error al enviar solicitud')
-            setRequestStatus('error')
-        }
+        })
+    }
+
+    const handleCancel = async () => {
+        if (!result) return
+        startTransition(async () => {
+            const response = await cancelConnectionRequestAction(result.id)
+            if (response.error) {
+                toast({ title: 'Error', description: response.error, variant: 'destructive' })
+            } else {
+                toast({ title: 'Solicitud cancelada', description: 'La solicitud ha sido eliminada.' })
+                setResult((prev: any) => ({ ...prev, connectionStatus: null }))
+            }
+        })
+    }
+
+    // URL Helper
+    const getAvatarUrl = (path: string | null) => {
+        if (!path) return null
+        if (path.startsWith('http')) return path
+        return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/branding/${path}`
     }
 
     return (
-        <Card className="mb-8 border-dashed bg-muted/30">
-            <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row gap-6 items-start">
-                    <div className="flex-1 space-y-4 w-full">
-                        <div>
-                            <h3 className="font-medium text-foreground flex items-center gap-2">
-                                <Search className="h-4 w-4 text-indigo-500" />
-                                Buscar Usuario Global
-                            </h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                Busca por email para conectar con usuarios que ya usan TechLife.
-                            </p>
-                        </div>
+        <div className="w-full max-w-md mx-auto mb-8">
+            <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+                <Input
+                    type="email"
+                    placeholder="Buscar cliente por email (ej: cliente@gmail.com)"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isPending}
+                    className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                />
+                <Button type="submit" disabled={isPending || !email}>
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Buscar'}
+                </Button>
+            </form>
 
-                        <form onSubmit={handleSearch} className="flex gap-2">
-                            <Input
-                                placeholder="ejemplo@email.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="bg-background"
-                            />
-                            <Button type="submit" disabled={loading || !email}>
-                                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Buscar'}
-                            </Button>
-                        </form>
-                    </div>
-
-                    {/* Result Card */}
-                    {searchResult && (
-                        <div className="w-full md:w-auto min-w-[300px] border border-border rounded-lg bg-card p-4 shadow-sm animate-in fade-in zoom-in-95 duration-200">
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-12 w-12 border">
-                                    <AvatarImage src={searchResult.avatar_url} />
-                                    <AvatarFallback>{searchResult.full_name?.slice(0, 2).toUpperCase()}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                    <div className="font-semibold text-foreground">{searchResult.full_name}</div>
-                                    <div className="text-xs text-muted-foreground break-all">Usuario Registrado</div>
-                                </div>
-
-                                {requestStatus === 'idle' && (
-                                    <Button size="sm" onClick={handleInvite} className="bg-indigo-600 hover:bg-indigo-700">
-                                        <UserPlus className="h-4 w-4 mr-2" />
-                                        Conectar
-                                    </Button>
-                                )}
-                                {requestStatus === 'sending' && (
-                                    <Button size="sm" disabled variant="outline">
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    </Button>
-                                )}
-                                {requestStatus === 'sent' && (
-                                    <Button size="sm" disabled variant="outline" className="text-green-600 border-green-200 bg-green-50">
-                                        <CheckCircle className="h-4 w-4 mr-2" />
-                                        Enviada
-                                    </Button>
-                                )}
+            {result && (
+                <Card className="animate-in fade-in zoom-in-95 duration-200 dark:bg-slate-900">
+                    <CardContent className="p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Avatar>
+                                <AvatarImage src={getAvatarUrl(result.avatar_url) || undefined} />
+                                <AvatarFallback>{result.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <h3 className="font-medium text-slate-900 dark:text-slate-100">{result.full_name}</h3>
+                                <p className="text-xs text-slate-500">{email}</p>
                             </div>
                         </div>
-                    )}
-                </div>
-            </CardContent>
-        </Card>
+
+                        <div>
+                            {result.connectionStatus === 'accepted' ? (
+                                <div className="flex items-center text-green-600 dark:text-green-500 text-sm font-medium">
+                                    <CheckCircle className="h-4 w-4 mr-1" /> Conectado
+                                </div>
+                            ) : result.connectionStatus === 'pending' ? (
+                                <Button variant="outline" size="sm" onClick={handleCancel} disabled={isPending} className="text-amber-600 border-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/20">
+                                    <Clock className="h-4 w-4 mr-1" /> Pendiente (Cancelar)
+                                </Button>
+                            ) : (
+                                <Button size="sm" onClick={handleConnect} disabled={isPending} className="bg-indigo-600 hover:bg-indigo-700">
+                                    <UserPlus className="h-4 w-4 mr-1" /> Conectar
+                                </Button>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
     )
 }

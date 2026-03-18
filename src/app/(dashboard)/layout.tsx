@@ -1,12 +1,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-import { LayoutDashboard, Users, Wrench, Package, Settings, LogOut, DollarSign, BarChart2 } from 'lucide-react'
+import { LayoutDashboard, Users, Wrench, Package, Settings, DollarSign, BarChart2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { NotificationBell } from '@/components/common/NotificationBell'
 import { FloatingNotification } from '@/components/common/FloatingNotification'
+import LogoutButton from '@/components/auth/LogoutButton'
 
 export default async function DashboardLayout({
     children,
@@ -21,7 +22,7 @@ export default async function DashboardLayout({
 
     const { data: profile } = await supabase
         .from('profiles')
-        .select('tenant_id, role')
+        .select('tenant_id, role, avatar_url')
         .eq('id', user.id)
         .single()
 
@@ -30,8 +31,8 @@ export default async function DashboardLayout({
     }
 
     if (!profile || !profile.tenant_id) {
-        // If they are an owner but have no tenant (shouldn't happen), redirect to home or register
-        redirect('/')
+        // If they are logged in but have no profile/tenant (e.g., deleted from DB), force logout to clear cookies
+        redirect('/auth/signout')
     }
 
     return (
@@ -56,57 +57,89 @@ export default async function DashboardLayout({
                 <nav className="flex-1 px-4 space-y-2">
                     <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
                         <LayoutDashboard className="h-5 w-5" />
-                        Dashboard
+                        {profile?.role === 'sales_store' || profile?.role === 'sales_field' ? 'Punto de Venta' :
+                            profile?.role === 'cashier' ? 'Caja' : 'Dashboard'}
                     </Link>
 
-                    <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
-                        <Wrench className="h-5 w-5" />
-                        Órdenes
-                    </Link>
+                    {/* --- OPERATIONAL MODULES --- */}
 
-                    <Link href="/dashboard/kanban" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
-                        <LayoutDashboard className="h-5 w-5" />
-                        Tablero Kanban
-                    </Link>
+                    {/* Orders: Owner, Manager, Head Tech, Reception, Technician */}
+                    {['owner', 'manager', 'head_technician', 'receptionist', 'technician'].includes(profile?.role || '') && (
+                        <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                            <Wrench className="h-5 w-5" />
+                            Órdenes
+                        </Link>
+                    )}
 
-                    <Link href="/customers" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
-                        <Users className="h-5 w-5" />
-                        Clientes
-                    </Link>
+                    {/* Kanban: Owner, Manager, Head Tech (Techs use DispatchPanel/MyOrders) */}
+                    {['owner', 'manager', 'head_technician'].includes(profile?.role || '') && (
+                        <Link href="/dashboard/kanban" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                            <LayoutDashboard className="h-5 w-5" />
+                            Tablero Kanban
+                        </Link>
+                    )}
 
-                    <Link href="/inventory" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
-                        <Package className="h-5 w-5" />
-                        Inventario
-                    </Link>
+                    {/* Customers: Owner, Manager, Head Tech, Reception (Sales has own view) */}
+                    {['owner', 'manager', 'head_technician', 'receptionist'].includes(profile?.role || '') && (
+                        <Link href="/customers" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                            <Users className="h-5 w-5" />
+                            Clientes
+                        </Link>
+                    )}
 
-                    <Link href="/finance" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
-                        <DollarSign className="h-5 w-5" />
-                        Finanzas
-                    </Link>
+                    {/* Inventory: Owner, Manager, Head Tech, Warehouse, Technician */}
+                    {['owner', 'manager', 'head_technician', 'warehouse_keeper', 'technician'].includes(profile?.role || '') && (
+                        <Link href="/inventory" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                            <Package className="h-5 w-5" />
+                            Inventario
+                        </Link>
+                    )}
 
-                    <Link href="/analytics" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
-                        <BarChart2 className="h-5 w-5" />
-                        Analítica
-                    </Link>
+                    {/* --- ADMIN MODULES --- */}
 
-                    <Link href="/pos" className="flex items-center gap-3 px-4 py-3 text-emerald-400 font-bold bg-emerald-950/30 hover:bg-emerald-900/50 rounded-md transition-colors border border-emerald-900/50 mt-2">
-                        <DollarSign className="h-5 w-5" />
-                        Punto de Venta
-                    </Link>
+                    {/* Finance: Owner, Manager */}
+                    {['owner', 'manager'].includes(profile?.role || '') && (
+                        <Link href="/finance" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                            <DollarSign className="h-5 w-5" />
+                            Finanzas
+                        </Link>
+                    )}
 
-                    <Link href="/settings" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
-                        <Settings className="h-5 w-5" />
-                        Configuración
-                    </Link>
+                    {/* Punto de Venta: For Admin roles quick access */}
+                    {['owner', 'manager'].includes(profile?.role || '') && (
+                        <Link href="/pos" className="flex items-center gap-3 px-4 py-3 text-emerald-400 font-bold bg-emerald-950/30 hover:bg-emerald-900/50 rounded-md transition-colors border border-emerald-900/50 mt-2">
+                            <DollarSign className="h-5 w-5" />
+                            Punto de Venta
+                        </Link>
+                    )}
+
+                    {/* Metrics & Analytics: Owner, Manager, Head Tech */}
+                    {['owner', 'manager', 'head_technician'].includes(profile?.role || '') && (
+                        <>
+                            <Link href="/sales-metrics" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                                <BarChart2 className="h-5 w-5" />
+                                Métricas Ventas
+                            </Link>
+
+                            <Link href="/analytics" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                                <BarChart2 className="h-5 w-5" />
+                                Analítica Gral
+                            </Link>
+
+                            <Link href="/settings" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                                <Settings className="h-5 w-5" />
+                                Configuración
+                            </Link>
+                        </>
+                    )}
                 </nav>
 
-                <div className="p-4 border-t border-slate-800">
-                    <form action="/auth/signout" method="post">
-                        <button className="flex w-full items-center gap-3 px-4 py-2 text-slate-400 hover:text-white transition-colors">
-                            <LogOut className="h-5 w-5" />
-                            Cerrar Sesión
-                        </button>
-                    </form>
+                <div className="p-4 border-t border-slate-800 space-y-2">
+                    <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
+                        <Users className="h-5 w-5" />
+                        Mi Perfil
+                    </Link>
+                    <LogoutButton />
                 </div>
             </aside>
 
@@ -116,9 +149,23 @@ export default async function DashboardLayout({
                     <h2 className="font-semibold text-foreground">Panel de Control</h2>
                     <div className="flex items-center gap-4">
                         <NotificationBell />
-                        <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border border-indigo-200">
-                            {user.email?.substring(0, 2).toUpperCase()}
-                        </div>
+                        <Link href="/profile" title="Mi Perfil">
+                            {profile?.avatar_url ? (
+                                <div className="h-8 w-8 rounded-full overflow-hidden border border-indigo-200">
+                                    <Image
+                                        src={profile.avatar_url}
+                                        alt="Avatar"
+                                        width={32}
+                                        height={32}
+                                        className="object-cover h-full w-full"
+                                    />
+                                </div>
+                            ) : (
+                                <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border border-indigo-200 hover:bg-indigo-200 transition-colors">
+                                    {user.email?.substring(0, 2).toUpperCase()}
+                                </div>
+                            )}
+                        </Link>
                     </div>
                 </header>
                 <div className="p-6">

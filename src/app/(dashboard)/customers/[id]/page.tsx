@@ -22,15 +22,40 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
 
     const { data: customer, error: customerError } = await supabase.from('customers').select('*').eq('id', id).single()
 
-    if (customerError) {
-        console.error('Error fetching customer:', customerError)
-        return notFound() // Verify if it's 404 or other error
-    }
+    let displayCustomer = customer
 
-    if (!customer) {
-        console.log('Customer not found in DB')
+    // HANDLE VIRTUAL CUSTOMERS (Not in DB yet)
+    if (id.startsWith('virtual-')) {
+        const userId = id.replace('virtual-', '')
+
+        // Use Admin Client to get real profile
+        const { createAdminClient } = await import('@/lib/supabase/server')
+        const adminSupabase = createAdminClient()
+
+        const { data: profile } = await adminSupabase.from('profiles').select('*').eq('id', userId).single()
+        const { data: authData } = await adminSupabase.auth.admin.getUserById(userId)
+
+        if (profile) {
+            displayCustomer = {
+                id: id,
+                full_name: profile.full_name || 'Usuario Conectado',
+                email: authData?.user?.email || 'Email no compartido',
+                phone: profile.phone || '',
+                address: 'Dirección no compartida',
+                created_at: new Date().toISOString(), // Mock
+                avatar_url: profile.avatar_url
+            }
+        }
+    } else if (customerError) {
+        console.error('Error fetching customer:', customerError)
+        return notFound()
+    } else if (!customer) {
         return notFound()
     }
+
+    // Assign to standard variable for render
+    const finalCustomer = displayCustomer || customer
+    if (!finalCustomer) return notFound()
 
     const assets = await getCustomerAssetsAction(id, tenantIndustry)
 
@@ -61,11 +86,22 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
 
             <div className="flex items-start justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">{customer.full_name}</h1>
-                    <div className="flex gap-4 mt-2 text-slate-500">
-                        <span>{customer.email}</span>
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+                        {finalCustomer.avatar_url && (
+                            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
+                                <img
+                                    src={finalCustomer.avatar_url.startsWith('http') ? finalCustomer.avatar_url : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/branding/${finalCustomer.avatar_url}`}
+                                    alt={finalCustomer.full_name}
+                                    className="h-full w-full object-cover"
+                                />
+                            </div>
+                        )}
+                        {finalCustomer.full_name}
+                    </h1>
+                    <div className="flex gap-4 mt-2 text-muted-foreground">
+                        <span>{finalCustomer.email}</span>
                         <span>•</span>
-                        <span>{customer.phone}</span>
+                        <span>{finalCustomer.phone}</span>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -80,11 +116,11 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
             </div>
 
             <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4 text-slate-800">Garaje / Equipos</h2>
+                <h2 className="text-xl font-semibold mb-4 text-foreground">Garaje / Equipos</h2>
 
-                <div className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden">
+                <div className="bg-card rounded-lg shadow border border-border overflow-hidden">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                        <thead className="bg-muted/50 text-muted-foreground border-b border-border">
                             <tr>
                                 <th className="px-6 py-4 font-medium w-12"></th>
                                 <th className="px-6 py-4 font-medium">{getIdentifierLabel()}</th>
@@ -94,29 +130,29 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
                                 <th className="px-6 py-4 text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-border">
                             {assets?.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-10 text-center text-slate-500">
+                                    <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
                                         Este cliente no tiene equipos registrados.
                                     </td>
                                 </tr>
                             )}
                             {assets?.map((asset: any) => (
-                                <tr key={asset.id} className="hover:bg-slate-50 transition-colors">
+                                <tr key={asset.id} className="hover:bg-muted/50 transition-colors">
                                     <td className="px-6 py-4">
                                         {getIndustryIcon()}
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-slate-900">{asset.identifier}</td>
-                                    <td className="px-6 py-4 text-slate-500">
+                                    <td className="px-6 py-4 font-medium text-foreground">{asset.identifier}</td>
+                                    <td className="px-6 py-4 text-muted-foreground">
                                         {asset.details?.brand} {asset.details?.model}
                                     </td>
-                                    <td className="px-6 py-4 text-slate-500 truncate max-w-xs">{asset.notes || '-'}</td>
-                                    <td className="px-6 py-4 text-slate-500">
+                                    <td className="px-6 py-4 text-muted-foreground truncate max-w-xs">{asset.notes || '-'}</td>
+                                    <td className="px-6 py-4 text-muted-foreground">
                                         {new Date(asset.created_at).toLocaleDateString()}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <Link href={`/orders?assetId=${asset.id}`} className="text-indigo-600 cursor-pointer hover:underline">
+                                        <Link href={`/orders?assetId=${asset.id}`} className="text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline">
                                             Historial
                                         </Link>
                                     </td>

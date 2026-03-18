@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { getCustomersAction } from '@/lib/actions/customers'
 import EnablePortalButton from '@/components/features/customers/EnablePortalButton'
 import DeleteCustomerButton from '@/components/features/customers/DeleteCustomerButton'
-import CustomerSearch from '@/components/features/customers/CustomerSearch'
+import { CustomerSearch } from '@/components/features/customers/CustomerSearch'
 export default async function CustomersPage({
     searchParams,
 }: {
@@ -60,7 +60,24 @@ export default async function CustomersPage({
                         )}
                         {customers?.map((customer) => (
                             <tr key={customer.id} className="hover:bg-muted/50 transition-colors">
-                                <td className="px-6 py-4 font-medium text-foreground">{customer.full_name}</td>
+                                <td className="px-6 py-4 font-medium text-foreground">
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                                            {customer.avatar_url ? (
+                                                <img
+                                                    src={customer.avatar_url.startsWith('http') ? customer.avatar_url : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/branding/${customer.avatar_url}`}
+                                                    alt={customer.full_name}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="flex h-full w-full items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold">
+                                                    {customer.full_name?.charAt(0) || 'C'}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span>{customer.full_name}</span>
+                                    </div>
+                                </td>
                                 <td className="px-6 py-4 text-muted-foreground">{customer.tax_id || '-'}</td>
                                 <td className="px-6 py-4 text-muted-foreground">
                                     <div className="flex flex-col">

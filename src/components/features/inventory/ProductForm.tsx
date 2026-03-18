@@ -299,16 +299,15 @@ export default function ProductForm({ productToEdit, categories = [], trigger, o
                         </div>
                     </div>
 
-                    {formData.type === 'product' && (
-                        <div className="space-y-2">
-                            <Label>Código / SKU</Label>
-                            <Input
-                                value={formData.sku}
-                                onChange={e => setFormData({ ...formData, sku: e.target.value })}
-                                placeholder="Escanear código de barras..."
-                            />
-                        </div>
-                    )}
+                    <div className="space-y-2">
+                        <Label>Código / SKU {formData.type === 'service' && '(Opcional)'}</Label>
+                        <Input
+                            value={formData.sku}
+                            onChange={e => setFormData({ ...formData, sku: e.target.value })}
+                            placeholder={formData.type === 'service' ? 'Dejar vacío para auto-generar' : 'Escanear código de barras...'}
+                        />
+                    </div>
+
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">

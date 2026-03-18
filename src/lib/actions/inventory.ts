@@ -23,7 +23,7 @@ export async function getProductsAction(term?: string) {
     let query = supabase
         .from('products')
         .select('*')
-        .eq('tenant_id', profile.tenant_id) // Force tenant isolation
+        .eq('tenant_id', profile.tenant_id)
         .order('name')
 
     if (term) {
@@ -37,8 +37,10 @@ export async function getProductsAction(term?: string) {
         throw new Error('Failed to fetch products')
     }
 
-    return data
+    return data as any[]
 }
+
+
 
 export async function getProductByIdAction(id: string) {
     const cookieStore = await cookies()
@@ -329,7 +331,7 @@ export async function deleteProductAction(productId: string) {
         .eq('id', user.id)
         .single()
 
-    if (!profile || !['owner', 'admin'].includes(profile.role)) {
+    if (!profile || !['owner', 'manager', 'head_technician'].includes(profile.role)) {
         return { error: 'No tienes permisos para eliminar productos.' }
     }
 

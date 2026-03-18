@@ -138,17 +138,17 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
                             </thead>
                             <tbody className="divide-y">
                                 {history.map((day) => (
-                                    <tr key={day.date} className="bg-white hover:bg-slate-50">
-                                        <td className="px-6 py-4 font-medium text-slate-900">
+                                    <tr key={day.date} className="bg-card hover:bg-muted/50 border-b border-border">
+                                        <td className="px-6 py-4 font-medium text-foreground">
                                             {new Date(day.date).toLocaleDateString()}
                                         </td>
-                                        <td className="px-6 py-4 text-right text-slate-600">
+                                        <td className="px-6 py-4 text-right text-muted-foreground">
                                             ${day.services.toFixed(2)}
                                         </td>
-                                        <td className="px-6 py-4 text-right text-slate-600">
+                                        <td className="px-6 py-4 text-right text-muted-foreground">
                                             ${day.sales.toFixed(2)}
                                         </td>
-                                        <td className="px-6 py-4 text-right font-bold text-slate-900">
+                                        <td className="px-6 py-4 text-right font-bold text-foreground">
                                             ${day.total.toFixed(2)}
                                         </td>
                                     </tr>

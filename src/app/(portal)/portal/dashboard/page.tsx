@@ -64,8 +64,9 @@ export default async function ConsumerHubPage() {
         .eq('status', 'pending')
 
     // 2. Fetch Linked Workshops
-    const { data: linkedCustomers } = await supabase
-        .from('customers')
+    // 2. Fetch Linked Workshops (Accepted Connections)
+    const { data: linkedWorkshops } = await supabase
+        .from('tenant_connections')
         .select(`
             id,
             tenant:tenants (
@@ -73,10 +74,10 @@ export default async function ConsumerHubPage() {
                 name,
                 industry,
                 logo_url
-            ),
-            service_orders (count)
+            )
         `)
         .eq('user_id', user.id)
+        .eq('status', 'accepted')
 
     // 3. Fetch Personal Assets
     const { data: personalAssets } = await supabase
@@ -87,7 +88,7 @@ export default async function ConsumerHubPage() {
         .limit(3)
 
     // 4. Counts for Stats
-    const workshopCount = linkedCustomers?.length || 0
+    const workshopCount = linkedWorkshops?.length || 0
     // Approximate assets count (this logic could be improved but sufficient for display)
     const { count: personalCount } = await supabase.from('user_assets').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
     const totalAssets = (personalCount || 0)
@@ -239,8 +240,8 @@ export default async function ConsumerHubPage() {
                                 Mis Talleres
                             </h2>
                             <div className="space-y-3">
-                                {linkedCustomers && linkedCustomers.length > 0 ? (
-                                    linkedCustomers.map((c: any) => c.tenant && (
+                                {linkedWorkshops && linkedWorkshops.length > 0 ? (
+                                    linkedWorkshops.map((c: any) => c.tenant && (
                                         <Link key={c.id} href={`/portal/workshops/${c.tenant.id}`}>
                                             <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors">
                                                 <div className="h-10 w-10 bg-muted rounded-full flex items-center justify-center shrink-0 overflow-hidden">

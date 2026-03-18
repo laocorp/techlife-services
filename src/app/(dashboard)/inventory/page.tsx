@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
+import StockDisplay from '@/components/features/inventory/StockDisplay'
 
 export default async function InventoryPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
     const { q } = await searchParams
@@ -31,8 +32,8 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
     }
 
     // Role Permissions
-    // Owner, Admin, Receptionist can manage stock. Technician can only view or request (not implemented yet).
-    const canManageStock = ['owner', 'admin', 'receptionist'].includes(userRole)
+    // Owner, Manager, Warehouse Keeper, Head Technicians allow manage stock.
+    const canManageStock = ['owner', 'manager', 'warehouse_keeper', 'head_technician'].includes(userRole)
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
@@ -122,17 +123,11 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
                                         {item.type === 'service' ? (
                                             <span className="text-muted-foreground">-</span>
                                         ) : (
-                                            <div className="flex flex-col items-center">
-                                                <span className={`font-bold ${item.quantity <= (item.min_stock || 0) ? 'text-destructive' : 'text-foreground'}`}>
-                                                    {item.quantity}
-                                                </span>
-                                                {item.quantity <= (item.min_stock || 0) && (
-                                                    <span className="flex items-center text-[10px] text-red-600 mt-1">
-                                                        <AlertTriangle className="h-3 w-3 mr-1" />
-                                                        Bajo Stock
-                                                    </span>
-                                                )}
-                                            </div>
+                                            <StockDisplay
+                                                stock={item.quantity}
+                                                minStock={item.min_stock || 0}
+                                                breakdown={item.stock_breakdown}
+                                            />
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">

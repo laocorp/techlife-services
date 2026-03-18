@@ -9,6 +9,7 @@ import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form'
 import { CustomerFormData, customerSchema } from '@/lib/validations/customers'
 import { createCustomerAction, searchCustomerByEmailAction } from '@/lib/actions/customers'
@@ -32,6 +33,8 @@ export default function NewCustomerPage() {
             email: '',
             phone: '',
             address: '',
+            createAccount: false,
+            password: '',
         },
     })
 
@@ -68,18 +71,22 @@ export default function NewCustomerPage() {
 
             if (result?.error) {
                 setError(result.error)
-            } else {
-                if (result?.invited) {
-                    router.push('/customers?success=invited')
-                } else {
-                    router.push('/customers')
-                }
-                router.refresh()
+                setLoading(false)
+                return
             }
-        } catch (err) {
-            setError('Error inesperado')
+
+            // Navigate based on result type
+            if (result?.accountCreated) {
+                router.push('/customers?success=created')
+            } else if (result?.invited) {
+                router.push('/customers?success=invited')
+            } else {
+                router.push('/customers')
+            }
+            router.refresh()
+        } catch (err: any) {
+            setError('Error inesperado: ' + (err?.message || 'Intenta de nuevo'))
             console.error(err)
-        } finally {
             setLoading(false)
         }
     }
@@ -254,6 +261,55 @@ export default function NewCustomerPage() {
                                         </FormItem>
                                     )}
                                 />
+
+                                <div className="p-4 bg-muted/30 rounded-lg border border-border space-y-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="createAccount"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center justify-between rounded-lg p-0 space-y-0">
+                                                <div className="space-y-0.5">
+                                                    <FormLabel className="text-base font-medium">
+                                                        Crear Cuenta de Acceso
+                                                    </FormLabel>
+                                                    <FormDescription>
+                                                        El cliente podrá entrar al Portal inmediatamente.
+                                                    </FormDescription>
+                                                </div>
+                                                <FormControl>
+                                                    <Switch
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    {form.watch('createAccount') && (
+                                        <FormField
+                                            control={form.control}
+                                            name="password"
+                                            render={({ field }) => (
+                                                <FormItem className="animate-in fade-in slide-in-from-top-2">
+                                                    <FormLabel>Contraseña Temporal</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="Ej. 123456"
+                                                            {...field}
+                                                            className="bg-background shadow-sm"
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Comparte esta contraseña con el cliente. Podrá cambiarla después.
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    )}
+                                </div>
 
                                 {error && (
                                     <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">

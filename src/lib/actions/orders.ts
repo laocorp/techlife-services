@@ -18,9 +18,6 @@ export async function createOrderAction(data: OrderFormData) {
     const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
     if (!profile?.tenant_id) return { error: 'Sin tenant' }
 
-    console.log('--- CREATE ORDER STARTED ---')
-    console.log('Input:', JSON.stringify(data))
-
     const validated = orderSchema.safeParse(data)
     if (!validated.success) {
         console.error('Validation Invalid:', validated.error)
@@ -28,30 +25,24 @@ export async function createOrderAction(data: OrderFormData) {
     }
 
     const { customerId, assetId, priority, description, notes } = validated.data
-    console.log('Validated Data: ', { customerId, assetId })
 
     let finalCustomerId = customerId
     try {
         if (customerId.startsWith('virtual-')) {
-            console.log('Detected Virtual Customer. Calling ensureLocalCustomer...')
             // Dynamic import to avoid circular dep if any
             const { ensureLocalCustomer } = await import('@/lib/actions/customers')
             finalCustomerId = await ensureLocalCustomer(customerId)
-            console.log('ensureLocalCustomer Result:', finalCustomerId)
         }
     } catch (e: any) {
         console.error('Virtual Customer Error:', e)
         return { error: `Error virtual: ${e.message}` }
     }
 
-    console.log('Final Customer ID for Insert:', finalCustomerId)
-
     // NEW: Ensure Asset is Local (Handle Shared Assets)
     let finalAssetId = assetId
     try {
         const { ensureLocalAsset } = await import('@/lib/actions/assets')
         finalAssetId = await ensureLocalAsset(assetId, finalCustomerId, profile.tenant_id)
-        console.log('ensureLocalAsset Result:', finalAssetId)
     } catch (e: any) {
         console.error('Asset Import Error:', e)
         return { error: `Error al procesar activo: ${e.message}` }
@@ -121,7 +112,6 @@ export async function getOrdersAction(filters?: { assetId?: string }) {
                             }
                         }
                     }
-                    console.log('Patched orders with connection names')
                 }
             }
         }
@@ -130,6 +120,57 @@ export async function getOrdersAction(filters?: { assetId?: string }) {
     }
 
     return orders as any[]
+}
+
+export async function getOrdersByBranchAction(branchId?: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { unassigned: [], assigned: [] }
+
+    const { data: profile } = await supabase.from('profiles').select('tenant_id, branch_id').eq('id', user.id).single()
+    if (!profile?.tenant_id) return { unassigned: [], assigned: [] }
+
+    const targetBranchId = branchId || profile.branch_id
+
+    // If no branch assigned and no branch requested, return empty or all?
+    // Usually Head Technician is assigned to a branch.
+    // We fetch orders where:
+    // 1. tenant_id matches
+    // 2. branch_id matches (if we added branch_id to service_orders - wait, did we?)
+
+    // Check Phase 14 Schema in previous steps. 
+    // "Modified Tables: service_orders (added branch_id)" -> YES.
+
+    let query = supabase
+        .from('service_orders')
+        .select(`
+            *,
+            customers (id, full_name),
+            asset:customer_assets (identifier, details, brand, model),
+            tech:profiles!service_orders_assigned_to_fkey (full_name, avatar_url)
+        `)
+        .eq('tenant_id', profile.tenant_id)
+        .neq('status', 'delivered') // Exclude finished
+        .neq('status', 'cancelled')
+        .order('created_at', { ascending: false })
+
+    if (targetBranchId) {
+        query = query.eq('branch_id', targetBranchId)
+    }
+
+    const { data: orders, error } = await query
+
+    if (error) {
+        console.error('Error fetching branch orders:', error)
+        return { unassigned: [], assigned: [] }
+    }
+
+    const unassigned = orders.filter(o => !o.assigned_to)
+    const assigned = orders.filter(o => o.assigned_to)
+
+    return { unassigned, assigned }
 }
 
 export async function getOrderByIdAction(orderId: string) {
@@ -311,5 +352,233 @@ export async function deleteOrderAction(orderId: string) {
     }
 
     revalidatePath('/orders')
+    return { success: true }
+}
+
+export async function createSalesOrderAction(data: {
+    customerId: string,
+    items: { productId: string, quantity: number, price: number }[],
+    paymentProof?: string, // URL or ID
+    notes?: string
+}) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autorizado' }
+
+    const { data: profile } = await supabase.from('profiles').select('tenant_id, id, role').eq('id', user.id).single()
+    if (!profile?.tenant_id) return { error: 'Sin tenant' }
+
+    // 1. Create Order Header
+    const { data: order, error: orderError } = await supabase
+        .from('service_orders')
+        .insert({
+            tenant_id: profile.tenant_id,
+            customer_id: data.customerId,
+            description_problem: 'Venta Directa de Productos',
+            priority: 'normal',
+            status: 'pending_payment', // Waiting for Cashier
+            sales_rep_id: profile.id, // Track Sales Rep
+            assigned_to: null, // No technician needed
+            // Store proof in metadata or notes? Notes for now.
+            notes: data.notes || (data.paymentProof ? `Comprobante: ${data.paymentProof}` : undefined)
+        })
+        .select()
+        .single()
+
+    if (orderError) {
+        console.error('Sales Order Create Error:', orderError)
+        return { error: 'Error al crear la orden de venta' }
+    }
+
+    // 2. Insert Items
+    const itemsToInsert = data.items.map(item => ({
+        tenant_id: profile.tenant_id,
+        service_order_id: order.id,
+        product_id: item.productId,
+        quantity: item.quantity,
+        unit_price: item.price
+    }))
+
+    const { error: itemsError } = await supabase
+        .from('service_order_items')
+        .insert(itemsToInsert)
+
+    if (itemsError) {
+        console.error('Sales Items Error:', itemsError)
+        // Should rollback order? Supabase doesn't support transactions easily in client lib.
+        // We'll leave it empty and alert user.
+        return { error: 'Orden creada pero error al agregar productos. Contacte soporte.' }
+    }
+
+
+    // 3. Deduct Stock immediately (Reservation)
+    const stockMovements = itemsToInsert.map(item => ({
+        tenant_id: profile.tenant_id,
+        product_id: item.product_id,
+        type: 'out',
+        quantity: item.quantity,
+        notes: `Venta Orden #${order.id.slice(0, 8)}`,
+        created_by: user.id
+    }))
+
+    const { error: stockError } = await supabase
+        .from('inventory_movements')
+        .insert(stockMovements)
+
+    if (stockError) {
+        console.error('Stock Update Error:', stockError)
+        // Non-blocking but critical log. In a real app, this should be transactional with order creation.
+    }
+
+    // 3. Notification for Custoemr (if user_id exists)
+    // Fetch customer user_id
+    if (data.customerId) {
+        const { data: customer } = await supabase
+            .from('customers')
+            .select('user_id')
+            .eq('id', data.customerId)
+            .single()
+
+        if (customer?.user_id) {
+            await supabase.from('notifications').insert({
+                user_id: customer.user_id,
+                title: 'Nueva Compra Registrada',
+                message: `Se ha registrado una nueva orden #${order.folio_id || order.id.slice(0, 6)} a tu nombre. Total: $${order.total?.toFixed(2) || '0.00'}. Estado: Pendiente de Pago.`,
+                type: 'info',
+                link: `/portal/orders/${order.id}`,
+                read: false
+            })
+        }
+    }
+
+    // 4. Notification for Cashier/Owner
+    // Fetch users who should be notified (Cashiers, Managers, Owners)
+    const { data: staffToNotify } = await supabase
+        .from('profiles')
+        .select('id')
+        .in('role', ['cashier', 'owner', 'manager'])
+        .eq('tenant_id', profile.tenant_id)
+
+    if (staffToNotify && staffToNotify.length > 0) {
+        const notifications = staffToNotify.map(staff => ({
+            user_id: staff.id,
+            title: 'Nueva Venta por Cobrar',
+            message: `Orden #${order.folio_id || order.id.slice(0, 6)} creada por ${profile.role === 'sales_store' ? 'Tienda' : 'Vendedor'}. Pendiente de pago.`,
+            type: 'info',
+            link: '/dashboard/cashier', // Redirect to cashier view
+            read: false
+        }))
+
+        await supabase.from('notifications').insert(notifications)
+    }
+
+    revalidatePath('/dashboard')
+    return { success: true, orderId: order.id }
+}
+
+export async function getPendingPaymentOrdersAction() {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+    if (!profile?.tenant_id) return []
+
+    const { data: orders, error } = await supabase
+        .from('service_orders')
+        .select(`
+            *,
+            customer:customers(full_name, email),
+            items:service_order_items(
+                quantity, 
+                unit_price, 
+                product:products(name)
+            ),
+            sales_rep:profiles!sales_rep_id(full_name)
+        `)
+        .eq('tenant_id', profile.tenant_id)
+        .eq('status', 'pending_payment')
+        .order('created_at', { ascending: false })
+
+    if (error) {
+        console.error('Error fetching pending payments:', error)
+        return []
+    }
+
+    return orders
+}
+
+export async function confirmPaymentAction(orderId: string, method: string, reference?: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase.from('profiles').select('tenant_id, role').eq('id', user?.id).single()
+
+    if (profile?.role !== 'cashier' && profile?.role !== 'owner' && profile?.role !== 'manager') {
+        return { error: 'No tienes permiso de Cajero' }
+    }
+
+    // Update Order Status
+    // If it's a Sales Order (no asset), maybe go to 'delivered' or 'completed'?
+    // Let's check if it has asset_id.
+    const { data: order } = await supabase.from('service_orders').select('asset_id').eq('id', orderId).single()
+
+    const newStatus = !order?.asset_id ? 'delivered' : 'ready' // If repair, maybe ready? Or just paid?
+    // User said "Confirmacion de pago". Status flow: pending_payment -> paid?
+    // But we use status for workflow.
+    // If it's a generic sale, 'delivered' is fine.
+
+    // Also Insert Payment Record
+    // ... (assuming payments table exists or we just use status for now)
+
+    const { error: updateError } = await supabase
+        .from('service_orders')
+        .update({
+            status: newStatus,
+            // updated_at: new Date() // handled by trigger usually
+        })
+        .eq('id', orderId)
+
+    if (updateError) return { error: 'Error actualizando orden' }
+
+    return { success: true }
+}
+
+export async function cancelOrderAction(orderId: string, reason?: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autorizado' }
+
+    const { data: profile } = await supabase.from('profiles').select('tenant_id, role').eq('id', user.id).single()
+
+    if (!profile || (profile.role !== 'cashier' && profile.role !== 'owner' && profile.role !== 'manager')) {
+        return { error: 'No tienes permisos para cancelar órdenes.' }
+    }
+
+    // Use Secure RPC to bypass RLS complexity (Handles status update & stock restoration)
+    const { data: rpcResult, error: rpcError } = await supabase.rpc('cancel_order_endpoint', {
+        p_order_id: orderId,
+        p_reason: reason || 'Anulado en Caja'
+    })
+
+    if (rpcError) {
+        console.error('RPC Error:', rpcError)
+        return { error: `Error al cancelar: ${rpcError.message}` }
+    }
+
+    if (rpcResult && !rpcResult.success) {
+        return { error: rpcResult.error || 'Error desconocido al cancelar' }
+    }
+
+    revalidatePath('/dashboard')
+    revalidatePath('/sales')
+
     return { success: true }
 }

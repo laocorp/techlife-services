@@ -66,7 +66,7 @@ export default function NewAssetPage() {
                                 <SelectTrigger>
                                     <SelectValue placeholder="Selecciona tipo" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white z-50">
+                                <SelectContent className="bg-popover z-50">
                                     <SelectItem value="automotive">Vehículo (Auto/Moto)</SelectItem>
                                     <SelectItem value="electronics">Dispositivo Electrónico</SelectItem>
                                     <SelectItem value="machinery">Maquinaria / Herramienta</SelectItem>

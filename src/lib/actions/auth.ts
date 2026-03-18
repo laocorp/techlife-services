@@ -75,6 +75,7 @@ export async function signUpAction(data: RegisterFormData) {
             id: authData.user.id,
             tenant_id: tenantData.id,
             full_name: fullName,
+            email: email, // Added email
             role: 'owner',
             status: 'active'
         })
@@ -85,6 +86,25 @@ export async function signUpAction(data: RegisterFormData) {
         // Note: Tenant might remain orphaned but it's better than a broken user.
         await adminSupabase.auth.admin.deleteUser(authData.user.id)
         return { error: 'Error al crear perfil de usuario. Intenta de nuevo.' }
+    }
+
+    return { success: true }
+}
+
+export async function updatePasswordAction(password: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
+    const { error } = await supabase.auth.updateUser({
+        password: password
+    })
+
+    if (error) {
+        console.error('Update Password Error:', error)
+        return { error: 'Error al cambiar contraseña' }
     }
 
     return { success: true }

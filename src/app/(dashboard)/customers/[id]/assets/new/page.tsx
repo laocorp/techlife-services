@@ -21,13 +21,13 @@ export default async function NewAssetPage({ params }: { params: Promise<{ id: s
 
     return (
         <div className="p-8 max-w-2xl mx-auto">
-            <Link href={`/customers/${id}`} className="flex items-center text-slate-500 hover:text-slate-900 mb-6 transition-colors">
+            <Link href={`/customers/${id}`} className="flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver al Cliente
             </Link>
 
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">Nuevo Equipo / Vehículo</h1>
-            <p className="text-slate-500 mb-6">Agregando al cliente: <span className="font-semibold text-slate-900">{customer.full_name}</span></p>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Nuevo Equipo / Vehículo</h1>
+            <p className="text-muted-foreground mb-6">Agregando al cliente: <span className="font-semibold text-foreground">{customer.full_name}</span></p>
 
             <NewAssetForm customerId={id} industry={industry} />
         </div>

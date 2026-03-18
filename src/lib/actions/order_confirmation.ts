@@ -33,11 +33,9 @@ export async function confirmOrderReceived(orderId: string) {
             .eq('id', orderId)
 
         if (updateError) {
-            console.error('❌ [Server] Error updating order status:', updateError)
+            console.error('Error updating order status:', updateError)
             return { success: false, error: 'No se pudo actualizar el estado' }
         }
-
-        console.log('✅ [Server] Order status updated to delivered')
 
         // 3. Get current user info for the notification message (using regular client)
         const { data: { user } } = await supabase.auth.getUser()
@@ -48,15 +46,12 @@ export async function confirmOrderReceived(orderId: string) {
             .single()
 
         const clientName = profile?.full_name || 'El cliente'
-        console.log('👤 [Server] Client name:', clientName)
 
         // 4. Get all users belonging to this tenant (using ADMIN client to bypass RLS)
         const { data: tenantUsers, error: tenantUsersError } = await adminClient
             .from('profiles')
             .select('id, full_name')
             .eq('tenant_id', order.tenant_id)
-
-        console.log('🔍 [Server][Admin] Tenant users found:', tenantUsers?.length || 0, tenantUsersError)
 
         // 5. Send notifications to all tenant users (using ADMIN client to bypass RLS)
         if (tenantUsers && tenantUsers.length > 0) {
@@ -68,19 +63,13 @@ export async function confirmOrderReceived(orderId: string) {
                 read: false,
             }))
 
-            console.log('📨 [Server][Admin] Inserting notifications for users:', tenantUsers.map(u => u.full_name || u.id))
-
             const { error: notifError } = await adminClient
                 .from('notifications')
                 .insert(notifications)
 
             if (notifError) {
-                console.error('❌ [Server][Admin] Error inserting notifications:', notifError)
-            } else {
-                console.log('✅ [Server][Admin] Notifications sent successfully to', tenantUsers.length, 'users')
+                console.error('Error inserting notifications:', notifError)
             }
-        } else {
-            console.warn('⚠️ [Server][Admin] No tenant users found for tenant:', order.tenant_id)
         }
 
         return { success: true }

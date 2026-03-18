@@ -59,6 +59,8 @@ export default function LoginPage() {
                     if (profile?.role === 'client') {
                         // Force full reload to ensure middleware and cookies are processed correctly
                         window.location.href = '/portal/dashboard'
+                    } else if (profile?.role === 'sales_store' || profile?.role === 'sales_field') {
+                        window.location.href = '/sales/catalog'
                     } else {
                         window.location.href = '/dashboard'
                     }

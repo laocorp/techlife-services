@@ -4,39 +4,76 @@ import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
+export async function lookupUserByEmailAction(email: string) {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data, error } = await supabase.rpc('lookup_user_by_email', {
+        search_email: email
+    })
+
+    if (error) {
+        console.error('Error looking up user:', error)
+        return { error: 'Error al buscar usuario' }
+    }
+
+    if (!data || data.length === 0) {
+        return { success: true, user: null }
+    }
+
+    // Check if there is already a connection
+    const targetUserId = data[0].id
+    const { data: { user: currentUser } } = await supabase.auth.getUser()
+
+    // We need to know who is asking. Assuming it's a tenant admin.
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', currentUser?.id)
+        .single()
+
+    let connectionStatus = null
+
+    if (profile?.tenant_id) {
+        const { data: connection } = await supabase
+            .from('tenant_connections')
+            .select('status, initiated_by')
+            .eq('tenant_id', profile.tenant_id)
+            .eq('user_id', targetUserId)
+            .single()
+
+        if (connection) {
+            connectionStatus = connection.status
+        }
+    }
+
+    return {
+        success: true,
+        user: { ...data[0], connectionStatus }
+    }
+}
+
 export async function sendConnectionRequestAction(userId: string) {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Unauthorized')
+    if (!user) return { error: 'Unauthorized' }
 
-    // Get tenant
+    // Get tenant ID and Name
     const { data: profile } = await supabase
         .from('profiles')
-        .select('tenant_id')
+        .select(`
+            tenant_id,
+            tenants (
+                name
+            )
+        `)
         .eq('id', user.id)
         .single()
 
-    if (!profile?.tenant_id) throw new Error('No tenant found')
+    if (!profile?.tenant_id) return { error: 'No tenant found' }
 
-    // Check if connection exists
-    const { data: existing } = await supabase
-        .from('tenant_connections')
-        .select('status')
-        .eq('tenant_id', profile.tenant_id)
-        .eq('user_id', userId)
-        .single()
-
-    if (existing) {
-        if (existing.status === 'accepted') return { error: 'El usuario ya está conectado.' }
-        if (existing.status === 'pending') return { error: 'Ya existe una solicitud pendiente.' }
-        if (existing.status === 'blocked') return { error: 'No se puede conectar con este usuario.' }
-        // If rejected, maybe allow retry? For now, just error.
-        if (existing.status === 'rejected') return { error: 'El usuario rechazó la conexión previamente.' }
-    }
-
-    // Create Connection Request
     const { error } = await supabase
         .from('tenant_connections')
         .insert({
@@ -47,113 +84,194 @@ export async function sendConnectionRequestAction(userId: string) {
         })
 
     if (error) {
-        console.error('Error creating connection:', error)
-        return { error: 'Error al enviar solicitud.' }
+        console.error('Error sending connection request:', error)
+        return { error: 'Failed to send request' }
     }
 
-    // TODO: Create Notification for User?
-    // Trigger notification manually since we don't have a DB trigger for this specific case yet?
-    // "El Taller X te ha enviado una solicitud de conexión"
-    // Let's rely on the Realtime Notifications (Fase 8) if possible, or add it here.
-    // For now, let's just insert the notification directly to be safe.
+    // Send Notification to User
+    // profile.tenants might be an array depending on generation, handle safely
+    const tenantData = profile.tenants
+    const tenantName = Array.isArray(tenantData) ? tenantData[0]?.name : (tenantData as any)?.name || 'Un taller'
 
     await supabase.from('notifications').insert({
         user_id: userId,
         title: 'Nueva Solicitud de Conexión',
-        message: 'Un taller quiere conectarse contigo para compartir historial de servici.',
+        message: `${tenantName} te ha invitado a conectar en TechLife Portal.`,
         type: 'info',
-        link: '/portal/profile', // Or wherever requests are managed
+        link: '/portal/dashboard', // Direct user to dashboard where pending requests are shown
         read: false
     })
 
-    revalidatePath('/dashboard/customers')
+    revalidatePath('/customers')
     return { success: true }
 }
 
-export async function lookupUserAction(email: string) {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-
-    // Use the Secure RPC
-    const { data, error } = await supabase.rpc('lookup_user_by_email', { search_email: email })
-
-    if (error) {
-        console.error('Lookup failed:', error)
-        return null
-    }
-
-    // RPC returns array (table function)
-    if (data && data.length > 0) {
-        return data[0] // { id, full_name, avatar_url }
-    }
-
-    return null
-}
-
-export async function respondToInvitationAction(connectionId: string, accept: boolean) {
+export async function cancelConnectionRequestAction(userId: string) {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Unauthorized')
+    if (!user) return { error: 'Unauthorized' }
 
-    const status = accept ? 'accepted' : 'rejected'
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('tenant_id')
+        .eq('id', user.id)
+        .single()
+
+    if (!profile?.tenant_id) return { error: 'No tenant found' }
 
     const { error } = await supabase
         .from('tenant_connections')
-        .update({ status })
+        .delete()
+        .eq('tenant_id', profile.tenant_id)
+        .eq('user_id', userId)
+
+    if (error) {
+        console.error('Error cancelling connection request:', error)
+        return { error: 'Failed to cancel request' }
+    }
+
+    revalidatePath('/customers')
+    return { success: true }
+}
+
+export async function respondToInvitationAction(connectionId: string, status: 'accepted' | 'rejected') {
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
+
+    // 1. Get Connection Details FIRST (to know tenant_id)
+    const { data: connection } = await supabase
+        .from('tenant_connections')
+        .select('tenant_id')
         .eq('id', connectionId)
-        .eq('user_id', user.id) // Security: Ensure own connection
+        .single()
+
+    if (!connection) return { error: 'Invitation not found' }
+
+    // 2. Verify and Update
+    const { error } = await supabase
+        .from('tenant_connections')
+        .update({ status: status })
+        .eq('id', connectionId)
+        .eq('user_id', user.id) // Security check in DB
 
     if (error) {
         console.error('Error responding to invitation:', error)
-        return { error: 'Error al responder la invitación' }
+        return { error: 'Failed to update invitation' }
     }
 
+    // 3. Notify Workshop (Only if Accepted)
+    if (status === 'accepted') {
+        // Get user details for the message
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name, email')
+            .eq('id', user.id)
+            .single()
+
+        const userName = profile?.full_name || profile?.email || 'Un usuario'
+
+        // Get tenant staff to notify
+        const { data: staffMembers } = await supabase
+            .rpc('get_tenant_staff_ids', { p_tenant_id: connection.tenant_id })
+
+        if (staffMembers && staffMembers.length > 0) {
+            const notifications = staffMembers.map((staff: any) => ({
+                user_id: staff.user_id,
+                title: 'Conexión Establecida',
+                message: `${userName} ha aceptado la invitación de conexión.`,
+                link: '/customers',
+                read: false,
+                type: 'success'
+            }))
+
+            await supabase.from('notifications').insert(notifications)
+        }
+    }
+
+    revalidatePath('/portal/dashboard')
     revalidatePath('/portal/profile')
     return { success: true }
 }
 
-export async function connectWithWorkshopAction(tenantId: string) {
+export async function connectWithWorkshopAction(formData: FormData) {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Unauthorized')
+    if (!user) return { error: 'Unauthorized' }
 
-    // Check if connection exists
-    const { data: existing } = await supabase
+    const tenantId = formData.get('tenantId') as string
+    if (!tenantId) return { error: 'Tenant ID required' }
+
+    // Check if connection already exists
+    const { data: existingConnection } = await supabase
         .from('tenant_connections')
-        .select('status')
+        .select('id, status')
         .eq('tenant_id', tenantId)
         .eq('user_id', user.id)
         .single()
 
-    if (existing) {
-        if (existing.status === 'accepted') return { error: 'Ya estás conectado con este taller.' }
-        if (existing.status === 'pending') return { error: 'Ya enviaste una solicitud.' }
-        if (existing.status === 'blocked') return { error: 'No puedes conectar con este taller.' }
+    if (existingConnection) {
+        if (existingConnection.status === 'rejected') {
+            // Retry? Usually blocked. But let's allow re-request.
+            const { error } = await supabase
+                .from('tenant_connections')
+                // Rule: User follows Workshop -> Accepted immediately? 
+                // Let's assume 'accepted' for now as per Phase 10 task list.
+                .update({ status: 'accepted', initiated_by: 'user' })
+                .eq('id', existingConnection.id)
+
+            if (error) return { error: 'Failed to update connection' }
+        }
+        return { success: true }
     }
 
-    // Create Connection (User initiated -> Status: accepted)
-    // We assume if a user wants to connect to a public workshop, it's auto-accepted for now.
-    // Or it could be 'pending' if the workshop needs to approve.
-    // Based on "Insertar conexión con estado accepted (iniciada por usuario)" in task list:
+    // Create new connection
     const { error } = await supabase
         .from('tenant_connections')
         .insert({
             tenant_id: tenantId,
             user_id: user.id,
-            status: 'accepted',
+            status: 'accepted', // User initiated -> Accepted
             initiated_by: 'user'
         })
 
     if (error) {
-        console.error('Error connecting with workshop:', error)
-        return { error: 'Error al conectar con el taller.' }
+        console.error('Error connecting to workshop:', error)
+        return { error: 'Failed to connect' }
+    }
+
+    // Notify Workshop Staff
+    // reusing the notification logic from respondToInvitationAction
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, email')
+        .eq('id', user.id)
+        .single()
+
+    const userName = profile?.full_name || profile?.email || 'Un usuario'
+
+    const { data: staffMembers } = await supabase
+        .rpc('get_tenant_staff_ids', { p_tenant_id: tenantId })
+
+    if (staffMembers && staffMembers.length > 0) {
+        const notifications = staffMembers.map((staff: any) => ({
+            user_id: staff.user_id,
+            title: 'Nuevo Cliente Conectado',
+            message: `${userName} ha comenzado a seguir tu taller.`,
+            link: '/customers',
+            read: false,
+            type: 'info'
+        }))
+
+        await supabase.from('notifications').insert(notifications)
     }
 
     revalidatePath(`/portal/workshops/${tenantId}`)
-    revalidatePath('/portal/profile')
     return { success: true }
 }

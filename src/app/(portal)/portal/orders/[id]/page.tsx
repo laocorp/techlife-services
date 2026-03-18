@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, CheckCircle, Clock, FileText, AlertCircle, Wrench, Camera, MessageSquare } from 'lucide-react'
-import { approveOrderAction } from '../../actions'
+import { approveOrderAction } from '@/lib/actions/portal'
 import { PrintButton } from '@/components/common/PrintButton'
 
 export async function generateMetadata(

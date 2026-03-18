@@ -26,7 +26,7 @@ export async function createAssetAction(
     const { identifier, brand, model, notes, ...otherDetails } = data
 
     // Prepare details JSON based on industry extra fields
-    let details: any = { brand, model, ...otherDetails }
+    const details: any = { brand, model, ...otherDetails }
 
     const { error } = await supabase.from('customer_assets').insert({
         tenant_id: profile.tenant_id,
@@ -165,27 +165,33 @@ export async function getCustomerAssetsAction(customerId: string, industryFilter
 
             // ONLY fetch shared assets if connection is ACCEPTED
             if (connection) {
-                let sharedQuery = supabase
-                    .from('user_assets')
-                    .select('*')
-                    .eq('user_id', targetUserId)
+                try {
+                    let sharedQuery = supabase
+                        .from('user_assets')
+                        .select('*')
+                        .eq('user_id', targetUserId)
 
-                if (industryFilter) {
-                    sharedQuery = sharedQuery.eq('type', industryFilter)
-                }
+                    if (industryFilter) {
+                        sharedQuery = sharedQuery.eq('type', industryFilter)
+                    }
 
-                const { data: userAssets, error: sharedError } = await sharedQuery
+                    const { data: userAssets, error: sharedError } = await sharedQuery
 
-                if (!sharedError && userAssets) {
-                    sharedAssets = userAssets.map(asset => ({
-                        id: asset.id,
-                        identifier: asset.identifier,
-                        details: asset.details,
-                        notes: asset.alias ? `Alias: ${asset.alias}` : '',
-                        created_at: asset.created_at,
-                        is_shared: true,
-                        customer_id: customerId
-                    }))
+                    if (!sharedError && userAssets) {
+                        sharedAssets = userAssets.map((asset: any) => ({
+                            id: asset.id,
+                            identifier: asset.identifier,
+                            details: asset.details,
+                            notes: asset.alias ? `Alias: ${asset.alias}` : '',
+                            created_at: asset.created_at,
+                            is_shared: true,
+                            customer_id: customerId
+                        }))
+                    } else if (sharedError) {
+                        console.warn('Shared Assets Fetch Error (Table might be missing):', sharedError.message)
+                    }
+                } catch (err) {
+                    console.error('Unexpected error fetching shared assets:', err)
                 }
             }
         }
@@ -196,7 +202,7 @@ export async function getCustomerAssetsAction(customerId: string, industryFilter
     // DEDUPLICATION: If we have a local asset with the same identifier as a shared one, prefer the local one.
     // Also deduplicate multiple local assets if they somehow got duplicated in DB (show latest).
 
-    let combined = [...localAssets, ...sharedAssets]
+    const combined = [...localAssets, ...sharedAssets]
 
     // Use a Map to keep unique identifiers (preferring local, and latest created)
     const uniqueMap = new Map()

@@ -73,7 +73,7 @@ export default function NewAssetForm({
     }
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow border border-slate-200">
+        <div className="bg-card p-6 rounded-lg shadow border border-border">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 
@@ -83,7 +83,7 @@ export default function NewAssetForm({
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="font-bold">{labels.identifier}</FormLabel>
-                                <p className="text-xs text-slate-500">Identificador único del equipo.</p>
+                                <p className="text-xs text-muted-foreground">Identificador único del equipo.</p>
                                 <FormControl>
                                     <Input placeholder={industry === 'automotive' ? 'ABC-123' : '3548...'} {...field} className="uppercase" />
                                 </FormControl>
@@ -137,7 +137,7 @@ export default function NewAssetForm({
                     />
 
                     {error && (
-                        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+                        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
                             {error}
                         </div>
                     )}

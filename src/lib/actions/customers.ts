@@ -1,6 +1,10 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
+
+// ... inside getCustomersAction ...
+
+
 import { customerSchema, CustomerFormData } from '@/lib/validations/customers'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
@@ -24,7 +28,72 @@ export async function createCustomerAction(data: CustomerFormData) {
     const validatedFields = customerSchema.safeParse(data)
     if (!validatedFields.success) return { error: 'Datos inválidos' }
 
-    const { fullName, taxId, email, phone, address } = validatedFields.data
+    const { fullName, taxId, email, phone, address, createAccount, password } = validatedFields.data
+
+    // 0. DIRECT ACCOUNT CREATION (Priority)
+    if (createAccount && email && password) {
+        const adminSupabase = createAdminClient()
+
+        // 1. Create Auth User
+        const { data: newUser, error: createUserError } = await adminSupabase.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+            user_metadata: { full_name: fullName }
+        })
+
+        if (createUserError) {
+            console.error("Create User Error:", createUserError)
+            return { error: 'Error al crear cuenta: ' + createUserError.message }
+        }
+
+        if (newUser && newUser.user) {
+            // 2. Create Profile (CRITICAL: trigger may not fire with admin.createUser)
+            // Without a profile with role='client', the user cannot log in properly
+            const { error: profileError } = await adminSupabase
+                .from('profiles')
+                .upsert({
+                    id: newUser.user.id,
+                    full_name: fullName,
+                    email: email,
+                    phone: phone || null,
+                    role: 'client',
+                    tenant_id: null,
+                }, { onConflict: 'id' })
+
+            if (profileError) {
+                console.error('Create Profile Error:', profileError)
+                // Non-fatal: user was created, profile might be created by trigger later
+            }
+
+            // 3. Create Customer Record (Linked)
+            const { error: customerError } = await supabase.from('customers').insert({
+                tenant_id: profile.tenant_id,
+                full_name: fullName,
+                tax_id: taxId,
+                email,
+                phone,
+                address,
+                user_id: newUser.user.id
+            })
+
+            if (customerError) {
+                console.error('Create Customer Error:', customerError)
+                return { error: 'Usuario creado, pero falló la ficha de cliente.' }
+            }
+
+            // 4. Create Connection (Accepted)
+            await supabase.from('tenant_connections').insert({
+                tenant_id: profile.tenant_id,
+                user_id: newUser.user.id,
+                status: 'accepted',
+                initiated_by: 'tenant'
+            })
+
+            revalidatePath('/customers')
+            return { success: true, created: true, accountCreated: true }
+        }
+    }
 
     // 1. Check if user exists globally (using our new RPC)
     if (email) {
@@ -168,6 +237,7 @@ export async function getCustomersAction() {
     const supabase = createClient(cookieStore)
 
     const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return [] // Return empty list if not authenticated
     // Need tenant_id to filter connections manually if RLS doesn't suffice (RLS usually does).
     // Assuming RLS handles visibility.
 
@@ -205,20 +275,77 @@ export async function getCustomersAction() {
     const combined = [...localCustomers]
     const existingUserIds = new Set(localCustomers.filter(c => c.user_id).map(c => c.user_id))
 
-    if (connections) {
-        console.log('Connections Found (RPC):', connections.length)
+    // Import admin client if not already imported at top? No, dynamic import or use standard import at top.
+    // Assuming createAdminClient is available from imports.
+
+    if (connections && connections.length > 0) {
+        // FETCH RICH DATA (Fallback for missing RPC fields) using Admin Client
+        // This is necessary because migration for RPC update might fail in some environments
+        let profilesMap = new Map()
+        const emailsMap = new Map()
+
+        try {
+            const adminSupabase = createAdminClient()
+            const userIds = connections.map((c: any) => c.user_id)
+
+            // 1. Fetch Profiles (Safe subset of columns that definitely exist)
+            // Removing 'email' from here to prevent crash if column is missing
+            const { data: richProfiles } = await adminSupabase
+                .from('profiles')
+                .select('id, full_name, avatar_url, phone')
+                .in('id', userIds)
+
+            if (richProfiles) {
+                profilesMap = new Map(richProfiles.map(p => [p.id, p]))
+            }
+
+            // 2. Fetch Emails from Auth (The Source of Truth)
+            // This bypasses public.profiles schema issues completely
+            const emailPromises = userIds.map(async (uid: string) => {
+                const { data, error } = await adminSupabase.auth.admin.getUserById(uid)
+                if (data?.user?.email) {
+                    return { id: uid, email: data.user.email }
+                }
+                return null
+            })
+
+            const emailResults = await Promise.all(emailPromises)
+            emailResults.forEach(r => {
+                if (r) emailsMap.set(r.id, r.email)
+            })
+
+        } catch (err) {
+            console.error('Error fetching rich profiles/emails:', err)
+        }
 
         // 3a. Patch Local Customers with fresh names from Connections
-        // This ensures the list shows the real name even if the DB record is stale ("Cliente Importado")
         for (const localCust of combined) {
             if (localCust.user_id) {
                 // @ts-ignore
                 const conn = connections.find(c => c.user_id === localCust.user_id)
-                if (conn && conn.full_name) {
+
+                if (conn) {
+                    // Enrich with Admin Data
+                    const richProfile = profilesMap.get(localCust.user_id)
+                    const realEmail = emailsMap.get(localCust.user_id)
+
+                    const realName = richProfile?.full_name || conn.full_name
+                    const realPhone = richProfile?.phone || conn.phone
+                    const finalEmail = realEmail || richProfile?.email || conn.email
+                    const realAvatar = richProfile?.avatar_url || conn.avatar_url
+
                     if (localCust.full_name === 'Cliente Importado' || !localCust.full_name) {
-                        localCust.full_name = conn.full_name
-                        localCust.phone = conn.phone || localCust.phone // Update phone too if available
-                        localCust.email = conn.email || localCust.email // Update email too if available
+                        localCust.full_name = realName
+                        localCust.phone = realPhone || localCust.phone
+                        localCust.email = finalEmail || localCust.email
+                    }
+                    // Always try to update avatar if local is missing
+                    if (!localCust.avatar_url && realAvatar) {
+                        localCust.avatar_url = realAvatar
+                    }
+                    // Always update email if we found a real one and local is generic/missing
+                    if (finalEmail && (localCust.email === 'Email no compartido' || !localCust.email)) {
+                        localCust.email = finalEmail
                     }
                 }
             }
@@ -228,13 +355,18 @@ export async function getCustomersAction() {
         for (const conn of connections) {
             // @ts-ignore
             if (!existingUserIds.has(conn.user_id)) {
+                // Enrich with Admin Data
+                const richProfile = profilesMap.get(conn.user_id)
+                const realEmail = emailsMap.get(conn.user_id)
+
                 combined.push({
                     id: `virtual-${conn.user_id}`,
                     user_id: conn.user_id,
                     tenant_id: profile.tenant_id,
-                    full_name: conn.full_name, // RPC returns this
-                    email: 'Email oculto',
-                    phone: conn.phone, // RPC now returns this (if updated)
+                    full_name: richProfile?.full_name || conn.full_name,
+                    email: realEmail || conn.email || 'Email no compartido',
+                    phone: richProfile?.phone || conn.phone,
+                    avatar_url: richProfile?.avatar_url || conn.avatar_url,
                     address: null,
                     tax_id: null,
                     created_at: conn.created_at,
@@ -319,7 +451,7 @@ export async function ensureLocalCustomer(customerId: string) {
     if (!profile?.tenant_id) throw new Error('No tenant')
 
     let targetUserId = ''
-    let isVirtual = customerId.startsWith('virtual-')
+    const isVirtual = customerId.startsWith('virtual-')
 
     if (isVirtual) {
         targetUserId = customerId.replace('virtual-', '')
@@ -334,8 +466,6 @@ export async function ensureLocalCustomer(customerId: string) {
         }
     }
 
-    console.log('[ensureLocalCustomer] Target User ID:', targetUserId)
-
     // FALLBACK: Use existing 'get_tenant_connected_customers' RPC which we KNOW works and returns names.
     // This avoids needing a new SQL migration.
     const { data: connectedUsers, error: rpcError } = await supabase.rpc('get_tenant_connected_customers', {
@@ -348,7 +478,6 @@ export async function ensureLocalCustomer(customerId: string) {
 
     // Find our specific user in the connected list
     const targetUser = connectedUsers?.find((u: any) => u.user_id === targetUserId)
-    console.log('[ensureLocalCustomer] Found in connection list:', targetUser)
 
     // usage of email or phone as fallback name
     let realName = targetUser?.full_name
@@ -362,8 +491,6 @@ export async function ensureLocalCustomer(customerId: string) {
     // The RPC might not return email for privacy, but let's check. 
     // If not, we leave it null or generic.
     const realEmail = targetUser?.email || null
-
-    console.log('[ensureLocalCustomer] Resolved Name Final:', realName)
 
     // Check if already exists (race condition check)
     const { data: existing } = await supabase.from('customers')

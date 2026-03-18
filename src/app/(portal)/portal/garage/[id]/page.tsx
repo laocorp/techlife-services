@@ -21,7 +21,7 @@ export default async function GarageAssetPage({
 
     // 1. Try fetching from Personal Assets by Identifier OR ID (to support both links)
     // We prioritize Identifier lookup for the new flow
-    let { data: personalAsset } = await supabase
+    const { data: personalAsset } = await supabase
         .from('user_assets')
         .select('*')
         .or(`identifier.eq.${identifier},id.eq.${identifier}`)
@@ -42,7 +42,7 @@ export default async function GarageAssetPage({
         .eq('identifier', identifier) // Match by identifier
         .eq('customers.user_id', user.id) // Ensure it belongs to us
 
-    let asset = personalAsset || (workshopAssets && workshopAssets[0]) ? {
+    const asset = personalAsset || (workshopAssets && workshopAssets[0]) ? {
         id: personalAsset?.id || workshopAssets![0].id,
         identifier: personalAsset?.identifier || workshopAssets![0].identifier,
         details: personalAsset?.details || workshopAssets![0].details,
@@ -183,14 +183,14 @@ export default async function GarageAssetPage({
                             history.map((event) => (
                                 <Card key={event.id}>
                                     <CardContent className="p-4 flex gap-4">
-                                        <div className={`p-2 rounded-lg h-fit ${event.type === 'manual' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'}`}>
+                                        <div className={`p-2 rounded-lg h-fit ${event.type === 'manual' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'bg-orange-500/10 text-orange-600 dark:text-orange-400'}`}>
                                             {event.type === 'manual' ? <Wrench className="h-5 w-5" /> : <ClipboardList className="h-5 w-5" />}
                                         </div>
                                         <div className="flex-1 space-y-1">
                                             <div className="flex justify-between items-start">
                                                 <div>
-                                                    <h3 className="font-bold text-slate-900">{event.title}</h3>
-                                                    <span className="text-sm text-slate-500">{new Date(event.date).toLocaleDateString()}</span>
+                                                    <h3 className="font-bold text-foreground">{event.title}</h3>
+                                                    <span className="text-sm text-muted-foreground">{new Date(event.date).toLocaleDateString()}</span>
                                                 </div>
                                                 {event.type === 'official' && (
                                                     <Link href={`/portal/orders/${event.id}`}>
@@ -200,18 +200,18 @@ export default async function GarageAssetPage({
                                                     </Link>
                                                 )}
                                             </div>
-                                            <p className="text-sm text-slate-600">Por: <span className="font-medium">{event.provider}</span></p>
-                                            {event.notes && <p className="text-sm text-slate-500 mt-2 bg-slate-50 p-2 rounded">{event.notes}</p>}
-                                            {event.cost && <div className="mt-2 text-right font-mono font-bold text-slate-700">${event.cost}</div>}
+                                            <p className="text-sm text-muted-foreground">Por: <span className="font-medium text-foreground">{event.provider}</span></p>
+                                            {event.notes && <p className="text-sm text-muted-foreground mt-2 bg-muted p-2 rounded">{event.notes}</p>}
+                                            {event.cost && <div className="mt-2 text-right font-mono font-bold text-foreground">${event.cost}</div>}
                                         </div>
                                     </CardContent>
                                 </Card>
                             ))
                         ) : (
-                            <div className="text-center py-12 border-2 border-dashed rounded-xl bg-slate-50 text-slate-500">
+                            <div className="text-center py-12 border-2 border-dashed rounded-xl bg-muted/50 text-muted-foreground">
                                 <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
                                 <p>No hay registros de mantenimiento aún.</p>
-                                {!isPersonal && <p className="text-xs mt-2 text-slate-400">Las reparaciones del taller aparecerán aquí automáticamente.</p>}
+                                {!isPersonal && <p className="text-xs mt-2 text-muted-foreground/70">Las reparaciones del taller aparecerán aquí automáticamente.</p>}
                             </div>
                         )}
                     </div>
