@@ -27,6 +27,7 @@ interface SalesHistoryItem {
     status: string
     description_problem?: string
     total: number
+    order_value: number
     type: 'Venta' | 'Servicio'
     customer: { full_name: string }
     sales_rep: { full_name: string; sales_code?: string }
@@ -68,7 +69,7 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
                         <TrendingUp className="w-8 h-8 text-primary" />
                         Métricas de Ventas
                     </h1>
-                    <p className="text-muted-foreground mt-1">Desempeño y Transacciones</p>
+                    <p className="text-muted-foreground mt-1">Desempeño y Transacciones en Caja</p>
                 </div>
 
                 {/* Date Filters */}
@@ -102,7 +103,7 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Ingresos Totales</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">Ingresos Registrados</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center gap-3">
@@ -111,7 +112,7 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
                             </div>
                             <div>
                                 <div className="text-3xl font-bold">${totalRevenue.toFixed(2)}</div>
-                                <p className="text-xs text-muted-foreground">Periodo seleccionado</p>
+                                <p className="text-xs text-muted-foreground">Dinero ingresado a caja</p>
                             </div>
                         </div>
                     </CardContent>
@@ -128,7 +129,7 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
                             </div>
                             <div>
                                 <div className="text-3xl font-bold">{totalOrders}</div>
-                                <p className="text-xs text-muted-foreground">Ventas registradas</p>
+                                <p className="text-xs text-muted-foreground">Ventas y servicios</p>
                             </div>
                         </div>
                     </CardContent>
@@ -136,7 +137,7 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
 
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Ticket Promedio</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">Ingreso Promedio</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center gap-3">
@@ -145,7 +146,7 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
                             </div>
                             <div>
                                 <div className="text-3xl font-bold">${avgOrderValue.toFixed(2)}</div>
-                                <p className="text-xs text-muted-foreground">Por orden</p>
+                                <p className="text-xs text-muted-foreground">De dinero real por orden</p>
                             </div>
                         </div>
                     </CardContent>
@@ -157,7 +158,7 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
                 <Card className="lg:col-span-1">
                     <CardHeader>
                         <CardTitle>Top Vendedores</CardTitle>
-                        <CardDescription>Ranking por ingresos</CardDescription>
+                        <CardDescription>Ranking por ingresos a caja</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -199,7 +200,7 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
                 <Card className="lg:col-span-2">
                     <CardHeader>
                         <CardTitle>Historial de Transacciones</CardTitle>
-                        <CardDescription>Detalle de todas las ventas y servicios</CardDescription>
+                        <CardDescription>Detalle de todas las ventas y su estatus de pago</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="relative overflow-x-auto">
@@ -210,7 +211,8 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
                                         <th className="px-4 py-2">Tipo</th>
                                         <th className="px-4 py-2">Cliente</th>
                                         <th className="px-4 py-2">Vendedor</th>
-                                        <th className="px-4 py-2 text-right">Total</th>
+                                        <th className="px-4 py-2 text-right">Valor Orden</th>
+                                        <th className="px-4 py-2 text-right border-l">Ingresado</th>
                                         <th className="px-4 py-2 text-center">Estado</th>
                                     </tr>
                                 </thead>
@@ -231,7 +233,10 @@ export default function SalesMetricsView({ metrics, history }: SalesMetricsViewP
                                             <td className="px-4 py-3 max-w-[150px] truncate" title={order.sales_rep?.full_name}>
                                                 {order.sales_rep?.full_name || 'General'}
                                             </td>
-                                            <td className="px-4 py-3 text-right font-medium">
+                                            <td className="px-4 py-3 text-right text-muted-foreground">
+                                                ${(order.order_value || 0).toFixed(2)}
+                                            </td>
+                                            <td className="px-4 py-3 text-right font-bold text-green-600 dark:text-green-400 border-l">
                                                 ${order.total.toFixed(2)}
                                             </td>
                                             <td className="px-4 py-3 text-center">

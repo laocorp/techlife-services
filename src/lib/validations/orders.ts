@@ -6,6 +6,7 @@ export const orderSchema = z.object({
     priority: z.enum(["low", "normal", "high", "urgent"]),
     description: z.string().min(10, "Describe el problema con más detalle (mínimo 10 caracteres)"),
     notes: z.string().optional(),
+    assignedTo: z.string().optional(),
 })
 
 export type OrderFormData = z.infer<typeof orderSchema>

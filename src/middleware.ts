@@ -67,8 +67,8 @@ export async function middleware(request: NextRequest) {
         // No role check needed, everyone has a profile
     }
 
-    // 1. Finance, Settings, Analytics (Strict Admin Only)
-    const strictAdminRoutes = ['/finance', '/settings', '/analytics', '/sales-metrics']
+    // 1. Settings, Analytics (Strict Admin Only)
+    const strictAdminRoutes = ['/settings', '/analytics', '/sales-metrics']
     if (strictAdminRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
@@ -82,13 +82,27 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // 1.5. Finance (Admins + Receptionist)
+    if (request.nextUrl.pathname.startsWith('/finance')) {
+        if (!user) return NextResponse.redirect(new URL('/login', request.url))
+
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        const allowed = ['owner', 'manager', 'head_technician', 'receptionist']
+
+        if (profile && !allowed.includes(profile.role)) {
+            if (profile.role === 'client') return NextResponse.redirect(new URL('/portal/dashboard', request.url))
+            if (['sales_store', 'sales_field'].includes(profile.role)) return NextResponse.redirect(new URL('/sales/catalog', request.url))
+            return NextResponse.redirect(new URL('/dashboard', request.url))
+        }
+    }
+
     // 2. Inventory (Admins + Warehouse + Technician)
     if (request.nextUrl.pathname.startsWith('/inventory')) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-        // Technicians can view inventory too (to see parts)
-        const allowed = ['owner', 'manager', 'head_technician', 'warehouse_keeper', 'technician']
+        // Technicians can view inventory too (to see parts) + Receptionist
+        const allowed = ['owner', 'manager', 'head_technician', 'warehouse_keeper', 'technician', 'receptionist']
 
         if (profile && !allowed.includes(profile.role)) {
             if (profile.role === 'client') return NextResponse.redirect(new URL('/portal/dashboard', request.url))
@@ -116,7 +130,7 @@ export async function middleware(request: NextRequest) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-        const allowed = ['owner', 'manager']
+        const allowed = ['owner', 'manager', 'receptionist']
 
         if (profile && !allowed.includes(profile.role)) {
             if (profile.role === 'client') return NextResponse.redirect(new URL('/portal/dashboard', request.url))

@@ -38,7 +38,6 @@ export default async function WorkshopProfilePage({
         .from('tenants')
         .select('*')
         .eq('id', id)
-        .eq('is_public', true)
         .single()
 
     // ... (Products fetching remains same)
@@ -93,6 +92,11 @@ export default async function WorkshopProfilePage({
             isConnected = true
         }
         connectionStatus = connection?.status
+    }
+
+    // Security Check: Only allow viewing if the workshop is public OR the client is connected
+    if (!tenant.is_public && !isConnected) {
+        return notFound()
     }
 
     return (
@@ -197,7 +201,10 @@ export default async function WorkshopProfilePage({
                             </div>
 
                             {!isConnected ? (
-                                <form action={connectWithWorkshopAction}>
+                                <form action={async (formData) => {
+                                    'use server'
+                                    await connectWithWorkshopAction(formData)
+                                }}>
                                     <input type="hidden" name="tenantId" value={tenant.id} />
                                     <Button className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 text-lg">
                                         Conectar Ahora
@@ -225,16 +232,14 @@ export default async function WorkshopProfilePage({
                 </div>
             </div>
 
-            {/* NEW: SERVICE HISTORY SECTION (Only if Connected) */}
-            {isConnected && (
-                <div className="max-w-5xl mx-auto px-4 mt-8">
-                    <h2 className="text-2xl font-bold text-foreground mb-6">Historial de Servicio</h2>
+                    {/* NEW: SERVICE HISTORY SECTION (Only if Connected) */}
+                    {isConnected && user && (
+                        <div className="max-w-5xl mx-auto px-4 mt-8">
+                            <h2 className="text-2xl font-bold text-foreground mb-6">Historial de Servicio</h2>
 
-                    {/* Fetch orders inside the component or pass as prop? 
-                        Let's fetch here since it's a Server Component */}
-                    <ServiceHistoryList tenantId={id} userId={user.id} />
-                </div>
-            )}
+                            <ServiceHistoryList tenantId={id} userId={user.id} />
+                        </div>
+                    )}
 
             {/* NEW: STORE SECTION */}
             <div className="max-w-5xl mx-auto px-4 mt-8">

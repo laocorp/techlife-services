@@ -44,6 +44,8 @@ export async function updateTenantProfile(formData: FormData) {
         bank_account // Namespace it
     }
 
+    const is_public = formData.get('is_public') === 'on'
+
     const { error } = await supabase
         .from('tenants')
         .update({
@@ -53,6 +55,7 @@ export async function updateTenantProfile(formData: FormData) {
             contact_email,
             contact_phone,
             website,
+            is_public,
             settings: newSettings,
             updated_at: new Date().toISOString()
         })

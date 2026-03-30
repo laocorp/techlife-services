@@ -57,6 +57,24 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
     const finalCustomer = displayCustomer || customer
     if (!finalCustomer) return notFound()
 
+    // Enrich with global profile data if they are connected
+    if (finalCustomer.user_id && !finalCustomer.is_virtual) {
+        const { createAdminClient } = await import('@/lib/supabase/server')
+        const adminSupabase = createAdminClient()
+        const { data: realProfile } = await adminSupabase
+            .from('profiles')
+            .select('full_name, avatar_url, phone, email')
+            .eq('id', finalCustomer.user_id)
+            .single()
+
+        if (realProfile) {
+            finalCustomer.full_name = realProfile.full_name || finalCustomer.full_name
+            finalCustomer.avatar_url = realProfile.avatar_url || finalCustomer.avatar_url
+            finalCustomer.phone = realProfile.phone || finalCustomer.phone
+            finalCustomer.email = realProfile.email || finalCustomer.email
+        }
+    }
+
     const assets = await getCustomerAssetsAction(id, tenantIndustry)
 
     const getIndustryIcon = () => {

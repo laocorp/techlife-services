@@ -1,0 +1,20 @@
+﻿src/app/(dashboard)/dashboard/sales/page.tsx(94,103): error TS2339: Property 'includes' does not exist on type 'never'.
+src/app/(dashboard)/dashboard/sales/page.tsx(95,82): error TS2339: Property 'split' does not exist on type 'never'.
+src/app/(dashboard)/sales-metrics/page.tsx(36,49): error TS2322: Type '{ total: number; order_value: number; sales_rep: { full_name: any; }[]; type: string; id: any; created_at: any; status: any; description_problem: any; sales_rep_id: any; total_amount: { quantity: any; unit_price: any; }[]; payments: { ...; }[]; customer: { ...; }[]; assigned_tech: { ...; }[]; }[]' is not assignable to type 'SalesHistoryItem[]'.
+  Type '{ total: number; order_value: number; sales_rep: { full_name: any; }[]; type: string; id: any; created_at: any; status: any; description_problem: any; sales_rep_id: any; total_amount: { quantity: any; unit_price: any; }[]; payments: { ...; }[]; customer: { ...; }[]; assigned_tech: { full_name: any; }[]; }' is not assignable to type 'SalesHistoryItem'.
+    Types of property 'type' are incompatible.
+      Type 'string' is not assignable to type '"Venta" | "Servicio"'.
+src/app/(portal)/portal/workshops/[id]/page.tsx(204,39): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/(portal)/portal/workshops/[id]/page.tsx(239,63): error TS18047: 'user' is possibly 'null'.
+src/components/features/customers/EnablePortalButton.tsx(73,21): error TS17001: JSX elements cannot have multiple attributes with the same name.
+src/lib/actions/debug.ts(22,9): error TS7034: Variable 'profilesFound' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/lib/actions/debug.ts(30,45): error TS2353: Object literal may only specify known properties, and 'error' does not exist in type '{ id: any; full_name: any; email: any; }'.
+src/lib/actions/debug.ts(38,25): error TS7005: Variable 'profilesFound' implicitly has an 'any[]' type.
+src/lib/actions/orders.ts(55,24): error TS2339: Property 'role' does not exist on type '{ tenant_id: any; branch_id: any; }'.
+src/lib/actions/sales.ts(124,85): error TS2339: Property 'user_id' does not exist on type '{ full_name: any; user_id: any; }[]'.
+src/lib/actions/sales.ts(126,32): error TS2339: Property 'full_name' does not exist on type '{ full_name: any; user_id: any; }[]'.

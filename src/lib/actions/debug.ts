@@ -19,7 +19,8 @@ export async function debugConnectionStateAction() {
         .select('*')
 
     // 3. Get Profiles of those connections
-    let profilesFound = []
+    let profilesFound: any[] = []
+    let profErrorData = null
     if (allConnections && allConnections.length > 0) {
         const ids = allConnections.map(c => c.user_id)
         const { data: profs, error: profError } = await supabase
@@ -27,7 +28,7 @@ export async function debugConnectionStateAction() {
             .select('id, full_name, email')
             .in('id', ids)
         profilesFound = profs || []
-        if (profError) profilesFound.push({ error: profError })
+        profErrorData = profError
     }
 
     return {
@@ -37,6 +38,6 @@ export async function debugConnectionStateAction() {
         tenant_connections_raw: allConnections,
         profiles_found: profilesFound,
         conn_error: connError,
-        profile_error: null
+        profile_error: profErrorData
     }
 }

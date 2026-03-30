@@ -81,7 +81,7 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2">
+                <h3 className="text-lg font-medium text-foreground flex items-center gap-2">
                     <Banknote className="h-5 w-5 text-green-600" />
                     Pagos y Caja
                 </h3>
@@ -134,9 +134,9 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
                                     placeholder="Ej. Referencia de transferencia..."
                                 />
                             </div>
-                            <div className="flex justify-between items-center bg-slate-50 p-2 rounded text-sm">
+                            <div className="flex justify-between items-center bg-muted p-2 rounded text-sm text-foreground">
                                 <span>Deuda Pendiente:</span>
-                                <span className="font-bold text-red-600">${balance.toFixed(2)}</span>
+                                <span className="font-bold text-red-600 dark:text-red-500">${balance.toFixed(2)}</span>
                             </div>
                         </div>
                         <div className="flex justify-end gap-2">
@@ -150,27 +150,27 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
             </div>
 
             {/* Resume Cards */}
-            <div className="grid grid-cols-3 gap-4">
-                <Card className="bg-card border-border">
-                    <CardContent className="p-6">
-                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Total Orden</p>
-                        <p className="text-3xl font-bold text-foreground">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <Card className="bg-card border-border overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 flex flex-col justify-center h-full">
+                        <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1 truncate" title="Total Orden">Total Orden</p>
+                        <p className="text-lg sm:text-xl font-bold text-foreground truncate" title={`$${totalCost.toFixed(2)}`}>
                             ${totalCost.toFixed(2)}
                         </p>
                     </CardContent>
                 </Card>
-                <Card className="bg-green-50/10 border-green-200/20 dark:bg-green-900/10 dark:border-green-900/30">
-                    <CardContent className="p-6">
-                        <p className="text-sm font-bold text-green-600 dark:text-green-500 uppercase tracking-wider mb-1">Abonado</p>
-                        <p className="text-3xl font-bold text-green-700 dark:text-green-400">
+                <Card className="bg-green-50/10 border-green-200/20 dark:bg-green-900/10 dark:border-green-900/30 overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 flex flex-col justify-center h-full">
+                        <p className="text-[10px] sm:text-xs font-bold text-green-600 dark:text-green-500 uppercase tracking-wide mb-1 truncate" title="Abonado">Abonado</p>
+                        <p className="text-lg sm:text-xl font-bold text-green-700 dark:text-green-400 truncate" title={`$${totalPaid.toFixed(2)}`}>
                             ${totalPaid.toFixed(2)}
                         </p>
                     </CardContent>
                 </Card>
-                <Card className="bg-red-50/10 border-red-200/20 dark:bg-red-900/10 dark:border-red-900/30">
-                    <CardContent className="p-6">
-                        <p className="text-sm font-bold text-red-600 dark:text-red-500 uppercase tracking-wider mb-1">Pendiente</p>
-                        <p className="text-3xl font-bold text-red-700 dark:text-red-400">
+                <Card className="bg-red-50/10 border-red-200/20 dark:bg-red-900/10 dark:border-red-900/30 overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 flex flex-col justify-center h-full">
+                        <p className="text-[10px] sm:text-xs font-bold text-red-600 dark:text-red-500 uppercase tracking-wide mb-1 truncate" title="Pendiente">Pendiente</p>
+                        <p className="text-lg sm:text-xl font-bold text-red-700 dark:text-red-400 truncate" title={`$${balance.toFixed(2)}`}>
                             ${balance.toFixed(2)}
                         </p>
                     </CardContent>
@@ -178,9 +178,9 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
             </div>
 
             {/* Payments List */}
-            <div className="bg-white rounded-lg border overflow-hidden">
+            <div className="bg-card rounded-lg border border-border overflow-hidden">
                 <table className="w-full text-sm">
-                    <thead className="bg-slate-50 text-slate-600 text-left">
+                    <thead className="bg-muted text-muted-foreground text-left">
                         <tr>
                             <th className="px-4 py-2">Fecha</th>
                             <th className="px-4 py-2">Método</th>
@@ -188,22 +188,22 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
                             <th className="px-4 py-2 text-right">Monto</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y">
+                    <tbody className="divide-y divide-border">
                         {payments.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="p-4 text-center text-slate-500">No hay pagos registrados.</td>
+                                <td colSpan={4} className="p-4 text-center text-muted-foreground">No hay pagos registrados.</td>
                             </tr>
                         ) : (
                             payments.map((p) => (
                                 <tr key={p.id}>
-                                    <td className="px-4 py-2 text-slate-500">
+                                    <td className="px-4 py-2 text-muted-foreground">
                                         {format(new Date(p.created_at), 'dd/MM/yy HH:mm', { locale: es })}
                                     </td>
-                                    <td className="px-4 py-2 capitalize">
+                                    <td className="px-4 py-2 capitalize text-foreground">
                                         {p.method === 'cash' ? 'Efectivo' : p.method === 'card' ? 'Tarjeta' : p.method}
                                     </td>
-                                    <td className="px-4 py-2 text-slate-500 truncate max-w-[150px]">{p.notes}</td>
-                                    <td className="px-4 py-2 text-right font-medium text-green-600">
+                                    <td className="px-4 py-2 text-muted-foreground truncate max-w-[150px]">{p.notes}</td>
+                                    <td className="px-4 py-2 text-right font-medium text-green-600 dark:text-green-500">
                                         +${p.amount.toFixed(2)}
                                     </td>
                                 </tr>
@@ -214,7 +214,7 @@ export default function OrderPaymentsManager({ orderId }: { orderId: string }) {
             </div>
 
             {isPaid && (
-                <div className="bg-green-100 text-green-800 p-3 rounded-md text-center font-bold border border-green-300">
+                <div className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 p-3 rounded-md text-center font-bold border border-green-300 dark:border-green-800">
                     ¡ORDEN PAGADA COMPLETAMENTE!
                 </div>
             )}

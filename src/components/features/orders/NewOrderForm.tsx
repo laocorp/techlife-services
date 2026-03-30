@@ -31,9 +31,11 @@ import { getCustomerAssetsAction } from '@/lib/actions/assets'
 
 type NewOrderFormProps = {
     customers: { id: string; full_name: string }[]
+    technicians?: { id: string; full_name: string }[]
+    hasHeadTechnician?: boolean
 }
 
-export default function NewOrderForm({ customers }: NewOrderFormProps) {
+export default function NewOrderForm({ customers, technicians = [], hasHeadTechnician = false }: NewOrderFormProps) {
     const router = useRouter()
     const [error, setError] = useState<string | null>(null)
     const [loadingAssets, setLoadingAssets] = useState(false)
@@ -48,15 +50,18 @@ export default function NewOrderForm({ customers }: NewOrderFormProps) {
         if (make) parts.push(make)
         if (model) parts.push(model)
 
-        return parts.join(' - ').toUpperCase()
+        let label = parts.join(' - ').toUpperCase()
+        if (asset.alias) {
+            label = `${asset.alias} | ${label}`
+        }
+        return label
     }
-
-    // ... (existing helper function)
 
     const form = useForm<OrderFormData>({
         resolver: zodResolver(orderSchema),
         defaultValues: {
             priority: 'normal',
+            assignedTo: 'unassigned', // Allow explicit unassigned or random default
         },
     })
 
@@ -100,10 +105,6 @@ export default function NewOrderForm({ customers }: NewOrderFormProps) {
                 // If customerId changed (virtual -> local migration), update form
                 if (res.newCustomerId && res.newCustomerId !== customerId) {
                     form.setValue('customerId', res.newCustomerId)
-                    // We might need to update the customer list too, but effectively the ID just changed
-                    // The UI select might break if the new ID isn't in `customers` prop list.
-                    // Ideally we should reload the page or add the new ID to the list.
-                    // For now, let's assume the mutation works and we just fetch assets for the NEW ID.
                     await onCustomerChange(res.newCustomerId)
                 } else {
                     // Just refresh assets
@@ -123,7 +124,13 @@ export default function NewOrderForm({ customers }: NewOrderFormProps) {
     async function onSubmit(data: OrderFormData) {
         setError(null)
         try {
-            const res = await createOrderAction(data)
+            // Clean up assignedTo if 'unassigned' is passed
+            const submissionData = { ...data }
+            if (submissionData.assignedTo === 'unassigned') {
+                submissionData.assignedTo = undefined
+            }
+
+            const res = await createOrderAction(submissionData)
             if (res?.error) {
                 setError(res.error)
             } else {
@@ -275,6 +282,41 @@ export default function NewOrderForm({ customers }: NewOrderFormProps) {
                     </div>
                     {assets.length === 0 && form.watch('customerId') && !loadingAssets && (
                         <p className="text-xs text-muted-foreground -mt-4">Este cliente no tiene equipos registrados.</p>
+                    )}
+
+                    {/* Smart Technician Assignment */}
+                    {!hasHeadTechnician && technicians.length > 0 && (
+                        <FormField
+                            control={form.control}
+                            name="assignedTo"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Asignar Técnico</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value || 'unassigned'}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Seleccionar Técnico (Opcional)" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="unassigned">-- Sin Asignar --</SelectItem>
+                                            {technicians.map((t) => (
+                                                <SelectItem key={t.id} value={t.id}>
+                                                    {t.full_name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-[11px] text-muted-foreground">Puedes asignar a un técnico ahora o dejarlo para más tarde.</p>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    )}
+                    {hasHeadTechnician && (
+                        <div className="bg-blue-50/50 text-blue-700/80 text-xs p-3 rounded-md border border-blue-100 flex items-center justify-between">
+                            <span>El equipo pasará a la fila del <strong>Jefe de Taller</strong> para su asignación.</span>
+                        </div>
                     )}
 
                     {/* Priority */}

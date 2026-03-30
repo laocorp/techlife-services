@@ -87,8 +87,8 @@ export default async function DashboardLayout({
                         </Link>
                     )}
 
-                    {/* Inventory: Owner, Manager, Head Tech, Warehouse, Technician */}
-                    {['owner', 'manager', 'head_technician', 'warehouse_keeper', 'technician'].includes(profile?.role || '') && (
+                    {/* Inventory: Owner, Manager, Head Tech, Reception, Warehouse, Technician */}
+                    {['owner', 'manager', 'head_technician', 'receptionist', 'warehouse_keeper', 'technician'].includes(profile?.role || '') && (
                         <Link href="/inventory" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
                             <Package className="h-5 w-5" />
                             Inventario
@@ -97,16 +97,16 @@ export default async function DashboardLayout({
 
                     {/* --- ADMIN MODULES --- */}
 
-                    {/* Finance: Owner, Manager */}
-                    {['owner', 'manager'].includes(profile?.role || '') && (
+                    {/* Finance: Owner, Manager, Reception */}
+                    {['owner', 'manager', 'receptionist'].includes(profile?.role || '') && (
                         <Link href="/finance" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
                             <DollarSign className="h-5 w-5" />
                             Finanzas
                         </Link>
                     )}
 
-                    {/* Punto de Venta: For Admin roles quick access */}
-                    {['owner', 'manager'].includes(profile?.role || '') && (
+                    {/* Punto de Venta: For Admin & Reception access */}
+                    {['owner', 'manager', 'receptionist'].includes(profile?.role || '') && (
                         <Link href="/pos" className="flex items-center gap-3 px-4 py-3 text-emerald-400 font-bold bg-emerald-950/30 hover:bg-emerald-900/50 rounded-md transition-colors border border-emerald-900/50 mt-2">
                             <DollarSign className="h-5 w-5" />
                             Punto de Venta

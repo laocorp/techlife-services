@@ -91,7 +91,10 @@ export async function getDailyIncomeAction(date: Date) {
         .gte('created_at', start.toISOString())
         .lte('created_at', end.toISOString())
 
-    if (paymentsError || salesError) {
+    // Strict error check: only fail if error has a message or code
+    const hasRealError = (err: any) => err && (err.message || err.code)
+    
+    if (hasRealError(paymentsError) || hasRealError(salesError)) {
         console.error('Error fetching daily income:', paymentsError, salesError)
         return { total: 0, breakdown: {} }
     }

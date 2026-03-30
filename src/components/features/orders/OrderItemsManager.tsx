@@ -123,7 +123,7 @@ export default function OrderItemsManager({ orderId }: OrderItemsManagerProps) {
                 </DialogContent>
             </Dialog>
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-slate-900">Repuestos y Servicios</h3>
+                <h3 className="text-lg font-medium text-foreground">Repuestos y Servicios</h3>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                         <Button size="sm" variant="default" className="bg-indigo-600 hover:bg-indigo-700 text-white">

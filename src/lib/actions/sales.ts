@@ -22,6 +22,7 @@ export async function getSalesMetricsAction(startDate?: string, endDate?: string
             status,
             sales_rep_id,
             items:service_order_items(quantity, unit_price),
+            payments(amount),
             sales_rep:profiles!sales_rep_id(full_name, sales_code, avatar_url)
         `)
         .eq('tenant_id', profile.tenant_id)
@@ -47,8 +48,9 @@ export async function getSalesMetricsAction(startDate?: string, endDate?: string
         // Handle orders without sales rep (Legacy or General)
         const repId = order.sales_rep_id || 'no_rep'
 
-        const orderTotal = order.items?.reduce((sum: number, item: any) =>
-            sum + (item.quantity * item.unit_price), 0) || 0
+        // Calculate actual income from payments
+        const orderIncome = order.payments?.reduce((sum: number, payment: any) =>
+            sum + Number(payment.amount), 0) || 0
 
         if (!metricsMap.has(repId)) {
             metricsMap.set(repId, {
@@ -67,7 +69,7 @@ export async function getSalesMetricsAction(startDate?: string, endDate?: string
 
         const metrics = metricsMap.get(repId)
         metrics.total_orders++
-        metrics.total_revenue += orderTotal
+        metrics.total_revenue += orderIncome
 
         if (order.status === 'delivered' || order.status === 'completed') {
             metrics.completed_orders++
@@ -95,8 +97,10 @@ export async function getSalesHistoryAction(startDate?: string, endDate?: string
             id, created_at, status, description_problem,
             sales_rep_id,
             total_amount:service_order_items(quantity, unit_price),
-            customer:customers(full_name),
-            sales_rep:profiles!sales_rep_id(full_name, sales_code)
+            payments(amount),
+            customer:customers(full_name, user_id),
+            sales_rep:profiles!sales_rep_id(full_name, sales_code),
+            assigned_tech:profiles!assigned_to(full_name)
         `)
         .eq('tenant_id', profile.tenant_id)
 
@@ -110,12 +114,38 @@ export async function getSalesHistoryAction(startDate?: string, endDate?: string
         return []
     }
 
-    return orders.map(order => ({
-        ...order,
-        total: order.total_amount?.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0) || 0,
-        sales_rep: order.sales_rep || { full_name: 'Ventas Generales / Anteriores' },
-        type: order.description_problem === 'Venta Directa de Productos' ? 'Venta' : 'Servicio'
-    }))
+    // Map connected customers for real names
+    const { data: connections } = await supabase.rpc('get_tenant_connected_customers', {
+        p_tenant_id: profile.tenant_id
+    })
+
+    if (connections && orders) {
+        orders.forEach(order => {
+            const customer = Array.isArray(order.customer) ? order.customer[0] : order.customer
+            const conn = connections.find((c: any) => c.user_id === customer?.user_id)
+            if (conn && conn.full_name && customer) {
+                customer.full_name = conn.full_name
+            }
+        })
+    }
+
+    return (orders || []).map(order => {
+        const type: 'Venta' | 'Servicio' = (order.description_problem === 'Venta Directa de Productos') ? 'Venta' : 'Servicio'
+        const customer = Array.isArray(order.customer) ? order.customer[0] : order.customer
+        const assigned_tech = Array.isArray(order.assigned_tech) ? order.assigned_tech[0] : order.assigned_tech
+        const sales_rep = Array.isArray(order.sales_rep) ? order.sales_rep[0] : order.sales_rep
+        
+        return {
+            ...order,
+            customer: customer || { full_name: 'Desconocido' },
+            total: order.payments?.reduce((sum: number, p: any) => sum + Number(p.amount), 0) || 0,
+            order_value: order.total_amount?.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0) || 0,
+            sales_rep: type === 'Servicio' && assigned_tech 
+                ? assigned_tech 
+                : (sales_rep || { full_name: 'Ventas Generales / Anteriores' }),
+            type
+        }
+    })
 }
 
 // RESTORED: Missing function for Sales Dashboard
@@ -129,17 +159,16 @@ export async function getSalesOrdersAction() {
     const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
     if (!profile?.tenant_id) return []
 
-    // Note: shipping_address, contact_phone, delivery_method might be missing in schema,
-    // returning null as fallback to satisfy build.
-    // We assume 'service_order_items' has product link or name, if not we return null name.
-
     const { data: orders, error } = await supabase
-        .from('service_orders')
+        .from('ecommerce_orders')
         .select(`
           id, created_at, status,
-          sales_rep_id,
-          items:service_order_items(quantity, unit_price),
-          customer:customers(full_name)
+          customer_id,
+          total_amount,
+          shipping_address,
+          contact_phone,
+          delivery_method,
+          items:ecommerce_order_items(quantity, unit_price)
       `)
         .eq('tenant_id', profile.tenant_id)
         .order('created_at', { ascending: false })
@@ -149,17 +178,15 @@ export async function getSalesOrdersAction() {
         return []
     }
 
-    return orders.map(order => ({
+    return (orders || []).map(order => ({
         ...order,
-        // Mock missing fields to pass build
         payment_status: order.status === 'completed' || order.status === 'delivered' ? 'paid' : 'pending',
-        total_amount: order.items?.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0) || 0,
-        shipping_address: null, // table might not have this column
-        contact_phone: null,
-        delivery_method: 'pickup', // default
-        items: order.items?.map((item: any) => ({
+        shipping_address: (order.shipping_address as string | null),
+        contact_phone: (order.contact_phone as string | null),
+        delivery_method: (order.delivery_method as string | null) || 'pickup',
+        items: (order.items || []).map((item: any) => ({
             ...item,
-            product: { name: 'Producto' } // Mock product name
+            product: { name: 'Producto' }
         }))
     }))
 }

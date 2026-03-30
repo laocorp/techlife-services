@@ -22,11 +22,14 @@ export default async function OrderDetailPage({ params }: PageProps) {
 
     if (!order) return notFound()
 
-    // Fetch technicians for assignment dropdown (simple logic: all profiles in tenant for now)
-    // Ideally we filter by role='technician'
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
+    const { data: { user } } = await supabase.auth.getUser()
     const { data: technicians } = await supabase.from('profiles').select('id, full_name, role').eq('tenant_id', order.tenant_id)
+
+    const hasHeadTechnician = technicians?.some(t => t.role === 'head_technician') || false
+    const currentUserProfile = technicians?.find(t => t.id === user?.id)
+    const userRole = currentUserProfile?.role || 'user'
 
     return (
         <div className="space-y-6 container mx-auto py-6">
@@ -108,6 +111,8 @@ export default async function OrderDetailPage({ params }: PageProps) {
                         currentStatus={order.status}
                         currentTechnicianId={order.assigned_to}
                         technicians={technicians || []}
+                        hasHeadTechnician={hasHeadTechnician}
+                        userRole={userRole}
                     />
 
                     {/* Cost & Items Manager */}
@@ -115,17 +120,17 @@ export default async function OrderDetailPage({ params }: PageProps) {
                         <OrderItemsManager orderId={order.id} />
                     </div>
 
-
-
                     {/* Payment Manager */}
-                    <div className="bg-card border rounded-lg p-6 shadow-sm">
-                        <OrderPaymentsManager orderId={order.id} />
-                    </div>
+                    {(['owner', 'manager', 'receptionist', 'head_technician'].includes(userRole) || (userRole === 'technician' && !hasHeadTechnician)) && (
+                        <div className="bg-card border rounded-lg p-6 shadow-sm">
+                            <OrderPaymentsManager orderId={order.id} />
+                        </div>
+                    )}
 
                     {/* Timeline & Events */}
                     <div className="space-y-6">
                         <div className="bg-card border rounded-lg p-6 shadow-sm">
-                            <h3 className="font-semibold mb-4 text-slate-800">Historial y Notas</h3>
+                            <h3 className="font-semibold mb-4 text-foreground">Historial y Notas</h3>
                             <OrderTimeline events={events} />
                         </div>
 

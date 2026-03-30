@@ -1,0 +1,46 @@
+{
+  "customers": [
+    {
+      "id": "8a9921b3-9933-4691-90ae-2c116760c5ea",
+      "full_name": "Zioly@gmail.co m",
+      "email": "Zioly@gmail.com",
+      "created_at": "2026-03-18T04:09:18.271482+00:00",
+      "user_id": "0b65820e-d9b0-43a5-978c-afbac15ecbc9"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "0b65820e-d9b0-43a5-978c-afbac15ecbc9",
+      "full_name": "Zioly Flores",
+      "email": "Zioly@gmail.com",
+      "created_at": "2026-03-18T04:09:18.106094+00:00"
+    },
+    {
+      "id": "e92833b8-5a53-4372-a84e-029ab98b6050",
+      "full_name": "Dan Caldera",
+      "email": "danhelic2011@gmail.com",
+      "created_at": "2026-03-18T04:03:29.364567+00:00"
+    }
+  ],
+  "authUsers": [
+    {
+      "id": "0b65820e-d9b0-43a5-978c-afbac15ecbc9",
+      "email": "zioly@gmail.com",
+      "meta": {
+        "email_verified": true,
+        "full_name": "Zioly@gmail.co m"
+      }
+    },
+    {
+      "id": "e92833b8-5a53-4372-a84e-029ab98b6050",
+      "email": "danhelic2011@gmail.com",
+      "meta": {
+        "email": "danhelic2011@gmail.com",
+        "email_verified": true,
+        "full_name": "Dan Caldera",
+        "phone_verified": false,
+        "sub": "e92833b8-5a53-4372-a84e-029ab98b6050"
+      }
+    }
+  ]
+}

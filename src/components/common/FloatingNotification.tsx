@@ -20,6 +20,15 @@ export function FloatingNotification({ tenantId }: { tenantId: string }) {
     }, [])
     */
 
+    const addNotification = (order: any) => {
+        setNotifications(prev => [order, ...prev])
+    }
+
+    const removeNotification = (id: string, e?: React.MouseEvent) => {
+        e?.stopPropagation()
+        setNotifications(prev => prev.filter(n => n.id !== id))
+    }
+
     useEffect(() => {
         if (!tenantId) return
 
@@ -44,15 +53,6 @@ export function FloatingNotification({ tenantId }: { tenantId: string }) {
             supabase.removeChannel(channel)
         }
     }, [tenantId])
-
-    const addNotification = (order: any) => {
-        setNotifications(prev => [order, ...prev])
-    }
-
-    const removeNotification = (id: string, e?: React.MouseEvent) => {
-        e?.stopPropagation()
-        setNotifications(prev => prev.filter(n => n.id !== id))
-    }
 
     /*
     const playNotificationSound = () => {

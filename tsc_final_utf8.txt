@@ -1,0 +1,4 @@
+﻿src/app/(dashboard)/sales-metrics/page.tsx(36,49): error TS2322: Type '{ total: number; order_value: number; sales_rep: { full_name: any; }[]; type: "Venta" | "Servicio"; id: any; created_at: any; status: any; description_problem: any; sales_rep_id: any; total_amount: { ...; }[]; payments: { ...; }[]; customer: { ...; }[]; assigned_tech: { ...; }[]; }[]' is not assignable to type 'SalesHistoryItem[]'.
+  Type '{ total: number; order_value: number; sales_rep: { full_name: any; }[]; type: "Venta" | "Servicio"; id: any; created_at: any; status: any; description_problem: any; sales_rep_id: any; total_amount: { ...; }[]; payments: { ...; }[]; customer: { ...; }[]; assigned_tech: { full_name: any; }[]; }' is not assignable to type 'SalesHistoryItem'.
+    Types of property 'customer' are incompatible.
+      Property 'full_name' is missing in type '{ full_name: any; user_id: any; }[]' but required in type '{ full_name: string; }'.

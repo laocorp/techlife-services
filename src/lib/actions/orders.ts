@@ -14,8 +14,8 @@ export async function createOrderAction(data: OrderFormData) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'No autorizado' }
 
-    // Get tenant_id
-    const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+    // Get tenant_id and branch_id
+    const { data: profile } = await supabase.from('profiles').select('tenant_id, branch_id, role').eq('id', user.id).single()
     if (!profile?.tenant_id) return { error: 'Sin tenant' }
 
     const validated = orderSchema.safeParse(data)
@@ -24,7 +24,7 @@ export async function createOrderAction(data: OrderFormData) {
         return { error: 'Datos inválidos' }
     }
 
-    const { customerId, assetId, priority, description, notes } = validated.data
+    const { customerId, assetId, priority, description, notes, assignedTo } = validated.data
 
     let finalCustomerId = customerId
     try {
@@ -48,13 +48,24 @@ export async function createOrderAction(data: OrderFormData) {
         return { error: `Error al procesar activo: ${e.message}` }
     }
 
+    // Determine assignee intelligently
+    let finalAssignee: string | null = null
+    if (assignedTo) {
+        finalAssignee = assignedTo
+    } else if (profile.role === 'technician') {
+        // If a technician creates it and no Head Tech exists (or they didn't pick), auto-assign to self to avoid orphans
+        finalAssignee = user.id
+    }
+
     const { error } = await supabase.from('service_orders').insert({
         tenant_id: profile.tenant_id,
+        branch_id: profile.branch_id,
         customer_id: finalCustomerId,
         asset_id: finalAssetId,
         priority,
         description_problem: description,
-        assigned_to: user.id, // Assign to creator by default for now
+        assigned_to: finalAssignee,
+        notes: notes
         // status defaults to 'reception'
     })
 
@@ -148,7 +159,7 @@ export async function getOrdersByBranchAction(branchId?: string) {
         .select(`
             *,
             customers (id, full_name),
-            asset:customer_assets (identifier, details, brand, model),
+            asset:customer_assets (identifier, details),
             tech:profiles!service_orders_assigned_to_fkey (full_name, avatar_url)
         `)
         .eq('tenant_id', profile.tenant_id)
@@ -189,6 +200,29 @@ export async function getOrderByIdAction(orderId: string) {
         .single()
 
     if (error) return null
+
+    // Patch names with Connections (Fix for "Cliente Importado")
+    try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+            const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+            if (profile?.tenant_id && data.customers?.user_id) {
+                const { data: connections } = await supabase.rpc('get_tenant_connected_customers', {
+                    p_tenant_id: profile.tenant_id
+                })
+
+                if (connections) {
+                    const conn = connections.find((c: any) => c.user_id === data.customers.user_id)
+                    if (conn && conn.full_name) {
+                        data.customers.full_name = conn.full_name
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Patch Error:', e)
+    }
+
     return data
 }
 
@@ -196,8 +230,20 @@ export async function updateOrderStatusAction(orderId: string, newStatus: string
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    // TODO: Verify transition logic here if we want strict rules
-    // For now, allow any transition for flexibility
+    // Security logic: check if transition is allowed
+    const { data: order } = await supabase.from('service_orders').select('customer_id, folio_id, id, tenant_id').eq('id', orderId).single()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (order?.tenant_id && user) {
+        const { data: technicians } = await supabase.from('profiles').select('id, role').eq('tenant_id', order.tenant_id)
+        const hasHeadTech = technicians?.some(t => t.role === 'head_technician') || false
+        const currentUserProfile = technicians?.find(t => t.id === user.id)
+
+        // Block regular tech from moving QA -> Ready if a head tech exists
+        if (newStatus === 'ready' && currentUserProfile?.role === 'technician' && hasHeadTech) {
+            return { error: 'Solo el Jefe de Taller puede aprobar la calidad (pasar a Listo).' }
+        }
+    }
 
     const { error } = await supabase
         .from('service_orders')
@@ -206,27 +252,58 @@ export async function updateOrderStatusAction(orderId: string, newStatus: string
 
     if (error) return { error: 'Error al actualizar estado' }
 
-    if (error) return { error: 'Error al actualizar estado' }
-
     // --- NOTIFICATIONS (MANUAL LINK) ---
     // If status is "approval" (Esperando Aprobación), notify the customer.
-    if (newStatus === 'approval') {
-        const { data: order } = await supabase.from('service_orders').select('customer_id, folio_id, id').eq('id', orderId).single()
+    if (newStatus === 'approval' && order?.customer_id) {
+        // Check if customer is connected (has user_id)
+        const { data: customer } = await supabase.from('customers').select('user_id').eq('id', order.customer_id).single()
 
-        if (order?.customer_id) {
-            // Check if customer is connected (has user_id)
-            const { data: customer } = await supabase.from('customers').select('user_id').eq('id', order.customer_id).single()
+        if (customer?.user_id) {
+            await supabase.from('notifications').insert({
+                user_id: customer.user_id,
+                title: 'Aprobación Requerida',
+                message: `Tu orden #${order.folio_id || order.id.slice(0, 6)} requiere tu aprobación para continuar.`,
+                type: 'warning',
+                link: `/portal/orders/${order.id}`,
+                read: false
+            })
+        }
+    }
 
-            if (customer?.user_id) {
-                await supabase.from('notifications').insert({
-                    user_id: customer.user_id,
-                    title: 'Aprobación Requerida',
-                    message: `Tu orden #${order.folio_id || order.id.slice(0, 6)} requiere tu aprobación para continuar.`,
-                    type: 'warning',
-                    link: `/portal/orders/${order.id}`,
-                    read: false
-                })
-            }
+    // If status is "ready" (Listo para Entrega), notify the customer.
+    if (newStatus === 'ready' && order?.customer_id) {
+        // Check if customer is connected (has user_id)
+        const { data: customer } = await supabase.from('customers').select('user_id').eq('id', order.customer_id).single()
+
+        if (customer?.user_id) {
+            await supabase.from('notifications').insert({
+                user_id: customer.user_id,
+                title: '¡Equipo Listo!',
+                message: `Tu equipo (Orden #${order.folio_id || order.id.slice(0, 6)}) ya está reparado y listo para retiro o entrega.`,
+                type: 'success',
+                link: `/portal/orders/${order.id}`,
+                read: false
+            })
+        }
+    }
+
+    // If status is "qa" (Control de Calidad), notify the Head Technician (if any).
+    if (newStatus === 'qa' && order?.tenant_id) {
+        const { data: headTechs } = await supabase.from('profiles')
+            .select('id')
+            .eq('tenant_id', order.tenant_id)
+            .eq('role', 'head_technician')
+
+        if (headTechs && headTechs.length > 0) {
+            const notifications = headTechs.map(tech => ({
+                user_id: tech.id,
+                title: 'Revisión Requerida (QA)',
+                message: `La orden #${order.folio_id || order.id.slice(0, 6)} ha pasado a Control de Calidad.`,
+                type: 'info',
+                link: `/orders/${order.id}`,
+                read: false
+            }))
+            await supabase.from('notifications').insert(notifications)
         }
     }
     // -----------------------------------
@@ -519,8 +596,8 @@ export async function confirmPaymentAction(orderId: string, method: string, refe
     const { data: { user } } = await supabase.auth.getUser()
     const { data: profile } = await supabase.from('profiles').select('tenant_id, role').eq('id', user?.id).single()
 
-    if (profile?.role !== 'cashier' && profile?.role !== 'owner' && profile?.role !== 'manager') {
-        return { error: 'No tienes permiso de Cajero' }
+    if (profile?.role !== 'cashier' && profile?.role !== 'owner' && profile?.role !== 'manager' && profile?.role !== 'receptionist') {
+        return { error: 'No tienes permisos para cobrar' }
     }
 
     // Update Order Status
@@ -558,7 +635,7 @@ export async function cancelOrderAction(orderId: string, reason?: string) {
 
     const { data: profile } = await supabase.from('profiles').select('tenant_id, role').eq('id', user.id).single()
 
-    if (!profile || (profile.role !== 'cashier' && profile.role !== 'owner' && profile.role !== 'manager')) {
+    if (!profile || (profile.role !== 'cashier' && profile.role !== 'owner' && profile.role !== 'manager' && profile.role !== 'receptionist')) {
         return { error: 'No tienes permisos para cancelar órdenes.' }
     }
 

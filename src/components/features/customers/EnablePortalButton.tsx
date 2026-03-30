@@ -70,7 +70,6 @@ export default function EnablePortalButton({ customerId, email, hasUser }: Enabl
                 <Button
                     variant="outline"
                     size="sm"
-                    size="sm"
                     className="h-7 text-xs bg-indigo-500/10 hover:bg-indigo-500/20 border-indigo-500/20 text-indigo-600 font-semibold"
                     disabled={!email}
                     title={!email ? 'Sin email registrado' : 'Generar acceso'}

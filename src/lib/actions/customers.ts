@@ -334,10 +334,14 @@ export async function getCustomersAction() {
                     const finalEmail = realEmail || richProfile?.email || conn.email
                     const realAvatar = richProfile?.avatar_url || conn.avatar_url
 
-                    if (localCust.full_name === 'Cliente Importado' || !localCust.full_name) {
+                    if (realName) {
                         localCust.full_name = realName
-                        localCust.phone = realPhone || localCust.phone
-                        localCust.email = finalEmail || localCust.email
+                    }
+                    if (realPhone) {
+                        localCust.phone = realPhone
+                    }
+                    if (finalEmail && (localCust.email === 'Email no compartido' || !localCust.email)) {
+                        localCust.email = finalEmail
                     }
                     // Always try to update avatar if local is missing
                     if (!localCust.avatar_url && realAvatar) {

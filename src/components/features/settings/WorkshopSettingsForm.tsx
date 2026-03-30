@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import {
     Select,
     SelectContent,
@@ -65,8 +66,6 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
         }
     }
 
-
-
     async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
         if (!e.target.files || e.target.files.length === 0) return
 
@@ -86,7 +85,7 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
             // Update DB
             const { error: dbError } = await supabase
                 .from('tenants')
-                .update({ cover_url: filePath }) // Ensure migration is run!
+                .update({ cover_url: filePath })
                 .eq('id', tenant.id)
 
             if (dbError) {
@@ -147,7 +146,7 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
             </CardHeader>
             <CardContent className="space-y-6">
 
-                {/* Cover Image Section (New) */}
+                {/* Cover Image Section */}
                 <div className="space-y-2">
                     <Label>Imagen de Portada (Red Social Corporativa)</Label>
                     <div className="h-48 w-full rounded-xl border border-border bg-muted relative overflow-hidden group">
@@ -161,7 +160,6 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
                             </div>
                         )}
 
-                        {/* Overlay with Upload Button */}
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <Label htmlFor="cover-upload" className="cursor-pointer">
                                 <div className="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white px-4 py-2 rounded-full flex items-center gap-2 transition-all">
@@ -185,9 +183,7 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
                             </div>
                         )}
                     </div>
-                    <p className="text-xs text-muted-foreground">Recomendado: 1200x400px o similar. Se mostrará en la parte superior de tu perfil público.</p>
                 </div>
-
 
                 {/* Logo Section */}
                 <div className="flex items-center gap-6">
@@ -219,39 +215,51 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
                                 disabled={uploading}
                             />
                         </Label>
-                        <p className="text-xs text-muted-foreground mt-1">Recomendado: PNG o JPG, fondo transparente.</p>
                     </div>
                 </div>
 
                 {/* Form Fields */}
                 <form action={onSubmit} className="space-y-4">
+                    <div className="flex flex-row items-center justify-between rounded-lg border border-border p-4 bg-muted/30 mb-6">
+                        <div className="space-y-0.5">
+                            <Label className="text-base font-semibold">Taller Público en el Marketplace</Label>
+                            <p className="text-sm text-muted-foreground">
+                                Permite que nuevos clientes encuentren tu taller en el directorio público.
+                            </p>
+                        </div>
+                        <Switch
+                            name="is_public"
+                            defaultChecked={tenant.is_public === true}
+                        />
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Nombre del Taller</Label>
-                            <Input id="name" name="name" defaultValue={tenant.name} required />
+                            <Input id="name" name="name" defaultValue={tenant.name || ''} required />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="phone">Teléfono de Contacto</Label>
-                            <Input id="phone" name="contact_phone" defaultValue={tenant.contact_phone} />
+                            <Input id="phone" name="contact_phone" defaultValue={tenant.contact_phone || ''} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email Público</Label>
-                            <Input id="email" name="contact_email" defaultValue={tenant.contact_email} />
+                            <Input id="email" name="contact_email" defaultValue={tenant.contact_email || ''} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="website">Sitio Web</Label>
-                            <Input id="website" name="website" defaultValue={tenant.website} placeholder="https://..." />
+                            <Input id="website" name="website" defaultValue={tenant.website || ''} placeholder="https://..." />
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="address">Dirección Física</Label>
-                        <Input id="address" name="address" defaultValue={tenant.address} />
+                        <Input id="address" name="address" defaultValue={tenant.address || ''} />
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="city">Ciudad / Región</Label>
-                        <Input id="city" name="city" defaultValue={tenant.city} />
+                        <Input id="city" name="city" defaultValue={tenant.city || ''} />
                     </div>
 
                     <div className="border-t border-border pt-4">
@@ -262,13 +270,13 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="bank_name">Banco</Label>
-                                <Input id="bank_name" name="bank_name" defaultValue={tenant.settings?.bank_account?.bank_name} placeholder="Ej. Banco Pichincha" />
+                                <Input id="bank_name" name="bank_name" defaultValue={tenant.settings?.bank_account?.bank_name} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="account_type">Tipo de Cuenta</Label>
                                 <Select name="account_type" defaultValue={tenant.settings?.bank_account?.account_type || 'Ahorros'}>
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Seleccione tipo de cuenta" />
+                                        <SelectValue placeholder="Tipo..." />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="Ahorros">Ahorros</SelectItem>
@@ -285,7 +293,7 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
                                 <Input id="account_holder" name="account_holder" defaultValue={tenant.settings?.bank_account?.account_holder} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="holder_id">C.I. / RUC del Titular</Label>
+                                <Label htmlFor="holder_id">C.I. / RUC</Label>
                                 <Input id="holder_id" name="holder_id" defaultValue={tenant.settings?.bank_account?.holder_id} />
                             </div>
                         </div>
@@ -298,7 +306,8 @@ export default function WorkshopSettingsForm({ tenant }: { tenant: any }) {
                         </Button>
                     </div>
                 </form>
-            </CardContent >
-        </Card >
+            </CardContent>
+        </Card>
     )
 }
+

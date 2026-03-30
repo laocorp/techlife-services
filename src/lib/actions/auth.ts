@@ -59,7 +59,7 @@ export async function signUpAction(data: RegisterFormData) {
         // Rollback: Delete the auth user if tenant creation fails
         console.error('Tenant creation error:', tenantError)
         await adminSupabase.auth.admin.deleteUser(authData.user.id)
-        return { error: 'Error al crear el taller. Por favor intenta de nuevo.' }
+        return { error: 'Error al crear el taller: ' + tenantError.message }
     }
 
     // 4. Create Profile linked to Tenant

@@ -182,6 +182,7 @@ export async function getCustomerAssetsAction(customerId: string, industryFilter
                             id: asset.id,
                             identifier: asset.identifier,
                             details: asset.details,
+                            alias: asset.alias,
                             notes: asset.alias ? `Alias: ${asset.alias}` : '',
                             created_at: asset.created_at,
                             is_shared: true,

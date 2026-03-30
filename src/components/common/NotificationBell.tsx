@@ -128,10 +128,18 @@ export function NotificationBell() {
 
         // Check if this is an ecommerce order notification
         const orderId = extractOrderId(notification)
-        if (orderId && (
+        
+        // If the link clearly points to a Service Order tracking page, NAVIGATE to it.
+        if (notification.link && notification.link.includes('/portal/orders/')) {
+            window.location.href = notification.link
+        }
+        // Otherwise, if it has an order ID and looks like an ecommerce notification
+        else if (orderId && (
             notification.title?.includes('Pago') ||
-            notification.title?.includes('Orden') ||
-            notification.link?.includes('/portal/')
+            notification.title?.includes('Pedido') ||
+            notification.title?.includes('Compra') ||
+            notification.title?.includes('Envío') ||
+            (notification.link && notification.link === '/portal/dashboard')
         )) {
             // Open modal for ecommerce orders
             setSelectedOrderId(orderId)

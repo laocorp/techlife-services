@@ -28,6 +28,8 @@ type OrderDetailActionsProps = {
     currentTechnicianId?: string | null
     technicians?: { id: string, full_name: string }[]
     isOwnerOrAdmin?: boolean
+    hasHeadTechnician?: boolean
+    userRole?: string
 }
 
 const STATUS_FLOW: Record<string, { label: string, next: string[], color: string }> = {
@@ -40,7 +42,14 @@ const STATUS_FLOW: Record<string, { label: string, next: string[], color: string
     'delivered': { label: 'Entregado', next: [], color: 'bg-gray-100 text-gray-800' }
 }
 
-export default function OrderDetailActions({ orderId, currentStatus, currentTechnicianId, technicians = [] }: OrderDetailActionsProps) {
+export default function OrderDetailActions({ 
+    orderId, 
+    currentStatus, 
+    currentTechnicianId, 
+    technicians = [], 
+    hasHeadTechnician = false,
+    userRole = 'user'
+}: OrderDetailActionsProps) {
     const [loading, setLoading] = useState(false)
     const router = useRouter()
 
@@ -72,7 +81,12 @@ export default function OrderDetailActions({ orderId, currentStatus, currentTech
         : `/track/${orderId}`
 
     const config = STATUS_FLOW[currentStatus] || STATUS_FLOW['reception']
-    const nextOptions = config.next
+    let nextOptions = config.next
+
+    // Smart QA Flow: If in QA, and user is a regular technician, AND a head tech exists, hide "ready".
+    if (currentStatus === 'qa' && userRole === 'technician' && hasHeadTechnician) {
+        nextOptions = nextOptions.filter(opt => opt !== 'ready')
+    }
 
     return (
         <div className="space-y-6">
