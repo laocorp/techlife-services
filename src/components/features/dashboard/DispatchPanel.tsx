@@ -50,54 +50,53 @@ export default function DispatchPanel({ unassigned, assigned, technicians }: Dis
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-2">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Panel de Despacho</h2>
-                    <p className="text-muted-foreground">Gestiona y asigna las órdenes de servicio de tu sede.</p>
+                    <h2 className="text-xl font-extrabold tracking-tight text-slate-800">Panel de Despacho</h2>
+                    <p className="text-sm text-slate-500">Estado global de tu sede hoy.</p>
                 </div>
-                {/* Could add filter/search here */}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* COLUMN 1: UNASSIGNED */}
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between bg-card p-3 rounded-lg border">
-                        <h3 className="font-semibold flex items-center gap-2">
-                            <AlertCircle className="w-5 h-5 text-orange-500" />
+                    <div className="flex items-center justify-between bg-orange-50/50 p-4 rounded-2xl border border-orange-100">
+                        <h3 className="font-bold text-orange-950 flex items-center gap-2">
+                            <AlertCircle className="w-5 h-5 text-orange-600" />
                             Por Asignar
                         </h3>
-                        <Badge variant="secondary">{unassigned.length}</Badge>
+                        <Badge variant="secondary" className="bg-orange-200/50 text-orange-800">{unassigned.length}</Badge>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         {unassigned.length === 0 && (
-                            <div className="text-center p-8 border rounded-lg border-dashed text-muted-foreground">
-                                No hay órdenes pendientes de asignación.
+                            <div className="text-center p-12 bg-white rounded-3xl border-2 border-dashed border-orange-100 text-slate-400">
+                                No hay órdenes pendientes. 🎉
                             </div>
                         )}
                         {unassigned.map(order => (
-                            <Card key={order.id} className="hover:shadow-md transition-shadow border-l-4 border-l-orange-500">
-                                <CardContent className="p-4 space-y-3">
+                            <Card key={order.id} className="rounded-3xl border-none shadow-xl shadow-slate-200/50 hover:scale-[1.02] transition-transform overflow-hidden group">
+                                <div className="h-2 w-full bg-orange-500" />
+                                <CardContent className="p-6 space-y-4">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <div className="font-bold flex items-center gap-2">
+                                            <div className="font-black text-xl text-slate-900 flex items-center gap-2">
                                                 #{order.folio_id || order.id.slice(0, 6)}
-                                                {order.priority === 'urgent' && <Badge variant="destructive" className="text-[10px]">Urgente</Badge>}
+                                                {order.priority === 'urgent' && <Badge variant="destructive" className="rounded-full bg-red-100 text-red-600 border-none px-3 font-bold">URGENTE</Badge>}
                                             </div>
-                                            <div className="text-sm font-medium">{order.asset?.model || 'Dispositivo Desconocido'}</div>
-                                            <p className="text-xs text-muted-foreground line-clamp-1">{order.description_problem}</p>
+                                            <div className="text-lg font-bold text-slate-700 mt-1">{order.asset?.model || 'Equipo General'}</div>
+                                            <p className="text-sm text-slate-500 mt-2 line-clamp-2 bg-slate-50 p-3 rounded-2xl italic">"{order.description_problem}"</p>
                                         </div>
-                                        <p className="text-xs text-muted-foreground whitespace-nowrap">
-                                            {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: es })}
-                                        </p>
                                     </div>
 
-                                    <div className="flex justify-between items-center pt-2">
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                            <User className="w-3 h-3" />
-                                            {order.customers?.full_name || 'Cliente'}
+                                    <div className="flex justify-between items-center pt-2 border-t border-slate-50">
+                                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 capitalize">
+                                            <div className="h-8 w-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                                <User className="w-4 h-4" />
+                                            </div>
+                                            {order.customers?.full_name?.split(' ')[0] || 'Cliente'}
                                         </div>
-                                        <Button size="sm" onClick={() => openAssign(order)} className="bg-orange-600 hover:bg-orange-700 text-white">
+                                        <Button size="lg" onClick={() => openAssign(order)} className="rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 px-6 font-bold">
                                             Asignar
                                         </Button>
                                     </div>
@@ -109,43 +108,49 @@ export default function DispatchPanel({ unassigned, assigned, technicians }: Dis
 
                 {/* COLUMN 2: IN PROGRESS / ASSIGNED */}
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between bg-card p-3 rounded-lg border">
-                        <h3 className="font-semibold flex items-center gap-2">
-                            <Wrench className="w-5 h-5 text-blue-500" />
+                    <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                        <h3 className="font-bold text-blue-950 flex items-center gap-2">
+                            <Wrench className="w-5 h-5 text-blue-600" />
                             En Progreso
                         </h3>
-                        <Badge variant="secondary">{assigned.length}</Badge>
+                        <Badge variant="secondary" className="bg-blue-200/50 text-blue-800">{assigned.length}</Badge>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         {assigned.length === 0 && (
-                            <div className="text-center p-8 border rounded-lg border-dashed text-muted-foreground">
-                                No hay órdenes en progreso actualmente.
+                            <div className="text-center p-12 bg-white rounded-3xl border-2 border-dashed border-blue-100 text-slate-400">
+                                No hay órdenes en marcha.
                             </div>
                         )}
                         {assigned.map(order => (
-                            <Link href={`/orders/${order.id}`} key={order.id} className="block">
-                                <Card className="hover:shadow-md transition-shadow border-l-4 border-l-blue-500 group">
-                                    <CardContent className="p-4 space-y-3">
+                            <Link href={`/orders/${order.id}`} key={order.id} className="block group">
+                                <Card className="rounded-3xl border-none shadow-xl shadow-blue-200/50 hover:scale-[1.02] transition-transform overflow-hidden relative">
+                                    <div className="h-1.5 w-full bg-blue-500" />
+                                    <CardContent className="p-6 space-y-4">
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <div className="font-bold">#{order.folio_id || order.id.slice(0, 6)}</div>
-                                                <div className="text-sm font-medium">{order.asset?.model}</div>
+                                                <div className="font-black text-xl text-slate-900">#{order.folio_id || order.id.slice(0, 6)}</div>
+                                                <div className="text-lg font-bold text-slate-700 mt-1">{order.asset?.model}</div>
                                             </div>
-                                            <Badge variant="outline" className="capitalize">{order.status}</Badge>
+                                            <Badge variant="outline" className="rounded-full bg-blue-600 text-white border-none py-1 px-3 font-bold uppercase text-[10px] tracking-widest">{order.status}</Badge>
                                         </div>
 
-                                        <div className="flex justify-between items-center pt-2">
+                                        <div className="flex justify-between items-center pt-3 border-t border-slate-50">
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="w-6 h-6">
+                                                <Avatar className="w-10 h-10 border-2 border-white shadow-sm ring-2 ring-blue-50">
                                                     <AvatarImage src={order.tech?.avatar_url} />
-                                                    <AvatarFallback className="text-[10px] bg-blue-100 text-blue-700">
+                                                    <AvatarFallback className="text-xs bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold">
                                                         {order.tech?.full_name?.substring(0, 2).toUpperCase() || 'TE'}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span className="text-xs font-medium">{order.tech?.full_name?.split(' ')[0] || 'Técnico'}</span>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs text-slate-400 font-bold uppercase tracking-tighter">Encargado</span>
+                                                    <span className="text-sm font-bold text-slate-800">{order.tech?.full_name?.split(' ')[0] || 'Técnico'}</span>
+                                                </div>
                                             </div>
-                                            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                            <div className="h-10 w-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                <ArrowRight className="w-5 h-5" />
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>

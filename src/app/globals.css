@@ -21,7 +21,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --radius: 1.25rem;
   }
 
   .dark {
@@ -68,13 +68,11 @@
     color: black;
   }
 
-  /* Ensure background colors are printed for cards/badges */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Reset margins for full page print to hide browser header/footer */
   @page {
     margin: 0;
     size: auto;
@@ -83,4 +81,34 @@
   body {
     margin: 1.5cm !important;
   }
+}
+
+/* --- PREMIUM UI UTILITIES (Tailwind 4) --- */
+@utility glass {
+  background-color: rgb(255 255 255 / 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.2);
+}
+
+@utility shadow-premium {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+}
+
+/* Global Smooth Transitions */
+* {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom Scrollbar for Mobile Feel */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground));
+  border-radius: 10px;
 }

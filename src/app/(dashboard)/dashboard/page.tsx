@@ -77,15 +77,23 @@ export default async function DashboardPage() {
         const techList = staff.filter((s: any) => s.role === 'technician' || s.role === 'head_technician')
 
         return (
-            <div className="p-4 md:p-8 max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-                        <p className="text-muted-foreground mt-1">
-                            Hola <span className="font-semibold text-purple-600">{profile?.full_name}</span>, gestiona tu sede.
+            <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+                {/* --- PREMIUM APP-STYLE WELCOME CARD --- */}
+                <div className="relative overflow-hidden rounded-3xl bg-indigo-600 p-8 text-white shadow-2xl shadow-indigo-200">
+                    <div className="relative z-10">
+                        <Badge className="mb-4 bg-indigo-500/30 text-indigo-100 border-none backdrop-blur-md">Gestión de Sede</Badge>
+                        <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+                            ¡Hola, {profile?.full_name?.split(' ')[0]}! 👋
+                        </h1>
+                        <p className="mt-2 text-indigo-100/80 max-w-md">
+                            Tienes el control total de tu sede hoy. Revisa las asignaciones pendientes abajo.
                         </p>
                     </div>
+                    {/* Decorative abstract shapes for depth */}
+                    <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl" />
+                    <div className="absolute -bottom-10 right-20 h-32 w-32 rounded-full bg-purple-500/20 blur-2xl" />
                 </div>
+
                 <DispatchPanel
                     unassigned={branchOrders.unassigned}
                     assigned={branchOrders.assigned}

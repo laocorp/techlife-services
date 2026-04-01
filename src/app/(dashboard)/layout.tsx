@@ -45,7 +45,7 @@ export default async function DashboardLayout({
             <MobileNav />
 
             {/* Sidebar (Desktop) */}
-            <aside className="w-64 bg-slate-900 text-white hidden md:flex flex-col shrink-0">
+            <aside className="w-64 bg-slate-950 text-white hidden md:flex flex-col shrink-0 border-r border-slate-800">
                 <div className="p-6 flex items-center gap-2">
                     <Image
                         src="/logo_transparent.png"
@@ -147,9 +147,9 @@ export default async function DashboardLayout({
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto flex flex-col mb-16 md:mb-0">
-                <header className="bg-background border-b border-border px-6 py-3 hidden md:flex items-center justify-between sticky top-0 z-10">
-                    <h2 className="font-semibold text-foreground">Panel de Control</h2>
+            <main className="flex-1 overflow-y-auto flex flex-col mb-20 md:mb-0 bg-slate-50/50">
+                <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 hidden md:flex items-center justify-between sticky top-0 z-10">
+                    <h2 className="font-bold text-slate-800 tracking-tight">Panel de Control</h2>
                     <div className="flex items-center gap-4">
                         <NotificationBell />
                         <Link href="/profile" title="Mi Perfil">
@@ -171,10 +171,20 @@ export default async function DashboardLayout({
                         </Link>
                     </div>
                 </header>
-                <div className="p-4 md:p-6 pb-20 md:pb-6">
+                <div className="p-4 md:p-8 max-md:pt-6">
                     {children}
                 </div>
             </main>
+
+            {/* --- MOBILE FLOATING ACTION BUTTON (FAB) --- */}
+            {/* Using a fixed position at the bottom right, only on mobile */}
+            <Link 
+                href="/orders/new" 
+                className="md:hidden fixed bottom-24 right-6 h-14 w-14 bg-indigo-600 text-white rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-95 transition-transform hover:bg-indigo-700 ring-4 ring-white"
+            >
+                <LayoutDashboard className="h-6 w-6" />
+                <span className="sr-only">Nueva Orden</span>
+            </Link>
 
             {/* Realtime Notifications */}
             <FloatingNotification tenantId={profile?.tenant_id} />
