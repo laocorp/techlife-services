@@ -15,7 +15,8 @@ export function InstallAppButton() {
     const [showBanner, setShowBanner] = useState(false)
 
     useEffect(() => {
-        // Check if already installed as PWA
+        // Check if already installed as PWA (only on client)
+        if (typeof window === 'undefined') return
         if (window.matchMedia('(display-mode: standalone)').matches) {
             setIsInstalled(true)
             return
@@ -24,7 +25,6 @@ export function InstallAppButton() {
         const handler = (e: Event) => {
             e.preventDefault()
             setInstallEvent(e as BeforeInstallPromptEvent)
-            // Show the install banner after a short delay
             setTimeout(() => setShowBanner(true), 3000)
         }
 
