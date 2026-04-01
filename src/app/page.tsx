@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Wrench, ArrowRight, ShieldCheck, BarChart3, Users, Smartphone, CheckCircle, Zap } from "lucide-react";
+import { InstallAppButton } from "@/components/common/InstallAppButton";
 
 export default function Home() {
   return (
@@ -62,7 +63,7 @@ export default function Home() {
                 <span className="font-semibold text-slate-900 dark:text-slate-200"> Todo en un solo lugar.</span>
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 flex-wrap">
                 <div className="flex-1 max-w-xs space-y-3">
                   <Link href="/register?type=workshop">
                     <Button size="lg" className="h-16 w-full text-lg rounded-2xl bg-slate-900 dark:bg-indigo-600 text-white hover:bg-slate-800 dark:hover:bg-indigo-700 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
@@ -82,6 +83,9 @@ export default function Home() {
                   </Link>
                   <p className="text-center text-xs text-slate-500 dark:text-slate-400">Consulta el estado de tu equipo.</p>
                 </div>
+
+                {/* PWA Install Button - only shown when browser supports it */}
+                <InstallAppButton />
               </div>
 
               <div className="flex items-center gap-8 pt-8 border-t border-slate-200/60 dark:border-slate-700/60">

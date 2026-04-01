@@ -8,10 +8,11 @@ export async function middleware(request: NextRequest) {
         },
     })
 
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
+    try {
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
             cookies: {
                 getAll() {
                     return request.cookies.getAll()
@@ -38,16 +39,21 @@ export async function middleware(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     // Protected routes (Dashboard & Sales)
-    if (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/sales')) {
-        if (!user) {
-            return NextResponse.redirect(new URL('/login', request.url))
-        }
+        if (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/sales')) {
+            if (!user) {
+                return NextResponse.redirect(new URL('/login', request.url))
+            }
 
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single()
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .maybeSingle() // Use maybeSingle to prevent crash if not found
+
+            if (profileError) {
+                console.error('Middleware Profile Error:', profileError)
+                return response // Let it pass if DB is having issues, or redirect to generic dashboard
+            }
 
         // Strict Role Separation for /dashboard
         if (request.nextUrl.pathname.startsWith('/dashboard')) {
@@ -72,7 +78,7 @@ export async function middleware(request: NextRequest) {
     if (strictAdminRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
         const allowed = ['owner', 'manager', 'head_technician']
 
         if (profile && !allowed.includes(profile.role)) {
@@ -86,7 +92,7 @@ export async function middleware(request: NextRequest) {
     if (request.nextUrl.pathname.startsWith('/finance')) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
         const allowed = ['owner', 'manager', 'head_technician', 'receptionist']
 
         if (profile && !allowed.includes(profile.role)) {
@@ -100,7 +106,7 @@ export async function middleware(request: NextRequest) {
     if (request.nextUrl.pathname.startsWith('/inventory')) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
         // Technicians can view inventory too (to see parts) + Receptionist
         const allowed = ['owner', 'manager', 'head_technician', 'warehouse_keeper', 'technician', 'receptionist']
 
@@ -115,7 +121,7 @@ export async function middleware(request: NextRequest) {
     if (request.nextUrl.pathname.startsWith('/customers')) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
         const allowed = ['owner', 'manager', 'head_technician', 'receptionist', 'technician']
 
         if (profile && !allowed.includes(profile.role)) {
@@ -129,7 +135,7 @@ export async function middleware(request: NextRequest) {
     if (request.nextUrl.pathname.startsWith('/pos')) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
         const allowed = ['owner', 'manager', 'receptionist']
 
         if (profile && !allowed.includes(profile.role)) {
@@ -146,7 +152,7 @@ export async function middleware(request: NextRequest) {
             .from('profiles')
             .select('role')
             .eq('id', user.id)
-            .single()
+            .maybeSingle()
 
         if (profile && profile.role !== 'client') {
             if (profile.role === 'sales_store' || profile.role === 'sales_field') {
@@ -164,7 +170,7 @@ export async function middleware(request: NextRequest) {
                 .from('profiles')
                 .select('role')
                 .eq('id', user.id)
-                .single()
+                .maybeSingle()
 
             if (profile?.role === 'client') {
                 return NextResponse.redirect(new URL('/portal/dashboard', request.url))
@@ -174,6 +180,11 @@ export async function middleware(request: NextRequest) {
 
             return NextResponse.redirect(new URL('/dashboard', request.url))
         }
+    }
+
+    } catch (error) {
+        console.error('CRITICAL MIDDLEWARE ERROR:', error)
+        return response // Fallback to safe response
     }
 
     return response

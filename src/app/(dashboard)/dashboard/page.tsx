@@ -32,7 +32,7 @@ export default async function DashboardPage() {
         .from('profiles')
         .select('*, tenants(name)')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
     const role = profile?.role || 'technician'
 

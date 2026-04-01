@@ -27,7 +27,7 @@ export default async function DashboardLayout({
         .from('profiles')
         .select('tenant_id, role, avatar_url')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
     if (profile?.role === 'client') {
         redirect('/portal/dashboard')
