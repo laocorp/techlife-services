@@ -117,6 +117,12 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
                         {finalCustomer.full_name}
                     </h1>
                     <div className="flex gap-4 mt-2 text-muted-foreground">
+                        {finalCustomer.tax_id && (
+                            <>
+                                <span>CI: {finalCustomer.tax_id}</span>
+                                <span>•</span>
+                            </>
+                        )}
                         <span>{finalCustomer.email}</span>
                         <span>•</span>
                         <span>{finalCustomer.phone}</span>

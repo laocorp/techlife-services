@@ -43,7 +43,7 @@ export default async function CustomersPage({
                     <thead className="bg-muted/50 text-muted-foreground border-b border-border">
                         <tr>
                             <th className="px-6 py-4 font-medium">Nombre</th>
-                            <th className="px-6 py-4 font-medium">Tax ID / DNI</th>
+                            <th className="px-6 py-4 font-medium">CI</th>
                             <th className="px-6 py-4 font-medium">Contacto</th>
                             <th className="px-6 py-4 font-medium">Dirección</th>
                             <th className="px-6 py-4 font-medium">Registro</th>

@@ -4,9 +4,12 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { Plus, Loader2 } from 'lucide-react'
+import { Plus, Loader2, Search, Check, ChevronsUpDown } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { cn } from "@/lib/utils"
 
 import { Button } from '@/components/ui/button'
 import {
@@ -30,7 +33,7 @@ import { createOrderAction } from '@/lib/actions/orders'
 import { getCustomerAssetsAction } from '@/lib/actions/assets'
 
 type NewOrderFormProps = {
-    customers: { id: string; full_name: string }[]
+    customers: { id: string; full_name: string; tax_id?: string | null; phone?: string | null }[]
     technicians?: { id: string; full_name: string }[]
     hasHeadTechnician?: boolean
 }
@@ -40,6 +43,10 @@ export default function NewOrderForm({ customers, technicians = [], hasHeadTechn
     const [error, setError] = useState<string | null>(null)
     const [loadingAssets, setLoadingAssets] = useState(false)
     const [assets, setAssets] = useState<{ id: string; identifier: string; details?: any; notes?: string }[]>([])
+    
+    // Searchable Customer State
+    const [open, setOpen] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('')
 
     // Helper to format asset display
     const formatAssetLabel = (asset: any) => {
@@ -154,36 +161,98 @@ export default function NewOrderForm({ customers, technicians = [], hasHeadTechn
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-                    {/* Customer Selection */}
+                    {/* Searchable Customer Selection */}
                     <FormField
                         control={form.control}
                         name="customerId"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Cliente</FormLabel>
-                                <Select
-                                    onValueChange={(val) => {
-                                        field.onChange(val)
-                                        onCustomerChange(val)
-                                    }}
-                                    defaultValue={field.value}
-                                >
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Seleccionar Cliente" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {customers.map((c) => (
-                                            <SelectItem key={c.id} value={c.id}>
-                                                {c.full_name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                        render={({ field }) => {
+                            const selectedCustomer = customers.find(c => c.id === field.value);
+                            const filteredCustomers = customers.filter(c => 
+                                c.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                c.tax_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                c.phone?.toLowerCase().includes(searchQuery.toLowerCase())
+                            );
+
+                            return (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Cliente</FormLabel>
+                                    <Popover open={open} onOpenChange={setOpen}>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    aria-expanded={open}
+                                                    className={cn(
+                                                        "w-full justify-between text-left font-normal",
+                                                        !field.value && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    {selectedCustomer ? (
+                                                        <span className="truncate">
+                                                            {selectedCustomer.full_name} {selectedCustomer.tax_id ? `- ${selectedCustomer.tax_id}` : ''}
+                                                        </span>
+                                                    ) : (
+                                                        "Seleccionar Cliente"
+                                                    )}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                                            <div className="flex items-center border-b px-3">
+                                                <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                                                <input
+                                                    className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                                                    placeholder="Buscar por Nombre, CI o Celular..."
+                                                    value={searchQuery}
+                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                />
+                                            </div>
+                                            <ScrollArea className="max-h-[300px] overflow-y-auto">
+                                                {filteredCustomers.length === 0 ? (
+                                                    <div className="py-6 text-center text-sm text-muted-foreground">
+                                                        No se encontraron clientes.
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-1">
+                                                        {filteredCustomers.map((customer) => (
+                                                            <div
+                                                                key={customer.id}
+                                                                className={cn(
+                                                                    "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+                                                                    field.value === customer.id && "bg-accent text-accent-foreground"
+                                                                )}
+                                                                onClick={() => {
+                                                                    field.onChange(customer.id);
+                                                                    onCustomerChange(customer.id);
+                                                                    setOpen(false);
+                                                                    setSearchQuery('');
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        field.value === customer.id ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-medium">{customer.full_name}</span>
+                                                                    <span className="text-[11px] text-muted-foreground">
+                                                                        {customer.tax_id ? `CI: ${customer.tax_id}` : 'Sin CI'} | {customer.phone ? `Cel: ${customer.phone}` : 'Sin Celular'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </ScrollArea>
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            );
+                        }}
                     />
 
                     {/* Asset Selection */}

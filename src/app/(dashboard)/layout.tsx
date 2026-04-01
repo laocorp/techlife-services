@@ -9,6 +9,9 @@ import { NotificationBell } from '@/components/common/NotificationBell'
 import { FloatingNotification } from '@/components/common/FloatingNotification'
 import LogoutButton from '@/components/auth/LogoutButton'
 
+import { MobileHeader } from '@/components/layout/MobileHeader'
+import { MobileNav } from '@/components/layout/MobileNav'
+
 export default async function DashboardLayout({
     children,
 }: {
@@ -36,13 +39,13 @@ export default async function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-background">
+        <div className="flex flex-col md:flex-row h-screen bg-background">
+            {/* --- MOBILE NAVIGATION --- */}
+            <MobileHeader />
+            <MobileNav />
 
-
-
-
-            {/* Sidebar */}
-            <aside className="w-64 bg-slate-900 text-white hidden md:flex flex-col">
+            {/* Sidebar (Desktop) */}
+            <aside className="w-64 bg-slate-900 text-white hidden md:flex flex-col shrink-0">
                 <div className="p-6 flex items-center gap-2">
                     <Image
                         src="/logo_transparent.png"
@@ -79,8 +82,8 @@ export default async function DashboardLayout({
                         </Link>
                     )}
 
-                    {/* Customers: Owner, Manager, Head Tech, Reception (Sales has own view) */}
-                    {['owner', 'manager', 'head_technician', 'receptionist'].includes(profile?.role || '') && (
+                    {/* Customers: Owner, Manager, Head Tech, Reception, Technician */}
+                    {['owner', 'manager', 'head_technician', 'receptionist', 'technician'].includes(profile?.role || '') && (
                         <Link href="/customers" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-md transition-colors">
                             <Users className="h-5 w-5" />
                             Clientes
@@ -144,8 +147,8 @@ export default async function DashboardLayout({
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto flex flex-col">
-                <header className="bg-background border-b border-border px-6 py-3 flex items-center justify-between sticky top-0 z-10">
+            <main className="flex-1 overflow-y-auto flex flex-col mb-16 md:mb-0">
+                <header className="bg-background border-b border-border px-6 py-3 hidden md:flex items-center justify-between sticky top-0 z-10">
                     <h2 className="font-semibold text-foreground">Panel de Control</h2>
                     <div className="flex items-center gap-4">
                         <NotificationBell />
@@ -168,7 +171,7 @@ export default async function DashboardLayout({
                         </Link>
                     </div>
                 </header>
-                <div className="p-6">
+                <div className="p-4 md:p-6 pb-20 md:pb-6">
                     {children}
                 </div>
             </main>

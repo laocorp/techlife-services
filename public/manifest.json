@@ -1,0 +1,17 @@
+{
+  "name": "TechLife Service",
+  "short_name": "TechLife",
+  "description": "Gestión Profesional para Talleres de Reparación",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/logo_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

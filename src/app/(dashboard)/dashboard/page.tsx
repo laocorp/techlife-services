@@ -45,7 +45,7 @@ export default async function DashboardPage() {
         ])
 
         return (
-            <div className="p-8 max-w-[1800px] mx-auto">
+            <div className="p-4 md:p-8 max-w-[1800px] mx-auto">
                 <div className="mb-6">
                     <h1 className="text-3xl font-bold text-foreground">Punto de Venta</h1>
                     <p className="text-muted-foreground mt-1">
@@ -62,7 +62,7 @@ export default async function DashboardPage() {
         const pendingOrders = await getPendingPaymentOrdersAction()
 
         return (
-            <div className="p-8 max-w-7xl mx-auto">
+            <div className="p-4 md:p-8 max-w-7xl mx-auto">
                 <CashierDashboard pendingOrders={pendingOrders} />
             </div>
         )
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
         const techList = staff.filter((s: any) => s.role === 'technician' || s.role === 'head_technician')
 
         return (
-            <div className="p-8 max-w-7xl mx-auto">
+            <div className="p-4 md:p-8 max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
@@ -102,7 +102,7 @@ export default async function DashboardPage() {
         const myOrders = assigned.filter((o: any) => o.assigned_to === user.id)
 
         return (
-            <div className="p-8 max-w-7xl mx-auto">
+            <div className="p-4 md:p-8 max-w-7xl mx-auto">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-foreground">Mis Reparaciones</h1>
                     <p className="text-muted-foreground mt-1">
@@ -161,7 +161,7 @@ export default async function DashboardPage() {
         const lowStock = products.filter((p: any) => p.quantity <= (p.min_stock || 5)).length
 
         return (
-            <div className="p-8 max-w-7xl mx-auto">
+            <div className="p-4 md:p-8 max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">Inventario</h1>
@@ -218,7 +218,7 @@ export default async function DashboardPage() {
     // RECEPTION: Front Desk Dashboard
     if (role === 'receptionist') {
         return (
-            <div className="p-8 max-w-7xl mx-auto">
+            <div className="p-4 md:p-8 max-w-7xl mx-auto">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-foreground">Recepción</h1>
                     <p className="text-muted-foreground mt-1">
@@ -267,7 +267,7 @@ export default async function DashboardPage() {
     ])
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <div>

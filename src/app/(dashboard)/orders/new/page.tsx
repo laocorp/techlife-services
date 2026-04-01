@@ -9,7 +9,9 @@ export default async function NewOrderPage() {
     // Transform for client component
     const customerList = customers?.map(c => ({
         id: c.id,
-        full_name: c.full_name
+        full_name: c.full_name,
+        tax_id: c.tax_id,
+        phone: c.phone
     })) || []
 
     // Fetch Staff for Assignment

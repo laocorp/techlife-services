@@ -61,6 +61,9 @@ export default async function MarketplacePage({
                     <Link href="/portal/marketplace?industry=electronics">
                         <Badge variant={industryFilter === 'electronics' ? "default" : "outline"} className="cursor-pointer">Electrónica</Badge>
                     </Link>
+                    <Link href="/portal/marketplace?industry=machinery">
+                        <Badge variant={industryFilter === 'machinery' ? "default" : "outline"} className="cursor-pointer">Maquinaria</Badge>
+                    </Link>
                 </div>
             </div>
 

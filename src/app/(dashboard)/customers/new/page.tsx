@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, ArrowLeft, Search, UserCheck, UserPlus, FileQuestion } from 'lucide-react'
+import { Loader2, ArrowLeft, Search, UserCheck, UserPlus, FileQuestion, SkipForward } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -96,6 +96,7 @@ export default function NewCustomerPage() {
         setFoundUser(null)
         setManualMode(true)
         form.setValue('email', '') // Clear email if they want to register "without email" or just reset
+        setTimeout(() => form.setFocus('fullName'), 100)
     }
 
     return (
@@ -192,16 +193,26 @@ export default function NewCustomerPage() {
                             )}
                         </div>
 
+                        {/* SKIP BUTTON / PREMIUM DESIGN */}
+                        {!foundUser && !manualMode && (
+                            <div className="flex justify-end px-2 -mt-4 mb-4">
+                                <div 
+                                    onClick={enableManualEntry}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50/50 dark:bg-indigo-950/30 rounded-lg border border-indigo-100/50 dark:border-indigo-800/30 cursor-pointer group hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all shadow-sm"
+                                >
+                                    <SkipForward className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 group-hover:translate-x-0.5 transition-transform" />
+                                    <span className="text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                                        ¿Sin email? Registrar manualmente
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
                         {/* STEP 2: MANUAL ENTRY (Conditional) */}
                         {(!foundUser) && (
                             <div className={`space-y-6 pt-6 border-t border-border transition-all duration-500 ${manualMode ? 'opacity-100' : 'opacity-50 grayscale pointer-events-none'}`}>
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold text-foreground">2. Datos del Cliente</h3>
-                                    {!manualMode && (
-                                        <Button type="button" variant="link" size="sm" onClick={enableManualEntry} className="text-muted-foreground">
-                                            Saltar búsqueda / Cliente sin email
-                                        </Button>
-                                    )}
                                 </div>
 
                                 <FormField
@@ -224,9 +235,9 @@ export default function NewCustomerPage() {
                                         name="taxId"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>ID Tributario</FormLabel>
+                                                <FormLabel>CI</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="DNI / NIT" {...field} />
+                                                    <Input placeholder="CI" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

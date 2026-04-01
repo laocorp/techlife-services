@@ -111,12 +111,12 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // 3. Customers (Admins + Reception)
+    // 3. Customers (Admins + Reception + Technician)
     if (request.nextUrl.pathname.startsWith('/customers')) {
         if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-        const allowed = ['owner', 'manager', 'head_technician', 'receptionist']
+        const allowed = ['owner', 'manager', 'head_technician', 'receptionist', 'technician']
 
         if (profile && !allowed.includes(profile.role)) {
             if (profile.role === 'client') return NextResponse.redirect(new URL('/portal/dashboard', request.url))
